@@ -1,0 +1,5 @@
+D:\GitRepos\pg_prm_unitOfWork\Units\obj\Debug\Units.csprojResolveAssemblyReference.cache
+D:\GitRepos\pg_prm_unitOfWork\Units\bin\Debug\Units.dll
+D:\GitRepos\pg_prm_unitOfWork\Units\bin\Debug\Units.pdb
+D:\GitRepos\pg_prm_unitOfWork\Units\obj\Debug\Units.dll
+D:\GitRepos\pg_prm_unitOfWork\Units\obj\Debug\Units.pdb

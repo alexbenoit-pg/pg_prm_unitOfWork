@@ -1,0 +1,7 @@
+D:\GitRepos\pg_prm_unitOfWork\Units.Tests\obj\Debug\Units.Tests.csprojResolveAssemblyReference.cache
+D:\GitRepos\pg_prm_unitOfWork\Units.Tests\bin\Debug\Units.Tests.dll
+D:\GitRepos\pg_prm_unitOfWork\Units.Tests\bin\Debug\Units.Tests.pdb
+D:\GitRepos\pg_prm_unitOfWork\Units.Tests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+D:\GitRepos\pg_prm_unitOfWork\Units.Tests\bin\Debug\ru\Microsoft.VisualStudio.QualityTools.UnitTestFramework.resources.dll
+D:\GitRepos\pg_prm_unitOfWork\Units.Tests\obj\Debug\Units.Tests.dll
+D:\GitRepos\pg_prm_unitOfWork\Units.Tests\obj\Debug\Units.Tests.pdb
