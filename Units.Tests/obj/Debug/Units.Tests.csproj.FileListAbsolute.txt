@@ -5,3 +5,16 @@ D:\GitRepos\pg_prm_unitOfWork\Units.Tests\bin\Debug\Microsoft.VisualStudio.Quali
 D:\GitRepos\pg_prm_unitOfWork\Units.Tests\bin\Debug\ru\Microsoft.VisualStudio.QualityTools.UnitTestFramework.resources.dll
 D:\GitRepos\pg_prm_unitOfWork\Units.Tests\obj\Debug\Units.Tests.dll
 D:\GitRepos\pg_prm_unitOfWork\Units.Tests\obj\Debug\Units.Tests.pdb
+C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units.Tests\bin\Debug\Units.Tests.dll
+C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units.Tests\bin\Debug\Units.Tests.pdb
+C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units.Tests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units.Tests\bin\Debug\nunit.framework.dll
+C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units.Tests\bin\Debug\Units.dll
+C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units.Tests\bin\Debug\Core.dll
+C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units.Tests\bin\Debug\Units.pdb
+C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units.Tests\bin\Debug\nunit.framework.xml
+C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units.Tests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.xml
+C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units.Tests\bin\Debug\Core.pdb
+C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units.Tests\obj\Debug\Units.Tests.csprojResolveAssemblyReference.cache
+C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units.Tests\obj\Debug\Units.Tests.dll
+C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units.Tests\obj\Debug\Units.Tests.pdb
