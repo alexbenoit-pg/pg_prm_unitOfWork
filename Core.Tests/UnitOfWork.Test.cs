@@ -42,31 +42,6 @@ namespace Core.Tests
             // Assert
             Assert.IsNotNull(unitOfWork.Journal);
         }
-
-        [TestMethod]
-        public void Test_Create_Operation_collection()
-        {
-            // Arrange
-            var unitOfWork = new UnitOfWork();
-
-            // Assert
-            Assert.IsNotNull(unitOfWork.Operations);
-        }
-
-        [TestMethod]
-        public void Test_Add_Operation()
-        {
-            // Arrange
-            var unitOfWork = new UnitOfWork();
-
-            // Act
-            var operation = new FakeTransactionUnit();
-
-            unitOfWork.RegisterOperation(operation);
-
-            // Assert
-            Assert.IsTrue(unitOfWork.Operations.Count > 0);
-        }
     }
 
 
