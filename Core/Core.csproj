@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BussinesTransaction.cs" />
+    <Compile Include="Interfaces\IJournal.cs" />
     <Compile Include="Interfaces\ITransactionUnit.cs" />
     <Compile Include="Journal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

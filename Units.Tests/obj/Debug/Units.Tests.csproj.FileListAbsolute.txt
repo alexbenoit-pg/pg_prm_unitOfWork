@@ -18,3 +18,8 @@ C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units.Tests\bin\Debug
 C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units.Tests\obj\Debug\Units.Tests.csprojResolveAssemblyReference.cache
 C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units.Tests\obj\Debug\Units.Tests.dll
 C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units.Tests\obj\Debug\Units.Tests.pdb
+D:\GitRepos\pg_prm_unitOfWork\Units.Tests\bin\Debug\Units.dll
+D:\GitRepos\pg_prm_unitOfWork\Units.Tests\bin\Debug\Core.dll
+D:\GitRepos\pg_prm_unitOfWork\Units.Tests\bin\Debug\Units.pdb
+D:\GitRepos\pg_prm_unitOfWork\Units.Tests\bin\Debug\nunit.framework.xml
+D:\GitRepos\pg_prm_unitOfWork\Units.Tests\bin\Debug\Core.pdb

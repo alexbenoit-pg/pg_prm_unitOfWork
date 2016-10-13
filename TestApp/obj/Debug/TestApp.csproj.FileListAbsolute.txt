@@ -1,1 +1,11 @@
 C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\TestApp\bin\Debug\TestApp.exe.config
+D:\GitRepos\pg_prm_unitOfWork\TestApp\obj\Debug\TestApp.csprojResolveAssemblyReference.cache
+D:\GitRepos\pg_prm_unitOfWork\TestApp\bin\Debug\TestApp.exe.config
+D:\GitRepos\pg_prm_unitOfWork\TestApp\bin\Debug\TestApp.exe
+D:\GitRepos\pg_prm_unitOfWork\TestApp\bin\Debug\TestApp.pdb
+D:\GitRepos\pg_prm_unitOfWork\TestApp\bin\Debug\Core.dll
+D:\GitRepos\pg_prm_unitOfWork\TestApp\bin\Debug\Units.dll
+D:\GitRepos\pg_prm_unitOfWork\TestApp\bin\Debug\Core.pdb
+D:\GitRepos\pg_prm_unitOfWork\TestApp\bin\Debug\Units.pdb
+D:\GitRepos\pg_prm_unitOfWork\TestApp\obj\Debug\TestApp.exe
+D:\GitRepos\pg_prm_unitOfWork\TestApp\obj\Debug\TestApp.pdb

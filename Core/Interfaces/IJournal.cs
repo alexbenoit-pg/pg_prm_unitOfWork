@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="Journal.cs" company="Paragon Software Group">
+// <copyright file="BussinesTransactionTests.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,15 +21,14 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core
+namespace Core.Interfaces
 {
     using System;
-    using Core.Interfaces;
 
-    public class Journal : IJournal
+    public interface IJournal : IDisposable
     {
-        public void Dispose()
-        {
-        }
+        //void Add(ITransactionUnit transactionUnit);
+        //void Delete(ITransactionUnit transactionUnit);
+        //void Clear();
     }
 }

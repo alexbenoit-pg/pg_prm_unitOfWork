@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="Journal.cs" company="Paragon Software Group">
+// <copyright file="FakeTransactionUnit.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,13 +21,46 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core
+using System;
+
+namespace Core.Tests.Fakes
 {
-    using System;
     using Core.Interfaces;
 
-    public class Journal : IJournal
+    class FakeBadTransactionUnit : IFakeTransactionUnit
     {
+        public FakeBadTransactionUnit()
+        {
+            IsCommit = false;
+            IsRollback = false;
+        }
+
+        public bool IsRollback { get; set; }
+        public bool IsCommit { get; set; }
+
+        public string GetOperationId()
+        {
+            return string.Empty;
+        }
+
+        public void Rollback(string operationID)
+        {
+            IsRollback = true;
+            IsCommit = false;
+        }
+
+        public void Rollback()
+        {
+            IsRollback = true;
+            IsCommit = false;
+        }
+
+        public void Commit()
+        {
+            IsCommit = true;
+            throw new Exception();
+        }
+        
         public void Dispose()
         {
         }
