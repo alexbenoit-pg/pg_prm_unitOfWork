@@ -21,15 +21,26 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using Core.Interfaces;
-
 namespace Core
 {
+    using Core.Interfaces;
+    using Core.Helpers;
+
     public sealed class UnitOfWork
     {
+        public UnitOfWork()
+        {
+            FolderHelper.CreateJournalsFolder();
+        }
+
         public BussinesTransaction BeginTransaction()
         {
             return new BussinesTransaction();
+        }
+
+        public BussinesTransaction BeginTransaction(IJournal journal)
+        {
+            return new BussinesTransaction(journal);
         }
     }
 }

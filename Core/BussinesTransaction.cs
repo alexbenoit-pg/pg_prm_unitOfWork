@@ -31,13 +31,16 @@ namespace Core
 
     public sealed class BussinesTransaction : IDisposable
     {
-        internal BussinesTransaction()
+        internal BussinesTransaction(IJournal journal = null)
         {
-            Journal = new Journal();
+            Journal = (journal == null) 
+                        ? new JSONJournal()
+                        : journal;
+
             Operations = new List<ITransactionUnit>();
         }
-        
-        public IJournal Journal { get; set; }
+
+        public IJournal Journal { get; private set; }
         public List<ITransactionUnit> Operations { get; private set; }
 
         public void RegisterOperation(ITransactionUnit operation)
@@ -55,14 +58,17 @@ namespace Core
             {
                 Rollback();
             }
+            
+            //Journal.DeleteJournal();
         }
 
         public void Rollback()
         {
+            //TODO очистка коллекции операций от невыполненых
             foreach (var operation in Operations)
             {
                 operation.Rollback();
-                // TODO Journal Delete-operation
+                Journal.Delete(operation);
             }
         }
 
@@ -70,7 +76,7 @@ namespace Core
         {
             foreach (var operation in Operations)
             {
-                // TODO Journal Add-operation
+                Journal.Add(operation);
                 operation.Commit();
             }
         }

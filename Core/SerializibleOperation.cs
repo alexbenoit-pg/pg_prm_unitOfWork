@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="Journal.cs" company="Paragon Software Group">
+// <copyright file="JsonSerializibleOperation.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -23,13 +23,26 @@
 
 namespace Core
 {
-    using System;
+    using System.Runtime.Serialization;
+
     using Core.Interfaces;
 
-    public class Journal : IJournal
+    [DataContract]
+    public class SerializibleOperation
     {
-        public void Dispose()
-        {
+        public SerializibleOperation(ITransactionUnit unit) {
+            TransactionUnitAssembly = unit.GetType().Assembly.GetName().ToString().Split(',')[0];
+            TransactionUnitName = unit.GetType().ToString();
+            OperationID = unit.GetOperationId();
         }
+
+        [DataMember]
+        public string TransactionUnitAssembly { get; set; }
+
+        [DataMember]
+        public string TransactionUnitName { get; set; }
+
+        [DataMember]
+        public string OperationID { get; set; }
     }
 }

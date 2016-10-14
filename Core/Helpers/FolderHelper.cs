@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="BussinesTransactionTests.cs" company="Paragon Software Group">
+// <copyright file="FolderHelper.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,15 +21,23 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core.Interfaces
+namespace Core.Helpers
 {
-    using System;
+using System.IO;
 
-    public interface IJournal : IDisposable
+    public static class FolderHelper
     {
-        void Add(ITransactionUnit transactionUnit);
-        void Delete(ITransactionUnit transactionUnit);
-        void DeleteJournalFile();
-        //void Clear();
+        private static readonly string TEMP_FOLDER = Path.GetTempPath();
+        private static readonly string FOLDER_NAME = "Unit_Of_Work";
+
+        public static string JournalsFolder
+        {
+            get { return $"{TEMP_FOLDER}\\{FOLDER_NAME}"; }
+        }
+
+        public static void CreateJournalsFolder() {
+            if(!Directory.Exists(JournalsFolder))
+                Directory.CreateDirectory(JournalsFolder);
+        }
     }
 }

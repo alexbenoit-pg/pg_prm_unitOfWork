@@ -9,3 +9,6 @@ D:\GitRepos\pg_prm_unitOfWork\TestApp\bin\Debug\Core.pdb
 D:\GitRepos\pg_prm_unitOfWork\TestApp\bin\Debug\Units.pdb
 D:\GitRepos\pg_prm_unitOfWork\TestApp\obj\Debug\TestApp.exe
 D:\GitRepos\pg_prm_unitOfWork\TestApp\obj\Debug\TestApp.pdb
+D:\GitRepos\pg_prm_unitOfWork\TestApp\bin\Debug\Core.Tests.dll
+D:\GitRepos\pg_prm_unitOfWork\TestApp\bin\Debug\nunit.framework.dll
+D:\GitRepos\pg_prm_unitOfWork\TestApp\bin\Debug\Core.Tests.pdb

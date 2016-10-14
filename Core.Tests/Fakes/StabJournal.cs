@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="BussinesTransactionTests.cs" company="Paragon Software Group">
+// <copyright file="StabJournal.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,15 +21,30 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core.Interfaces
+namespace Core.Tests.Fakes
 {
     using System;
-
-    public interface IJournal : IDisposable
+    using Core.Interfaces;
+    public class StabJournal : IJournal
     {
-        void Add(ITransactionUnit transactionUnit);
-        void Delete(ITransactionUnit transactionUnit);
-        void DeleteJournalFile();
-        //void Clear();
+        public void Add(ITransactionUnit transactionUnit)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Delete(ITransactionUnit transactionUnit)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteJournalFile()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

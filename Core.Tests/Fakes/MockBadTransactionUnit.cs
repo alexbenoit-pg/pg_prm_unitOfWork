@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="FakeTransactionUnit.cs" company="Paragon Software Group">
+// <copyright file="MockTransactionUnit.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -27,9 +27,9 @@ namespace Core.Tests.Fakes
 {
     using Core.Interfaces;
 
-    class FakeBadTransactionUnit : IFakeTransactionUnit
+    public class MockBadTransactionUnit : IFakeTransactionUnit
     {
-        public FakeBadTransactionUnit()
+        public MockBadTransactionUnit()
         {
             IsCommit = false;
             IsRollback = false;
@@ -38,9 +38,10 @@ namespace Core.Tests.Fakes
         public bool IsRollback { get; set; }
         public bool IsCommit { get; set; }
 
+        public string ID { get; set; }
         public string GetOperationId()
         {
-            return string.Empty;
+            return ID/*Guid.NewGuid().ToString().Substring(1, 9)*/;
         }
 
         public void Rollback(string operationID)
