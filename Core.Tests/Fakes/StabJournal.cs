@@ -32,7 +32,7 @@ namespace Core.Tests.Fakes
             throw new NotImplementedException();
         }
 
-        public void Delete(ITransactionUnit transactionUnit)
+        public void Remove(ITransactionUnit transactionUnit)
         {
             throw new NotImplementedException();
         }

@@ -11,6 +11,12 @@ namespace Core.Interfaces
         string GetOperationId();
 
         /// <summary>
+        /// Set <paramref name="operationId"/> of this operation
+        /// </summary>
+        /// <param name="operationId"></param>
+        void SetOperationId(string operationId);
+
+        /// <summary>
         /// Rollback operation with <paramref name="operationId"/>
         /// </summary>
         /// <param name="operationId"></param>

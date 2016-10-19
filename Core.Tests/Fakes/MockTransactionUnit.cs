@@ -26,6 +26,7 @@ using System;
 namespace Core.Tests.Fakes
 {
     using Core.Interfaces;
+    using System.IO;
 
     public class MockTransactionUnit : IFakeTransactionUnit
     {
@@ -33,8 +34,10 @@ namespace Core.Tests.Fakes
         {
             IsRollback = false;
             IsCommit = false;
+            ID = Guid.NewGuid().ToString().Substring(1, 9);
         }
         
+        private PATH = "Path\\to\\Journals\\Folder";
         public string ID { get; set; }
 
         public string GetOperationId()
@@ -44,8 +47,8 @@ namespace Core.Tests.Fakes
 
         public void Rollback(string operationID)
         {
-            IsRollback = true;
-            IsCommit = false;
+            // Читает журнал по ID, где ID - имя журнала
+            // id.txt
         }
 
         public void Rollback()
@@ -56,6 +59,7 @@ namespace Core.Tests.Fakes
 
         public void Commit()
         {
+            File.AppendAllText(PATH)
             IsCommit = true;
         }
 

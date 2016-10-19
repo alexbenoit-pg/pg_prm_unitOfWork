@@ -30,10 +30,11 @@ namespace Core
 
     using Core.Interfaces;
     using Core.Helpers;
+    using System.Collections.Generic;
 
-    public class JSONJournal : IJournal
+    public class JsonJournal : IJournal
     {
-        public JSONJournal()
+        public JsonJournal()
         {
             this.name = Guid.NewGuid().ToString();
             CreateJournalFile();
@@ -46,6 +47,11 @@ namespace Core
             }
         }
 
+        internal void CallbackAfterCrash()
+        {
+            throw new NotImplementedException();
+        }
+
         public void Add(ITransactionUnit operation)
         {
             if (operation == null)
@@ -53,39 +59,32 @@ namespace Core
 
             var serializibleOperation = new SerializibleOperation(operation);
 
-            var jsonFormatter = 
-                new DataContractJsonSerializer(typeof(SerializibleOperation));
-
-            WriteToFile(serializibleOperation, jsonFormatter);
+            //WriteToJournalFile(serializibleOperation);
         }
         
-        public void Delete(ITransactionUnit operation)
+        public void Remove(ITransactionUnit operation)
         {
             if (operation == null)
                 throw new NullReferenceException();
 
-            var jsonFormatter =
-                new DataContractJsonSerializer(typeof(SerializibleOperation[]));
-
-            var operationsInJournal = ReadJournalFile(jsonFormatter);
-            operationsInJournal = operationsInJournal
-                .Where(o => o.OperationID != operation.GetOperationId()).ToArray();
+            var operationsInJournal = ReadJournalFile()
+                .Where(o => o.OperationID != operation.GetOperationId())
+                .ToArray();
 
             ClearJournalFile();
-
-            using (FileStream fs = new FileStream(Path, FileMode.Append))
-            {
-                jsonFormatter.WriteObject(fs, operationsInJournal);
-            }
+            WriteToJournalFile(operationsInJournal);
         }
 
         public void DeleteJournalFile() {
             File.Delete(Path);
         }
 
-        private SerializibleOperation[] ReadJournalFile(DataContractJsonSerializer jsonFormatter)
+        private SerializibleOperation[] ReadJournalFile()
         {
             SerializibleOperation[] result;
+
+            var jsonFormatter =
+                new DataContractJsonSerializer(typeof(SerializibleOperation[]));
             
             using (FileStream fs = new FileStream(Path, FileMode.OpenOrCreate))
             {
@@ -95,8 +94,11 @@ namespace Core
             return result;
         }
 
-        private void WriteToFile(SerializibleOperation serializibleOperation, DataContractJsonSerializer jsonFormatter)
+        private void WriteToJournalFile(SerializibleOperation serializibleOperation)
         {
+            var jsonFormatter =
+                new DataContractJsonSerializer(typeof(SerializibleOperation));
+
             RemoveLastSymbols();
 
             using (FileStream fs = new FileStream(Path, FileMode.Append))
@@ -105,6 +107,17 @@ namespace Core
             }
 
             File.AppendAllText(Path, "," + endSymbols);
+        }
+
+        private void WriteToJournalFile(SerializibleOperation[] serializibleOperations)
+        {
+            var jsonFormatter =
+                new DataContractJsonSerializer(typeof(SerializibleOperation[]));
+
+            using (FileStream fs = new FileStream(Path, FileMode.Append))
+            {
+                jsonFormatter.WriteObject(fs, serializibleOperations);
+            }
         }
 
         private void RemoveLastSymbols()
@@ -130,9 +143,24 @@ namespace Core
             File.WriteAllText(Path, "");
         }
 
-        private readonly string name;
+        public List<ITransactionUnit> GetOperationsFromJournal(string journalName)
+        {
+            var result = new List<ITransactionUnit>();
+            this.name = journalName;
+            var operationsInJson = ReadJournalFile();
+            foreach (var op in operationsInJson) {
+                ITransactionUnit unit = (ITransactionUnit)Activator.CreateInstance(
+                                                op.TransactionUnitAssembly, 
+                                                op.TransactionUnitName);
+                unit.SetOperationId(op.OperationID);
+                result.Add(unit);
+            }
+
+            return result;
+        }
+
+        private string name;
         private const string startSymbols = "[\n";
         private const string endSymbols = "\n]";
-
     }
 }

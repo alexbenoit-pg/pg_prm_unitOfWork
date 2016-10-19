@@ -23,24 +23,39 @@
 
 namespace Core
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.IO;
+
     using Core.Interfaces;
     using Core.Helpers;
 
     public sealed class UnitOfWork
     {
-        public UnitOfWork()
+        public UnitOfWork(bool f = true)
         {
             FolderHelper.CreateJournalsFolder();
+            if (f)
+                CheckBadTransaction();
+        }
+
+        public void CheckBadTransaction()
+        {
+            var journals = Directory.GetFiles(FolderHelper.JournalsFolder);
+            if (journals.Length > 0)
+                RollbackBadTransactions(journals);
+        }
+
+        private void RollbackBadTransactions(string[] journals)
+        {
+            foreach (var journalName in journals)
+                new BussinesTransaction(journalName);
         }
 
         public BussinesTransaction BeginTransaction()
         {
             return new BussinesTransaction();
-        }
-
-        public BussinesTransaction BeginTransaction(IJournal journal)
-        {
-            return new BussinesTransaction(journal);
         }
     }
 }

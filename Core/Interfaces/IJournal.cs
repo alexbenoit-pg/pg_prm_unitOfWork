@@ -24,12 +24,14 @@
 namespace Core.Interfaces
 {
     using System;
+    using System.Collections.Generic;
 
     public interface IJournal : IDisposable
     {
         void Add(ITransactionUnit transactionUnit);
-        void Delete(ITransactionUnit transactionUnit);
+        void Remove(ITransactionUnit transactionUnit);
         void DeleteJournalFile();
+        List<ITransactionUnit> GetOperationsFromJournal(string journal);
         //void Clear();
     }
 }

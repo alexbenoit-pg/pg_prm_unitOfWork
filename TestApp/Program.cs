@@ -18,10 +18,11 @@
             var a = Path.GetTempPath();
 
             using (var bo = unit.BeginTransaction()) {
-                bo.RegisterOperation(oper);
-                bo.RegisterOperation(oper2);
-                bo.RegisterOperation(oper3);
+                bo.RegisterOperation(oper); // sql unit
+                bo.RegisterOperation(oper2);// file unit
+                bo.RegisterOperation(oper3);// sql unit
                 bo.Commit();
+                // sql code
             }
         }
     }

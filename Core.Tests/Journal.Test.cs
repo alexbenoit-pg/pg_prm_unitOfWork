@@ -42,7 +42,7 @@ namespace Core.Tests
         public void Journal_CreateIstance_IsNotNull()
         {
             // Arrange
-            var journal = new JSONJournal();
+            var journal = new JsonJournal();
 
             // Assert
             Assert.IsNotNull(journal);
@@ -52,7 +52,7 @@ namespace Core.Tests
         public void Journal_AddOperation_WithoutException()
         {
             // Arrange
-            var journal = new JSONJournal();
+            var journal = new JsonJournal();
             var operation = new MockTransactionUnit();
 
             // Assert
@@ -64,11 +64,11 @@ namespace Core.Tests
         public void Journal_DeleteOperation_WithoutException()
         {
             // Arrange
-            var journal = new JSONJournal();
+            var journal = new JsonJournal();
             var operation = new MockTransactionUnit(); 
 
             // Assert
-            Assert.That(() => journal.Delete(operation),
+            Assert.That(() => journal.Remove(operation),
                 Throws.Nothing);
         }
     }
