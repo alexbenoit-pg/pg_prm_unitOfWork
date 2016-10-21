@@ -9,6 +9,7 @@
         static void Main(string[] args)
         {
             var unit = new UnitOfWork();
+
             var oper = new MockTransactionUnit();
             oper.ID = "1";
             var oper2 = new MockTransactionUnit();
@@ -18,11 +19,10 @@
             var a = Path.GetTempPath();
 
             using (var bo = unit.BeginTransaction()) {
-                bo.RegisterOperation(oper); // sql unit
-                bo.RegisterOperation(oper2);// file unit
-                bo.RegisterOperation(oper3);// sql unit
+                bo.RegisterOperation(oper);
+                bo.RegisterOperation(oper2);
+                bo.RegisterOperation(oper3);
                 bo.Commit();
-                // sql code
             }
         }
     }

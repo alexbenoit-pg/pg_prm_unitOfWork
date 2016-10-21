@@ -12,3 +12,5 @@ D:\GitRepos\pg_prm_unitOfWork\TestApp\obj\Debug\TestApp.pdb
 D:\GitRepos\pg_prm_unitOfWork\TestApp\bin\Debug\Core.Tests.dll
 D:\GitRepos\pg_prm_unitOfWork\TestApp\bin\Debug\nunit.framework.dll
 D:\GitRepos\pg_prm_unitOfWork\TestApp\bin\Debug\Core.Tests.pdb
+D:\GitRepos\pg_prm_unitOfWork\TestApp\bin\Debug\Newtonsoft.Json.dll
+D:\GitRepos\pg_prm_unitOfWork\TestApp\bin\Debug\Newtonsoft.Json.xml

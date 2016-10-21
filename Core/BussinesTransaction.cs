@@ -21,41 +21,26 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-// TODO Добавить журнальные методы добавления информации об операциях
 namespace Core
 {
     using System;
     using System.Collections.Generic;
+    using System.Runtime.Serialization;
 
     using Core.Interfaces;
+    using Core.Journals;
 
     public sealed class BussinesTransaction : IDisposable
     {
-        internal BussinesTransaction()
-        {
-            Journal = new JsonJournal();
-            Operations = new List<ITransactionUnit>();
-        }
-        
-        internal BussinesTransaction(string JournalName)
-        {
-            Journal = new JsonJournal();
-            Operations = Journal.GetOperationsFromJournal(JournalName);
-            RollbackAfterCrush();
-        }
-
-        private void RollbackAfterCrush()
-        {
-            foreach (var operation in Operations)
-            {
-                operation.Rollback(operation.GetOperationId());
-                Journal.Remove(operation);
-            }
-        }
-
         public IJournal Journal { get; private set; }
         public List<ITransactionUnit> Operations { get; private set; }
 
+        internal BussinesTransaction()
+        {
+            Journal = new BinaryJournal();
+            Operations = new List<ITransactionUnit>();
+        }
+        
         public void RegisterOperation(ITransactionUnit operation)
         {
             Operations.Add(operation);
@@ -67,17 +52,20 @@ namespace Core
             {
                 CommitEachOperation();
             }
-            catch
+            catch (SerializationException e) {
+                Rollback();
+                throw e;
+            }
+            catch (Exception e)
             {
                 Rollback();
             }
-            
-            //Journal.DeleteJournal();
         }
 
         public void Rollback()
         {
-            //TODO очистка коллекции операций от невыполненых
+            Journal.DeleteUncommitableOperations(Operations);
+
             foreach (var operation in Operations)
             {
                 operation.Rollback();

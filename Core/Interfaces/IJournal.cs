@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="BussinesTransactionTests.cs" company="Paragon Software Group">
+// <copyright file="IJournal.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -28,10 +28,34 @@ namespace Core.Interfaces
 
     public interface IJournal : IDisposable
     {
+        /// <summary>
+        /// Add commited instance of transaction unit to journal.
+        /// </summary>
+        /// <param name="transactionUnit"></param>
         void Add(ITransactionUnit transactionUnit);
+
+        /// <summary>
+        /// Remove instance of transaction unit from journal.
+        /// </summary>
+        /// <param name="transactionUnit"></param>
         void Remove(ITransactionUnit transactionUnit);
-        void DeleteJournalFile();
-        List<ITransactionUnit> GetOperationsFromJournal(string journal);
-        //void Clear();
+
+        /// <summary>
+        /// Delete journal file.
+        /// </summary>
+        void Delete();
+
+        /// <summary>
+        /// Get List-collection with commited instances of transaction units from journal.
+        /// </summary>
+        /// <param name="journalName"></param>
+        /// <returns></returns>
+        List<ITransactionUnit> GetOperationsFromJournal();
+
+        /// <summary>
+        /// Delete uncommited instances of transaction units from operation collection in instance of bussines transaction.
+        /// </summary>
+        /// <param name="operations"></param>
+        void DeleteUncommitableOperations(List<ITransactionUnit> operations);
     }
 }

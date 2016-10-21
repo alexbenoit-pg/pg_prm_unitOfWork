@@ -24,8 +24,11 @@
 namespace Core.Tests
 {
     using System;
+
     using Core;
+    using Core.Journals;
     using Core.Tests.Fakes;
+
     using NUnit.Framework;
 
     /// <summary>

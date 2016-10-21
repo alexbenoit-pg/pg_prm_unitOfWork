@@ -24,7 +24,10 @@
 namespace Core.Tests.Fakes
 {
     using System;
+    using System.Collections.Generic;
+
     using Core.Interfaces;
+
     public class StabJournal : IJournal
     {
         public void Add(ITransactionUnit transactionUnit)
@@ -37,12 +40,27 @@ namespace Core.Tests.Fakes
             throw new NotImplementedException();
         }
 
-        public void DeleteJournalFile()
+        public void Delete()
         {
             throw new NotImplementedException();
         }
 
         public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ITransactionUnit> GetOperationsFromJournal(string journalName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteUncommitableOperations(List<ITransactionUnit> operations)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ITransactionUnit> GetOperationsFromJournal()
         {
             throw new NotImplementedException();
         }

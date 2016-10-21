@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="JsonSerializibleOperation.cs" company="Paragon Software Group">
+// <copyright file="AssemblyHelper.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,28 +21,18 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core
+namespace Core.Helpers
 {
-    using System.Runtime.Serialization;
-
-    using Core.Interfaces;
-
-    [DataContract]
-    public class SerializibleOperation
+    public static class AssemblyHelper
     {
-        public SerializibleOperation(ITransactionUnit unit) {
-            TransactionUnitAssembly = unit.GetType().Assembly.GetName().ToString().Split(',')[0];
-            TransactionUnitName = unit.GetType().ToString();
-            OperationID = unit.GetOperationId();
+        public static string GetAssemblyName(object obj){
+            return obj.GetType().Assembly.GetName().ToString().Split(',')[0];
         }
 
-        [DataMember]
-        public string TransactionUnitAssembly { get; set; }
-
-        [DataMember]
-        public string TransactionUnitName { get; set; }
-
-        [DataMember]
-        public string OperationID { get; set; }
+        public static string GetTypeName(object obj)
+        {
+            return obj.GetType().ToString();
+        }
     }
 }
+

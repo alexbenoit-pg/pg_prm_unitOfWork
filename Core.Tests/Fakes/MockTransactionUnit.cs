@@ -21,13 +21,11 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
-
 namespace Core.Tests.Fakes
 {
-    using Core.Interfaces;
-    using System.IO;
+    using System;
 
+    [Serializable]
     public class MockTransactionUnit : IFakeTransactionUnit
     {
         public MockTransactionUnit()
@@ -37,7 +35,6 @@ namespace Core.Tests.Fakes
             ID = Guid.NewGuid().ToString().Substring(1, 9);
         }
         
-        private PATH = "Path\\to\\Journals\\Folder";
         public string ID { get; set; }
 
         public string GetOperationId()
@@ -59,12 +56,16 @@ namespace Core.Tests.Fakes
 
         public void Commit()
         {
-            File.AppendAllText(PATH)
             IsCommit = true;
         }
 
         public void Dispose()
         {
+        }
+
+        public void SetOperationId(string operationId)
+        {
+            throw new NotImplementedException();
         }
 
         public bool IsRollback { get; set; }

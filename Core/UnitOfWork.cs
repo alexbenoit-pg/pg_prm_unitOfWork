@@ -33,10 +33,10 @@ namespace Core
 
     public sealed class UnitOfWork
     {
-        public UnitOfWork(bool f = true)
+        public UnitOfWork(bool chechAfterCrush = true)
         {
             FolderHelper.CreateJournalsFolder();
-            if (f)
+            if (chechAfterCrush)
                 CheckBadTransaction();
         }
 
@@ -47,15 +47,15 @@ namespace Core
                 RollbackBadTransactions(journals);
         }
 
-        private void RollbackBadTransactions(string[] journals)
-        {
-            foreach (var journalName in journals)
-                new BussinesTransaction(journalName);
-        }
-
         public BussinesTransaction BeginTransaction()
         {
             return new BussinesTransaction();
+        }
+        
+        private void RollbackBadTransactions(string[] journals)
+        {
+            foreach (var journal in journals)
+                using (new BadBussinesTransaction(FolderHelper.GetJournalName(journal)));
         }
     }
 }
