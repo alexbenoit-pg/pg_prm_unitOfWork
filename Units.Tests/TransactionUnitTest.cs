@@ -27,7 +27,7 @@ namespace Units.Tests
             var opID = unitTest.GetOperationId();
 
           
-            Assert.IsNotNullOrEmpty(opID);
+            Assert.IsNotNull(opID);
         }
 
     }

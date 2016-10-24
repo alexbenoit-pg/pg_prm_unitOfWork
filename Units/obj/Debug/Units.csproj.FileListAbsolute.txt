@@ -1,8 +1,5 @@
-D:\GitRepos\pg_prm_unitOfWork\Units\obj\Debug\Units.csprojResolveAssemblyReference.cache
 D:\GitRepos\pg_prm_unitOfWork\Units\bin\Debug\Units.dll
 D:\GitRepos\pg_prm_unitOfWork\Units\bin\Debug\Units.pdb
-D:\GitRepos\pg_prm_unitOfWork\Units\obj\Debug\Units.dll
-D:\GitRepos\pg_prm_unitOfWork\Units\obj\Debug\Units.pdb
 C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units\bin\Debug\Units.dll
 C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units\bin\Debug\Units.pdb
 C:\Users\vuyan\Desktop\pg_prm_unitOfWork\pg_prm_unitOfWork\Units\obj\Debug\Units.csprojResolveAssemblyReference.cache
@@ -14,3 +11,8 @@ D:\GitRepos\pg_prm_unitOfWork\Units\bin\Debug\Core.dll
 D:\GitRepos\pg_prm_unitOfWork\Units\bin\Debug\Core.pdb
 D:\GitRepos\pg_prm_unitOfWork\Units\bin\Debug\Newtonsoft.Json.dll
 D:\GitRepos\pg_prm_unitOfWork\Units\bin\Debug\Newtonsoft.Json.xml
+D:\GitRepos\pg_prm_unitOfWork\bin\Debug\Units.dll
+D:\GitRepos\pg_prm_unitOfWork\bin\Debug\Units.pdb
+D:\GitRepos\pg_prm_unitOfWork\Units\obj\Debug\Units.csprojResolveAssemblyReference.cache
+D:\GitRepos\pg_prm_unitOfWork\Units\obj\Debug\Units.dll
+D:\GitRepos\pg_prm_unitOfWork\Units\obj\Debug\Units.pdb
