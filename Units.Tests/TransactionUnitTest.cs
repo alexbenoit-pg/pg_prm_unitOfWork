@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -7,28 +8,51 @@ using System.Threading.Tasks;
 using Units;
 
 namespace Units.Tests
+=======
+﻿namespace Units.Tests
+>>>>>>> master
 {
+    using NUnit.Framework;
+    using System.IO;
+    using Assert = NUnit.Framework.Assert;
+
     [TestFixture]
     public class TransactionUnitTest
     {
         [Test]
-        public void Test_Create_Unit()
+        public void TransactionUnit_CreateInstance_IsNotNull()
         {
-            var unitTest = new Unit();
-                
+            var unitTest = new TransactionSimulationUnit();
+
             Assert.IsNotNull(unitTest);
         }
 
         [Test]
-        public void Test_GetOperationID()
+        public void TransactionUnit_GetOperationID_IsNotNull()
         {
-            var unitTest = new Unit();
+            var unitTest = new TransactionSimulationUnit();
+            var operationID = unitTest.GetOperationId();
 
-            var opID = unitTest.GetOperationId();
+            Assert.IsNotNullOrEmpty(operationID);
+        }
 
+        [Test]
+        public void TransactionUnit_CheckCommite_IsTrue()
+        {
+            var unitTest = new TransactionSimulationUnit();
+            unitTest.Commit();
+            string testText = "Commit прошел успешно";
+            string[] text = File.ReadAllLines(unitTest.path);
+
+<<<<<<< HEAD
           
             Assert.IsNotNull(opID);
+=======
+            Assert.IsTrue(text[text.Length-1] == testText);
+>>>>>>> master
         }
+
+
 
     }
 }
