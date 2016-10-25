@@ -1,16 +1,4 @@
-<<<<<<< HEAD
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Units;
-
 namespace Units.Tests
-=======
-﻿namespace Units.Tests
->>>>>>> master
 {
     using NUnit.Framework;
     using System.IO;
@@ -33,7 +21,7 @@ namespace Units.Tests
             var unitTest = new TransactionSimulationUnit();
             var operationID = unitTest.GetOperationId();
 
-            Assert.IsNotNullOrEmpty(operationID);
+            Assert.IsNotNull(operationID);
         }
 
         [Test]
@@ -43,13 +31,7 @@ namespace Units.Tests
             unitTest.Commit();
             string testText = "Commit прошел успешно";
             string[] text = File.ReadAllLines(unitTest.path);
-
-<<<<<<< HEAD
-          
-            Assert.IsNotNull(opID);
-=======
             Assert.IsTrue(text[text.Length-1] == testText);
->>>>>>> master
         }
 
 
