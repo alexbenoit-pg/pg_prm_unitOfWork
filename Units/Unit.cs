@@ -39,7 +39,9 @@ namespace Units
             throw new NotImplementedException();
         }
 
-        
-
+        public void SetOperationId(string operationId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

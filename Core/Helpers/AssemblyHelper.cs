@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="FakeTransactionUnit.cs" company="Paragon Software Group">
+// <copyright file="AssemblyHelper.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,47 +21,18 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
-
-namespace Core.Tests.Fakes
+namespace Core.Helpers
 {
-    using Core.Interfaces;
-
-    class FakeTransactionUnit : IFakeTransactionUnit
+    public static class AssemblyHelper
     {
-        public FakeTransactionUnit()
-        {
-            IsRollback = false;
-            IsCommit = false;
-        }
-        
-        public string GetOperationId()
-        {
-            return string.Empty;
+        public static string GetAssemblyName(object obj){
+            return obj.GetType().Assembly.GetName().ToString().Split(',')[0];
         }
 
-        public void Rollback(string operationID)
+        public static string GetTypeName(object obj)
         {
-            IsRollback = true;
-            IsCommit = false;
+            return obj.GetType().ToString();
         }
-
-        public void Rollback()
-        {
-            IsRollback = true;
-            IsCommit = false;
-        }
-
-        public void Commit()
-        {
-            IsCommit = true;
-        }
-
-        public void Dispose()
-        {
-        }
-
-        public bool IsRollback { get; set; }
-        public bool IsCommit { get; set; }
     }
 }
+

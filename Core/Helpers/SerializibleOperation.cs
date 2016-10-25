@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="UnitOfWork.cs" company="Paragon Software Group">
+// <copyright file="JsonSerializibleOperation.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,41 +21,29 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core
+namespace Core.Helpers
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.IO;
+    using System.Runtime.Serialization;
 
-    using Core.Interfaces;
     using Core.Helpers;
+    using Core.Interfaces;
 
-    public sealed class UnitOfWork
+    [DataContract]
+    public class SerializibleOperation
     {
-        public UnitOfWork(bool chechAfterCrush = true)
-        {
-            FolderHelper.CreateJournalsFolder();
-            if (chechAfterCrush)
-                CheckBadTransaction();
+        public SerializibleOperation(ITransactionUnit unit) {
+            TransactionUnitAssembly = AssemblyHelper.GetAssemblyName(unit);
+            TransactionUnitName = AssemblyHelper.GetTypeName(unit);
+            OperationID = unit.GetOperationId();
         }
 
-        public void CheckBadTransaction()
-        {
-            var journals = Directory.GetFiles(FolderHelper.JournalsFolder);
-            if (journals.Length > 0)
-                RollbackBadTransactions(journals);
-        }
+        [DataMember]
+        public string TransactionUnitAssembly { get; set; }
 
-        public BussinesTransaction BeginTransaction()
-        {
-            return new BussinesTransaction();
-        }
-        
-        private void RollbackBadTransactions(string[] journals)
-        {
-            foreach (var journal in journals)
-                using (new BadBussinesTransaction(FolderHelper.GetJournalName(journal)));
-        }
+        [DataMember]
+        public string TransactionUnitName { get; set; }
+
+        [DataMember]
+        public string OperationID { get; set; }
     }
 }

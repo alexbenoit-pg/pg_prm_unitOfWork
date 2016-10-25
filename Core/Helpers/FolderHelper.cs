@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="FakeTransactionUnit.cs" company="Paragon Software Group">
+// <copyright file="FolderHelper.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,48 +21,28 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
-
-namespace Core.Tests.Fakes
+namespace Core.Helpers
 {
-    using Core.Interfaces;
+    using System.IO;
+    using System.Linq;
 
-    class FakeBadTransactionUnit : IFakeTransactionUnit
+    public static class FolderHelper
     {
-        public FakeBadTransactionUnit()
+        private static readonly string TEMP_FOLDER = Path.GetTempPath();
+        private static readonly string FOLDER_NAME = "Unit_Of_Work";
+
+        public static string JournalsFolder
         {
-            IsCommit = false;
-            IsRollback = false;
+            get { return $"{TEMP_FOLDER}\\{FOLDER_NAME}"; }
         }
 
-        public bool IsRollback { get; set; }
-        public bool IsCommit { get; set; }
-
-        public string GetOperationId()
-        {
-            return string.Empty;
+        public static void CreateJournalsFolder() {
+            if(!Directory.Exists(JournalsFolder))
+                Directory.CreateDirectory(JournalsFolder);
         }
 
-        public void Rollback(string operationID)
-        {
-            IsRollback = true;
-            IsCommit = false;
-        }
-
-        public void Rollback()
-        {
-            IsRollback = true;
-            IsCommit = false;
-        }
-
-        public void Commit()
-        {
-            IsCommit = true;
-            throw new Exception();
-        }
-        
-        public void Dispose()
-        {
+        public static string GetJournalName(string fullPath) {
+            return Path.GetFileNameWithoutExtension(fullPath);
         }
     }
 }

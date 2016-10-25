@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="UnitOfWork.cs" company="Paragon Software Group">
+// <copyright file="MockTransactionUnit.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,41 +21,54 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core
+namespace Core.Tests.Fakes
 {
     using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.IO;
 
-    using Core.Interfaces;
-    using Core.Helpers;
-
-    public sealed class UnitOfWork
+    [Serializable]
+    public class MockTransactionUnit : IFakeTransactionUnit
     {
-        public UnitOfWork(bool chechAfterCrush = true)
+        public MockTransactionUnit()
         {
-            FolderHelper.CreateJournalsFolder();
-            if (chechAfterCrush)
-                CheckBadTransaction();
-        }
-
-        public void CheckBadTransaction()
-        {
-            var journals = Directory.GetFiles(FolderHelper.JournalsFolder);
-            if (journals.Length > 0)
-                RollbackBadTransactions(journals);
-        }
-
-        public BussinesTransaction BeginTransaction()
-        {
-            return new BussinesTransaction();
+            IsRollback = false;
+            IsCommit = false;
+            ID = Guid.NewGuid().ToString().Substring(1, 9);
         }
         
-        private void RollbackBadTransactions(string[] journals)
+        public string ID { get; set; }
+
+        public string GetOperationId()
         {
-            foreach (var journal in journals)
-                using (new BadBussinesTransaction(FolderHelper.GetJournalName(journal)));
+            return ID /*Guid.NewGuid().ToString().Substring(1,9)*/;
         }
+
+        public void Rollback(string operationID)
+        {
+            // Читает журнал по ID, где ID - имя журнала
+            // id.txt
+        }
+
+        public void Rollback()
+        {
+            IsRollback = true;
+            IsCommit = false;
+        }
+
+        public void Commit()
+        {
+            IsCommit = true;
+        }
+
+        public void Dispose()
+        {
+        }
+
+        public void SetOperationId(string operationId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsRollback { get; set; }
+        public bool IsCommit { get; set; }
     }
 }
