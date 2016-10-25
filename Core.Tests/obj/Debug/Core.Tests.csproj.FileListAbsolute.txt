@@ -1,0 +1,5 @@
+D:\GitRepos\pg_prm_unitOfWork\bin\Debug\Core.Tests.dll
+D:\GitRepos\pg_prm_unitOfWork\bin\Debug\Core.Tests.pdb
+D:\GitRepos\pg_prm_unitOfWork\Core.Tests\obj\Debug\Core.Tests.csprojResolveAssemblyReference.cache
+D:\GitRepos\pg_prm_unitOfWork\Core.Tests\obj\Debug\Core.Tests.dll
+D:\GitRepos\pg_prm_unitOfWork\Core.Tests\obj\Debug\Core.Tests.pdb
