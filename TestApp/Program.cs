@@ -21,7 +21,7 @@
             using (var bo = unit.BeginTransaction()) {
                 bo.RegisterOperation(oper);
                 bo.RegisterOperation(oper2);
-                bo.RegisterOperation(oper3);
+                //bo.RegisterOperation(oper3);
                 bo.Commit();
             }
         }
