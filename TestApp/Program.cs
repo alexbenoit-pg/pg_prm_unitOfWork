@@ -9,6 +9,7 @@
         static void Main(string[] args)
         {
             var unit = new UnitOfWork();
+
             var oper = new MockTransactionUnit();
             oper.ID = "1";
             var oper2 = new MockTransactionUnit();
@@ -20,7 +21,7 @@
             using (var bo = unit.BeginTransaction()) {
                 bo.RegisterOperation(oper);
                 bo.RegisterOperation(oper2);
-                bo.RegisterOperation(oper3);
+                //bo.RegisterOperation(oper3);
                 bo.Commit();
             }
         }

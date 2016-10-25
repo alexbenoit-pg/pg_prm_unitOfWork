@@ -74,22 +74,7 @@ namespace Core.Tests
             // Assert
             Assert.IsNotNull(bussinesTransaction.Journal);
         }
-
-        /// <summary>
-        /// Test for a possibility of creation journal instance.
-        /// </summary>
-        [Test]
-        public void BussinesTransaction_CreateCustomJournalInBussinesTransaction_IsNotNull()
-        {
-            // Arrange
-            var unitOfWork = new UnitOfWork();
-            var customJournal = new StabJournal();
-            var bussinesTransaction = unitOfWork.BeginTransaction(customJournal);
-
-            // Assert
-            Assert.True(bussinesTransaction.Journal is StabJournal);
-        }
-
+        
         /// <summary>
         /// Test for a possibility of added operation to bussines transaction
         /// </summary>

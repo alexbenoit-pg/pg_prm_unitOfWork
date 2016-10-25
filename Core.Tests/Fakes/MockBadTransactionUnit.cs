@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="MockTransactionUnit.cs" company="Paragon Software Group">
+// <copyright file="MockBadTransactionUnit.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -25,8 +25,6 @@ using System;
 
 namespace Core.Tests.Fakes
 {
-    using Core.Interfaces;
-
     public class MockBadTransactionUnit : IFakeTransactionUnit
     {
         public MockBadTransactionUnit()
@@ -64,6 +62,11 @@ namespace Core.Tests.Fakes
         
         public void Dispose()
         {
+        }
+
+        public void SetOperationId(string operationId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

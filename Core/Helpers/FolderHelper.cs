@@ -23,7 +23,8 @@
 
 namespace Core.Helpers
 {
-using System.IO;
+    using System.IO;
+    using System.Linq;
 
     public static class FolderHelper
     {
@@ -38,6 +39,10 @@ using System.IO;
         public static void CreateJournalsFolder() {
             if(!Directory.Exists(JournalsFolder))
                 Directory.CreateDirectory(JournalsFolder);
+        }
+
+        public static string GetJournalName(string fullPath) {
+            return Path.GetFileNameWithoutExtension(fullPath);
         }
     }
 }

@@ -21,18 +21,18 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
-
 namespace Core.Tests.Fakes
 {
-    using Core.Interfaces;
+    using System;
 
+    [Serializable]
     public class MockTransactionUnit : IFakeTransactionUnit
     {
         public MockTransactionUnit()
         {
             IsRollback = false;
             IsCommit = false;
+            ID = Guid.NewGuid().ToString().Substring(1, 9);
         }
         
         public string ID { get; set; }
@@ -44,8 +44,8 @@ namespace Core.Tests.Fakes
 
         public void Rollback(string operationID)
         {
-            IsRollback = true;
-            IsCommit = false;
+            // Читает журнал по ID, где ID - имя журнала
+            // id.txt
         }
 
         public void Rollback()
@@ -61,6 +61,11 @@ namespace Core.Tests.Fakes
 
         public void Dispose()
         {
+        }
+
+        public void SetOperationId(string operationId)
+        {
+            throw new NotImplementedException();
         }
 
         public bool IsRollback { get; set; }
