@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="UnitOfWork.cs" company="Paragon Software Group">
+// <copyright file="JsonHelper.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,41 +21,31 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core
+namespace Core.Helpers
 {
     using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.IO;
+    using Newtonsoft.Json;
 
-    using Core.Interfaces;
-    using Core.Helpers;
-
-    public sealed class UnitOfWork
+    public static class JsonHelper
     {
-        public UnitOfWork(bool chechAfterCrush = true)
+        public static string ToJson<T>(T obj)
         {
-            FolderHelper.CreateJournalsFolder();
-            if (chechAfterCrush)
-                CheckBadTransaction();
+            if (obj == null)
+                throw new ArgumentNullException();
+
+            return JsonConvert.SerializeObject(obj);
         }
 
-        public void CheckBadTransaction()
+        public static T FromJson<T>(string json)
         {
-            var journals = Directory.GetFiles(FolderHelper.JournalsFolder);
-            if (journals.Length > 0)
-                RollbackBadTransactions(journals);
-        }
+            if (json == null)
+                throw new ArgumentNullException();
 
-        public BussinesTransaction BeginTransaction()
-        {
-            return new BussinesTransaction();
-        }
-        
-        private void RollbackBadTransactions(string[] journals)
-        {
-            foreach (var journal in journals)
-                using (new BadBussinesTransaction(FolderHelper.GetJournalName(journal)));
+            if (string.IsNullOrWhiteSpace(json))
+                throw new ArgumentException();
+
+            T obj = default(T);
+            return JsonConvert.DeserializeAnonymousType(json, obj);
         }
     }
 }

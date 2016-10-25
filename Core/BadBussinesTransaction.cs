@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="UnitOfWork.cs" company="Paragon Software Group">
+// <copyright file="BadBussinesTransaction.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -24,38 +24,37 @@
 namespace Core
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
-    using System.IO;
 
     using Core.Interfaces;
-    using Core.Helpers;
+    using Core.Journals;
 
-    public sealed class UnitOfWork
+    public sealed class BadBussinesTransaction : IDisposable
     {
-        public UnitOfWork(bool chechAfterCrush = true)
+        public IJournal Journal { get; private set; }
+        public List<ITransactionUnit> Operations { get; private set; }
+        
+        internal BadBussinesTransaction(string journalName)
         {
-            FolderHelper.CreateJournalsFolder();
-            if (chechAfterCrush)
-                CheckBadTransaction();
-        }
-
-        public void CheckBadTransaction()
-        {
-            var journals = Directory.GetFiles(FolderHelper.JournalsFolder);
-            if (journals.Length > 0)
-                RollbackBadTransactions(journals);
-        }
-
-        public BussinesTransaction BeginTransaction()
-        {
-            return new BussinesTransaction();
+            Journal = new BinaryJournal(journalName);
+            Operations = Journal.GetOperationsFromJournal();
+            RollbackAfterCrush();
         }
         
-        private void RollbackBadTransactions(string[] journals)
+        private void RollbackAfterCrush()
         {
-            foreach (var journal in journals)
-                using (new BadBussinesTransaction(FolderHelper.GetJournalName(journal)));
+            foreach (var operation in Operations)
+            {
+                operation.Rollback(operation.GetOperationId());
+                Journal.Remove(operation);
+            }
+        }
+
+        public void Dispose()
+        {
+            Operations.Clear();
+            Operations = null;
+            Journal.Dispose();
         }
     }
 }

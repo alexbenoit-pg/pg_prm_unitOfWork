@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="Journal.cs" company="Paragon Software Group">
+// <copyright file="StabJournal.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,15 +21,48 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core
+namespace Core.Tests.Fakes
 {
     using System;
+    using System.Collections.Generic;
+
     using Core.Interfaces;
 
-    public class Journal : IJournal
+    public class StabJournal : IJournal
     {
+        public void Add(ITransactionUnit transactionUnit)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Remove(ITransactionUnit transactionUnit)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Delete()
+        {
+            throw new NotImplementedException();
+        }
+
         public void Dispose()
         {
+            throw new NotImplementedException();
+        }
+
+        public List<ITransactionUnit> GetOperationsFromJournal(string journalName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteUncommitableOperations(List<ITransactionUnit> operations)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ITransactionUnit> GetOperationsFromJournal()
+        {
+            throw new NotImplementedException();
         }
     }
 }

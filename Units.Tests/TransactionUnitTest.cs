@@ -1,4 +1,4 @@
-﻿namespace Units.Tests
+namespace Units.Tests
 {
     using NUnit.Framework;
     using System.IO;
@@ -21,7 +21,7 @@
             var unitTest = new TransactionSimulationUnit();
             var operationID = unitTest.GetOperationId();
 
-            Assert.IsNotNullOrEmpty(operationID);
+            Assert.IsNotNull(operationID);
         }
 
         [Test]
@@ -31,7 +31,6 @@
             unitTest.Commit();
             string testText = "Commit прошел успешно";
             string[] text = File.ReadAllLines(unitTest.path);
-
             Assert.IsTrue(text[text.Length-1] == testText);
         }
 

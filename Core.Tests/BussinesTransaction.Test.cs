@@ -46,7 +46,7 @@ namespace Core.Tests
             // Assert
             Assert.IsNotNull(bussinesTransaction);
         }
-
+        
         /// <summary>
         /// Test for a possibility of creation collection of Operations(transaction units)
         /// </summary>
@@ -74,7 +74,7 @@ namespace Core.Tests
             // Assert
             Assert.IsNotNull(bussinesTransaction.Journal);
         }
-
+        
         /// <summary>
         /// Test for a possibility of added operation to bussines transaction
         /// </summary>
@@ -86,7 +86,7 @@ namespace Core.Tests
             var bussinesTransaction = unitOfWork.BeginTransaction();
 
             // Act
-            var operation = new FakeTransactionUnit();
+            var operation = new MockTransactionUnit();
             bussinesTransaction.RegisterOperation(operation);
 
             // Assert
@@ -106,15 +106,15 @@ namespace Core.Tests
             using (bussinesTransaction = unitOfWork.BeginTransaction())
             {
                 // Act
-                bussinesTransaction.Operations.Add(new FakeTransactionUnit());
-                bussinesTransaction.Operations.Add(new FakeTransactionUnit());
+                bussinesTransaction.Operations.Add(new MockTransactionUnit());
+                bussinesTransaction.Operations.Add(new MockTransactionUnit());
 
                 bussinesTransaction.Commit();
 
                 // Assert
                 Assert.IsTrue(bussinesTransaction.Operations.All(op =>
                 {
-                    var fakeUnit = (FakeTransactionUnit)op;
+                    var fakeUnit = (MockTransactionUnit)op;
                     return fakeUnit.IsCommit;
                 }));
             }
@@ -133,9 +133,9 @@ namespace Core.Tests
             using (bussinesTransaction = unitOfWork.BeginTransaction())
             {
                 // Act
-                bussinesTransaction.Operations.Add(new FakeTransactionUnit());
-                bussinesTransaction.Operations.Add(new FakeBadTransactionUnit());
-                bussinesTransaction.Operations.Add(new FakeTransactionUnit());
+                bussinesTransaction.Operations.Add(new MockTransactionUnit());
+                bussinesTransaction.Operations.Add(new MockBadTransactionUnit());
+                bussinesTransaction.Operations.Add(new MockTransactionUnit());
 
                 bussinesTransaction.Commit();
                 
@@ -162,8 +162,8 @@ namespace Core.Tests
             using (bussinesTransaction = unitOfWork.BeginTransaction())
             {
                 // Act
-                bussinesTransaction.Operations.Add(new FakeTransactionUnit());
-                bussinesTransaction.Operations.Add(new FakeTransactionUnit());
+                bussinesTransaction.Operations.Add(new MockTransactionUnit());
+                bussinesTransaction.Operations.Add(new MockTransactionUnit());
 
                 bussinesTransaction.Rollback();
 

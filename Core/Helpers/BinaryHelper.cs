@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="UnitOfWork.cs" company="Paragon Software Group">
+// <copyright file="BinaryHelper.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,41 +21,46 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core
+namespace Core.Helpers
 {
     using System;
-    using System.Collections;
-    using System.Collections.Generic;
+    using System.Runtime.Serialization.Formatters.Binary;
     using System.IO;
 
-    using Core.Interfaces;
-    using Core.Helpers;
-
-    public sealed class UnitOfWork
+    public static class BinaryHelper
     {
-        public UnitOfWork(bool chechAfterCrush = true)
+        public static string ToBinary<T>(T obj)
         {
-            FolderHelper.CreateJournalsFolder();
-            if (chechAfterCrush)
-                CheckBadTransaction();
+            if (obj == null)
+                throw new ArgumentNullException();
+            
+            using (var stream = new MemoryStream())
+            {
+                new BinaryFormatter().Serialize(stream, obj);
+                return Convert.ToBase64String(stream.ToArray());
+            }
         }
 
-        public void CheckBadTransaction()
+        public static T FromBinary<T>(string binaryString)
         {
-            var journals = Directory.GetFiles(FolderHelper.JournalsFolder);
-            if (journals.Length > 0)
-                RollbackBadTransactions(journals);
-        }
+            if (binaryString == null)
+                throw new ArgumentNullException();
 
-        public BussinesTransaction BeginTransaction()
-        {
-            return new BussinesTransaction();
+            if (string.IsNullOrWhiteSpace(binaryString))
+                throw new ArgumentException();
+
+            byte[] arr = Convert.FromBase64String(binaryString);
+
+            using (var stream = new MemoryStream(arr)) {
+                stream.Seek(0, SeekOrigin.Begin);
+                return (T)new BinaryFormatter().Deserialize(stream);
+            }
         }
         
-        private void RollbackBadTransactions(string[] journals)
+        public static bool IsSerialisibleOperation(object obj)
         {
-            foreach (var journal in journals)
-                using (new BadBussinesTransaction(FolderHelper.GetJournalName(journal)));
+            var attributes = obj.GetType().Attributes.ToString();
+            return attributes.Contains("Serializable");
         }
     }
 }

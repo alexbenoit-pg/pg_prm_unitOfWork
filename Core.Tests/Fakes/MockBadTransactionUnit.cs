@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="UnitOfWork.cs" company="Paragon Software Group">
+// <copyright file="MockBadTransactionUnit.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,41 +21,52 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core
+using System;
+
+namespace Core.Tests.Fakes
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.IO;
-
-    using Core.Interfaces;
-    using Core.Helpers;
-
-    public sealed class UnitOfWork
+    public class MockBadTransactionUnit : IFakeTransactionUnit
     {
-        public UnitOfWork(bool chechAfterCrush = true)
+        public MockBadTransactionUnit()
         {
-            FolderHelper.CreateJournalsFolder();
-            if (chechAfterCrush)
-                CheckBadTransaction();
+            IsCommit = false;
+            IsRollback = false;
         }
 
-        public void CheckBadTransaction()
+        public bool IsRollback { get; set; }
+        public bool IsCommit { get; set; }
+
+        public string ID { get; set; }
+        public string GetOperationId()
         {
-            var journals = Directory.GetFiles(FolderHelper.JournalsFolder);
-            if (journals.Length > 0)
-                RollbackBadTransactions(journals);
+            return ID/*Guid.NewGuid().ToString().Substring(1, 9)*/;
         }
 
-        public BussinesTransaction BeginTransaction()
+        public void Rollback(string operationID)
         {
-            return new BussinesTransaction();
+            IsRollback = true;
+            IsCommit = false;
+        }
+
+        public void Rollback()
+        {
+            IsRollback = true;
+            IsCommit = false;
+        }
+
+        public void Commit()
+        {
+            IsCommit = true;
+            throw new Exception();
         }
         
-        private void RollbackBadTransactions(string[] journals)
+        public void Dispose()
         {
-            foreach (var journal in journals)
-                using (new BadBussinesTransaction(FolderHelper.GetJournalName(journal)));
+        }
+
+        public void SetOperationId(string operationId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

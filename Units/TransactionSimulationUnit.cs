@@ -43,5 +43,10 @@
         {
             File.AppendAllText(path, $"\nRollback прошел успешно! Operation Id:{operationId}");
         }
+
+        public void SetOperationId(string operationId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -23,14 +23,21 @@
 
 namespace Core.Tests
 {
+    using System;
+
     using Core;
+    using Core.Journals;
+    using Core.Tests.Fakes;
+
     using NUnit.Framework;
 
     /// <summary>
     /// Unit tests for Journal Class
     /// </summary>
+    [TestFixture]
     public class JournalTests
     {
+
         /// <summary>
         /// Test for a possibility of creation of an instans of a Journal
         /// </summary>
@@ -38,10 +45,34 @@ namespace Core.Tests
         public void Journal_CreateIstance_IsNotNull()
         {
             // Arrange
-            var journal = new Journal();
+            var journal = new JsonJournal();
 
             // Assert
             Assert.IsNotNull(journal);
+        }
+
+        [Test]
+        public void Journal_AddOperation_WithoutException()
+        {
+            // Arrange
+            var journal = new JsonJournal();
+            var operation = new MockTransactionUnit();
+
+            // Assert
+            Assert.That(() => journal.Add(operation),
+                Throws.Nothing);
+        }
+        
+        [Test]
+        public void Journal_DeleteOperation_WithoutException()
+        {
+            // Arrange
+            var journal = new JsonJournal();
+            var operation = new MockTransactionUnit(); 
+
+            // Assert
+            Assert.That(() => journal.Remove(operation),
+                Throws.Nothing);
         }
     }
 }

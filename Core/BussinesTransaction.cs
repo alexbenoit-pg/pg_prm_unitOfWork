@@ -21,25 +21,26 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-// TODO Добавить журнальные методы добавления информации об операциях
 namespace Core
 {
     using System;
     using System.Collections.Generic;
+    using System.Runtime.Serialization;
 
     using Core.Interfaces;
+    using Core.Journals;
 
     public sealed class BussinesTransaction : IDisposable
     {
+        public IJournal Journal { get; private set; }
+        public List<ITransactionUnit> Operations { get; private set; }
+
         internal BussinesTransaction()
         {
-            Journal = new Journal();
+            Journal = new BinaryJournal();
             Operations = new List<ITransactionUnit>();
         }
         
-        public IJournal Journal { get; set; }
-        public List<ITransactionUnit> Operations { get; private set; }
-
         public void RegisterOperation(ITransactionUnit operation)
         {
             Operations.Add(operation);
@@ -51,7 +52,11 @@ namespace Core
             {
                 CommitEachOperation();
             }
-            catch (Exception)
+            catch (SerializationException e) {
+                Rollback();
+                throw e;
+            }
+            catch (Exception e)
             {
                 Rollback();
             }
@@ -59,10 +64,12 @@ namespace Core
 
         public void Rollback()
         {
+            Journal.DeleteUncommitableOperations(Operations);
+
             foreach (var operation in Operations)
             {
                 operation.Rollback();
-                // TODO Journal Delete-operation
+                Journal.Remove(operation);
             }
         }
 
@@ -70,7 +77,7 @@ namespace Core
         {
             foreach (var operation in Operations)
             {
-                // TODO Journal Add-operation
+                Journal.Add(operation);
                 operation.Commit();
             }
         }
