@@ -29,13 +29,15 @@ namespace Units
     using System.Transactions;
     using ChinhDo.Transactions;
     using Units.Helpers;
-
-    class FileTransactionUnit : ITransactionUnit
+    [Serializable]
+    public class FileTransactionUnit : ITransactionUnit
     {
         public FileTransactionUnit()
         {
             this.target = new TxFileManager();
             ID = target.GetOperationID();
+            this.operations = new List<FileOperations>();
+            this.parametersForOperations = new Dictionary<int, object[]>();
         }
 
         #region ITransactionUnit implimentation
@@ -55,7 +57,7 @@ namespace Units
                 }
             }
         }
-        
+
         public void Dispose()
         {
 
@@ -85,24 +87,25 @@ namespace Units
 
         #region File operations
 
-        void AppendAllText(string path, string contents) {
+        public void AppendAllText(string path, string contents)
+        {
             this.operations.Add(FileOperations.AppendAllText);
             this.parametersForOperations.Add(
-                this.operations.Count-1,
-                new object[] {path, contents}
+                this.operations.Count - 1,
+                new object[] { path, contents }
                 );
         }
-        
-        void Copy(string sourceFileName, string destFileName, bool overwrite)
+
+        public void Copy(string sourceFileName, string destFileName, bool overwrite)
         {
             this.operations.Add(FileOperations.Copy);
             this.parametersForOperations.Add(
                 this.operations.Count - 1,
-                new object[] { sourceFileName, destFileName, overwrite}
+                new object[] { sourceFileName, destFileName, overwrite }
                 );
         }
 
-        void CreateFile(string pathToFile, string fileName, string fileExtention)
+        public void CreateFile(string pathToFile, string fileName, string fileExtention)
         {
             this.operations.Add(FileOperations.CreateFile);
             this.parametersForOperations.Add(
@@ -111,7 +114,7 @@ namespace Units
                 );
         }
 
-        void Delete(string path)
+        public void Delete(string path)
         {
             this.operations.Add(FileOperations.Delete);
             this.parametersForOperations.Add(
@@ -119,8 +122,8 @@ namespace Units
                 new object[] { path }
                 );
         }
-        
-        void Move(string srcFileName, string destFileName)
+
+        public void Move(string srcFileName, string destFileName)
         {
             this.operations.Add(FileOperations.Move);
             this.parametersForOperations.Add(
@@ -128,8 +131,8 @@ namespace Units
                 new object[] { srcFileName, destFileName }
                 );
         }
-        
-        void WriteAllText(string path, string contents)
+
+        public void WriteAllText(string path, string contents)
         {
             this.operations.Add(FileOperations.WriteAllText);
             this.parametersForOperations.Add(
@@ -139,9 +142,9 @@ namespace Units
         }
 
         #endregion
-        
+
         public string ID { get; set; }
-        
+
         private void ExecuteEachOperation()
         {
             for (int i = 0; i < operations.Count; i++)
