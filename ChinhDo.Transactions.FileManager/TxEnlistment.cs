@@ -41,11 +41,18 @@ namespace ChinhDo.Transactions
         public void Commit(Enlistment enlistment)
         {
 
-            using (Stream fileStream = File.Open(OperationID, FileMode.Create))
+            //using (Stream fileStream = File.Open(OperationID, FileMode.Create))
+            //{
+            //    BinaryFormatter serializer = new BinaryFormatter();
+            //    serializer.Serialize(fileStream, _journal);
+            //} 
+
+            using (var stream = new MemoryStream())
             {
-                BinaryFormatter serializer = new BinaryFormatter();
-                serializer.Serialize(fileStream, _journal);
-            } 
+                new BinaryFormatter().Serialize(stream, _journal);
+             
+                File.WriteAllBytes(FileUtils.journalFolder + "\\" + OperationID, stream.ToArray());
+            }
 
             DisposeJournal();
             enlistment.Done();
@@ -86,10 +93,20 @@ namespace ChinhDo.Transactions
 
         public void RollbackAfterCrash()
         {
-            using (Stream fileStream = File.OpenRead(OperationID))
+            //using (Stream fileStream = File.OpenRead(OperationID))
+            //{
+
+            //    BinaryFormatter deserializer = new BinaryFormatter();
+            //    fileStream.Position = 0;
+            //    _journal = (List<IRollbackableOperation>)deserializer.Deserialize(fileStream);
+            //}
+            
+            byte[] arr = File.ReadAllBytes(FileUtils.journalFolder +"\\"+ OperationID);
+
+            using (var stream = new MemoryStream(arr))
             {
-                BinaryFormatter deserializer = new BinaryFormatter();
-                _journal = (List<IRollbackableOperation>)deserializer.Deserialize(fileStream);
+                stream.Seek(0, SeekOrigin.Begin);
+                _journal  = (List<IRollbackableOperation>) new BinaryFormatter().Deserialize(stream);
             }
 
             try
@@ -127,7 +144,6 @@ namespace ChinhDo.Transactions
 
                 _journal.RemoveAt(i);
             }
-            File.Delete(OperationID);
         }
     }
 }

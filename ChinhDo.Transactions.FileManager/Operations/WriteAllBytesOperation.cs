@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace ChinhDo.Transactions
 {
+    [Serializable]
     /// <summary>
     /// Creates a file, and writes the specified contents to it.
     /// </summary>

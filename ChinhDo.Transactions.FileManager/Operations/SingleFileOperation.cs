@@ -67,20 +67,20 @@ namespace ChinhDo.Transactions
         /// </summary>
         private void InnerDispose()
         {
-            if (!disposed)
-            {
-                if (backupPath != null)
-                {
-                    FileInfo fi = new FileInfo(backupPath);
-                    if (fi.IsReadOnly)
-                    {
-                        fi.Attributes = FileAttributes.Normal;
-                    }
-                    File.Delete(backupPath);
-                }
+            //if (!disposed)
+            //{
+            //    if (backupPath != null)
+            //    {
+            //        FileInfo fi = new FileInfo(backupPath);
+            //        if (fi.IsReadOnly)
+            //        {
+            //            fi.Attributes = FileAttributes.Normal;
+            //        }
+            //        File.Delete(backupPath);
+            //    }
 
-                disposed = true;
+            //    disposed = true;
             }
         }
     }
-}
+

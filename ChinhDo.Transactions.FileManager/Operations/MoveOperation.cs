@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace ChinhDo.Transactions
 {
+    [Serializable]
     /// <summary>
     /// Rollbackable operation which moves a file to a new location.
     /// </summary>

@@ -54,6 +54,7 @@ namespace Units
                 catch (Exception e)
                 {
                     scope.Dispose();
+                    throw e;
                 }
             }
         }
@@ -70,7 +71,7 @@ namespace Units
 
         public void Rollback()
         {
-            //target.Rollback();
+            this.target.RollbackAfterCrash(this.target.GetOperationID());
         }
 
         public void Rollback(string operationId)

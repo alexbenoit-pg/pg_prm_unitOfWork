@@ -53,11 +53,13 @@ namespace Core
                 CommitEachOperation();
             }
             catch (SerializationException e) {
+                Operations.RemoveAt(Operations.Count-1);
                 Rollback();
                 throw e;
             }
             catch (Exception e)
             {
+                Operations.RemoveAt(Operations.Count - 1);
                 Rollback();
             }
         }

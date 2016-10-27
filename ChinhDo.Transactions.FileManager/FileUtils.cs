@@ -5,7 +5,9 @@ namespace ChinhDo.Transactions
 {
     static class FileUtils
     {
-        private static readonly string tempFolder = Path.Combine(Path.GetTempPath(), "UnitOfWorkFileTransaction");
+        public static readonly string tempFolder = Path.Combine(Path.GetTempPath(), "UnitOfWorkFileTransaction");
+        public static readonly string journalFolder = Path.Combine(tempFolder, "Journals");
+        public static readonly string Journal = journalFolder + operationId;
 
         /// <summary>
         /// Ensures that the folder that contains the temporary files exists.
@@ -18,6 +20,20 @@ namespace ChinhDo.Transactions
             }
         }
 
+
+        /// <summary>
+        /// Ensures that the folder that contains the temporary files exists.
+        /// </summary>
+        public static void EnsureJournalFolder()
+        {
+            if (!Directory.Exists(journalFolder))
+            {
+                Directory.CreateDirectory(journalFolder);
+            }
+        }
+
+        public static string operationId{ get; set; }
+
         /// <summary>
         /// Returns a unique temporary file name.
         /// </summary>
@@ -26,7 +42,7 @@ namespace ChinhDo.Transactions
         public static string GetTempFileName(string extension)
         {
             Guid g = Guid.NewGuid();
-            string retVal = Path.Combine(tempFolder, g.ToString().Substring(0, 16)) + extension;
+            string retVal = Path.Combine(tempFolder, operationId + "_" + g.ToString().Substring(0, 8)) + extension;
 
             return retVal;
         }

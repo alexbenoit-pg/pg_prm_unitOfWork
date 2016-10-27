@@ -5,10 +5,7 @@ using System.Transactions;
 
 namespace ChinhDo.Transactions
 {
-    /// <summary>
-    /// File Resource Manager. Allows inclusion of file system operations in transactions.
-    /// http://www.chinhdo.com/20080825/transactional-file-manager/
-    /// </summary>
+    [Serializable]
     public class TxFileManager : IFileManager
     {
         /// <summary>
@@ -17,7 +14,9 @@ namespace ChinhDo.Transactions
         public TxFileManager()
         {
             FileUtils.EnsureTempFolderExists();
+            FileUtils.EnsureJournalFolder();
             OperationId = Guid.NewGuid().ToString();
+            FileUtils.operationId = OperationId;
         }
 
         #region IFileOperations
@@ -75,7 +74,8 @@ namespace ChinhDo.Transactions
             {
                 EnlistOperation(new CreateFileOperation(pathToFile, fileName, fileExtention));
             }
-            else {
+            else
+            {
                 File.Create($"{pathToFile}\\{fileName}.{fileExtention}");
             }
         }
@@ -258,7 +258,7 @@ namespace ChinhDo.Transactions
 
         private static readonly object _enlistmentsLock = new object();
 
-        private static string OperationId; 
+        private static string OperationId;
 
         private static bool IsInTransaction()
         {
@@ -290,6 +290,17 @@ namespace ChinhDo.Transactions
         {
             TxEnlistment enlistment = new TxEnlistment(JournalID);
             enlistment.RollbackAfterCrash();
+        }
+
+        ~TxFileManager()
+        {
+            var tempFiles = Directory.GetFiles(FileUtils.tempFolder, OperationId+"*");
+            foreach (var filePath in tempFiles)
+            {
+                File.Delete(filePath);
+            }
+
+            File.Delete(FileUtils.journalFolder + "\\" + OperationId);
         }
 
         #endregion

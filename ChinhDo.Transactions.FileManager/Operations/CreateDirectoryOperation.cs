@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace ChinhDo.Transactions
 {
+    [Serializable]
     /// <summary>
     /// Creates all directories in the specified path.
     /// </summary>
