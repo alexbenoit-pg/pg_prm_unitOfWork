@@ -67,6 +67,19 @@ namespace ChinhDo.Transactions
             }
         }
 
+        /// <summary>Creates all directories in the specified path.</summary>
+        /// <param name="path">The directory path to create.</param>
+        public void CreateFile(string pathToFile, string fileName, string fileExtention)
+        {
+            if (IsInTransaction())
+            {
+                EnlistOperation(new CreateFileOperation(pathToFile, fileName, fileExtention));
+            }
+            else {
+                File.Create($"{pathToFile}\\{fileName}.{fileExtention}");
+            }
+        }
+
         /// <summary>Deletes the specified file. An exception is not thrown if the file does not exist.</summary>
         /// <param name="path">The file to be deleted.</param>
         public void Delete(string path)

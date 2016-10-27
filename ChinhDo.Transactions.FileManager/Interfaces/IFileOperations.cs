@@ -31,6 +31,12 @@ namespace ChinhDo.Transactions
         void CreateDirectory(string path);
 
         /// <summary>
+        /// Creates all directories in the specified path.
+        /// </summary>
+        /// <param name="path">The directory path to create.</param>
+        void CreateFile(string pathToFile, string fileName, string fileExtention);
+
+        /// <summary>
         /// Deletes the specified file. An exception is not thrown if the file does not exist.
         /// </summary>
         /// <param name="path">The file to be deleted.</param>
