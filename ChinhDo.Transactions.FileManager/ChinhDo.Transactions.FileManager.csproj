@@ -59,6 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileOperations.cs" />
     <Compile Include="Operations\AppendAllTextOperation.cs" />
     <Compile Include="Operations\CreateFileOperation.cs" />
     <Compile Include="Operations\CopyOperation.cs" />
