@@ -21,7 +21,7 @@
             var unitTest = new TransactionSimulationUnit();
             var operationID = unitTest.GetOperationId();
 
-            Assert.IsNotNullOrEmpty(operationID);
+            Assert.IsNotNull(operationID);
         }
 
         [Test]

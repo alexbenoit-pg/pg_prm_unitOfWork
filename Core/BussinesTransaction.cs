@@ -31,12 +31,12 @@ namespace Core
 
     public sealed class BussinesTransaction : IDisposable
     {
-        internal BussinesTransaction()
+        public BussinesTransaction()
         {
             Journal = new Journal();
             Operations = new List<ITransactionUnit>();
         }
-        
+
         public IJournal Journal { get; set; }
         public List<ITransactionUnit> Operations { get; private set; }
 

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.CodeDom;
+using NUnit.Framework.Constraints;
 
 namespace Core.Interfaces
 {
-    public interface ITransactionUnit:IDisposable
+    public interface ITransactionUnit: IDisposable
     {
         /// <summary>
         /// Return ID of this operation
