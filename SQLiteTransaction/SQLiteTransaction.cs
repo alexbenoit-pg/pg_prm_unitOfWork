@@ -13,7 +13,7 @@ namespace SQLiteTransaction
         public SQLiteCommand _dbCommand = null;
         private readonly SqLiteJournal _sqLiteJournal = new SqLiteJournal();
         private readonly List<string> _rollbackCommands = new List<string>();
-        private readonly string _operationId;
+        private string _operationId;
         private string _databasePath;
 
         public SqLiteTransaction()
@@ -40,12 +40,7 @@ namespace SQLiteTransaction
             GC.Collect();
             GC.SuppressFinalize(this);
         }
-
-        private bool IsValidFilePath(string path)
-        {
-            return File.Exists(path);
-        }
-
+        
         public bool ConnectDatabase(string databasePath)
         {
             try
@@ -73,7 +68,6 @@ namespace SQLiteTransaction
             }
         }
 
-
         public bool AddSqliteCommand(string sqlCommand, string rollbackCommand)
         {
             if (_dbConnection != null)
@@ -83,6 +77,7 @@ namespace SQLiteTransaction
                 _dbCommand.ExecuteNonQuery();
                 return true;
             }
+            Console.WriteLine("");
             return false;
         }
 
@@ -118,15 +113,17 @@ namespace SQLiteTransaction
             }
             finally
             {
-                _dbCommand?.Dispose();
+                _dbCommand.Dispose();
 
-                _dbTransaction?.Dispose();
+                _dbTransaction.Dispose();
 
                 if (_dbConnection != null)
                 {
                     try
                     {
                         _dbConnection.Close();
+                       
+
                     }
                     catch (SQLiteException exception)
                     {
@@ -146,7 +143,11 @@ namespace SQLiteTransaction
 
         public string GetOperationId()
         {
-            return Guid.NewGuid().ToString();
+            if (_operationId == null)
+            {
+                _operationId = Guid.NewGuid().ToString();
+            }
+            return _operationId;
         }
 
         public void Rollback(string operationId)
