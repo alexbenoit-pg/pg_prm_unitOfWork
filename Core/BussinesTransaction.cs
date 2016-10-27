@@ -40,7 +40,7 @@ namespace Core
             Journal = new BinaryJournal();
             Operations = new List<ITransactionUnit>();
         }
-        
+
         public void RegisterOperation(ITransactionUnit operation)
         {
             Operations.Add(operation);
@@ -52,7 +52,8 @@ namespace Core
             {
                 CommitEachOperation();
             }
-            catch (SerializationException e) {
+            catch (SerializationException e)
+            {
                 Rollback();
                 throw e;
             }

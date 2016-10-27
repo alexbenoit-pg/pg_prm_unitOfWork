@@ -18,7 +18,8 @@
             oper3.ID = "3";
             var a = Path.GetTempPath();
 
-            using (var bo = unit.BeginTransaction()) {
+            using (var bo = unit.BeginTransaction())
+            {
                 bo.RegisterOperation(oper);
                 bo.RegisterOperation(oper2);
                 //bo.RegisterOperation(oper3);
