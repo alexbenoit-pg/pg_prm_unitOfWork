@@ -56,6 +56,6 @@ namespace Core.Interfaces
         /// Delete uncommited instances of transaction units from operation collection in instance of bussines transaction.
         /// </summary>
         /// <param name="operations"></param>
-        void DeleteUncommitableOperations(List<ITransactionUnit> operations);
+        List<ITransactionUnit> DeleteUncommitableOperations(List<ITransactionUnit> operations);
     }
 }

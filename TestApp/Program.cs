@@ -15,24 +15,23 @@
             fileTransaction.Move(@"C:\Users\vuyan\Desktop\TestUNIT\2.txt", @"C:\Users\vuyan\Desktop\TestUNIT\999.txt");
 
 
-
-
             FileTransactionUnit Katarsis = new FileTransactionUnit();
             Katarsis.Delete(@"C:\Users\vuyan\Desktop\TestUNIT\5.txt");
-            //     FileTrax.Copy(@"C:\Users\vuyan\Desktop\TestUNIT\6.txt", "Sada\\", true);
 
 
             FileTransactionUnit Frustration = new FileTransactionUnit();
-            Frustration.Copy(@"C:\Users\vuyan\Desktop\TestUNIT\512321312.txt", @"C:\Users\vuyan\Desktop\TestUNIT\CopyFile.txt", true);
-
-
-
-
+            Frustration.Copy(@"C:\Users\vuyan\Desktop\TestUNIT\999.txt", @"C:\Users\vuyan\Desktop\TestUNIT\123456.txt", true);
+            
+            //FAILOp
+            FileTransactionUnit Sublimation = new FileTransactionUnit();
+            Sublimation.Copy("dasdasdas", "dsadas", true);
+            
             using (var fileTrn = FileManager.BeginTransaction())
             {
                 fileTrn.RegisterOperation(fileTransaction);
                 fileTrn.RegisterOperation(Katarsis);
                 fileTrn.RegisterOperation(Frustration);
+              //  fileTrn.RegisterOperation(Sublimation);
                 fileTrn.Commit();
             }
         }

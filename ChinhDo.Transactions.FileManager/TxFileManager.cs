@@ -16,7 +16,6 @@ namespace ChinhDo.Transactions
             FileUtils.EnsureTempFolderExists();
             FileUtils.EnsureJournalFolder();
             OperationId = Guid.NewGuid().ToString();
-            FileUtils.operationId = OperationId;
         }
 
         #region IFileOperations
@@ -252,20 +251,28 @@ namespace ChinhDo.Transactions
 
         #region Private
 
+        private string pperationId;
+        public string OperationId {
+            get { return pperationId; }
+            set
+            {
+                this.pperationId = value;
+            }
+        }
+
+
         /// <summary>Dictionary of transaction enlistment objects for the current thread.</summary>
-        [ThreadStatic]
-        private static Dictionary<string, TxEnlistment> _enlistments;
+        
+        private Dictionary<string, TxEnlistment> _enlistments;
+        
+        private readonly object _enlistmentsLock = new object();
 
-        private static readonly object _enlistmentsLock = new object();
-
-        private static string OperationId;
-
-        private static bool IsInTransaction()
+        private bool IsInTransaction()
         {
             return Transaction.Current != null;
         }
         //tod
-        private static void EnlistOperation(IRollbackableOperation operation)
+        private void EnlistOperation(IRollbackableOperation operation)
         {
             Transaction tx = Transaction.Current;
             TxEnlistment enlistment;
@@ -279,12 +286,46 @@ namespace ChinhDo.Transactions
 
                 if (!_enlistments.TryGetValue(tx.TransactionInformation.LocalIdentifier, out enlistment))
                 {
-                    enlistment = new TxEnlistment(tx);
+                    enlistment = new TxEnlistment(tx, OperationId);
                     _enlistments.Add(tx.TransactionInformation.LocalIdentifier, enlistment);
                 }
-                enlistment.EnlistOperation(operation, OperationId);
+                enlistment.EnlistOperation(operation);
             }
         }
+
+        ///// <summary>Dictionary of transaction enlistment objects for the current thread.</summary>
+        //[ThreadStatic]
+        //private static Dictionary<string, TxEnlistment> _enlistments;
+
+        //private static string StaticOperationId;
+
+        //private static readonly object _enlistmentsLock = new object();
+
+        //private static bool IsInTransaction()
+        //{
+        //    return Transaction.Current != null;
+        //}
+        ////tod
+        //private static void EnlistOperation(IRollbackableOperation operation)
+        //{
+        //    Transaction tx = Transaction.Current;
+        //    TxEnlistment enlistment;
+
+        //    lock (_enlistmentsLock)
+        //    {
+        //        if (_enlistments == null)
+        //        {
+        //            _enlistments = new Dictionary<string, TxEnlistment>();
+        //        }
+
+        //        if (!_enlistments.TryGetValue(tx.TransactionInformation.LocalIdentifier, out enlistment))
+        //        {
+        //            enlistment = new TxEnlistment(tx, FileUtils.GetID(OperationId));
+        //            _enlistments.Add(tx.TransactionInformation.LocalIdentifier, enlistment);
+        //        }
+        //        enlistment.EnlistOperation(operation);
+        //    }
+        //}
 
         public void RollbackAfterCrash(string JournalID)
         {

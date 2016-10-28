@@ -78,10 +78,9 @@ namespace Core.Journals
             return ReadFromFile();
         }
 
-        public void DeleteUncommitableOperations(List<ITransactionUnit> operations)
+        public List<ITransactionUnit> DeleteUncommitableOperations(List<ITransactionUnit> operations)
         {
-            var operationsInJournal = ReadFromFile();
-            operations = operations.Intersect(ReadFromFile()).ToList();
+            return ReadFromFile();
         }
         
         public void Delete()

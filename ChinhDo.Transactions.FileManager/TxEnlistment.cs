@@ -8,7 +8,7 @@ using System.Transactions;
 namespace ChinhDo.Transactions
 {
     /// <summary>Provides two-phase commits/rollbacks/etc for a single <see cref="Transaction"/>.</summary>
-
+    [Serializable]
     sealed class TxEnlistment : IEnlistmentNotification
     {
         private  List<IRollbackableOperation> _journal = new List<IRollbackableOperation>();
@@ -16,9 +16,10 @@ namespace ChinhDo.Transactions
 
         /// <summary>Initializes a new instance of the <see cref="TxEnlistment"/> class.</summary>
         /// <param name="tx">The Transaction.</param>
-        public TxEnlistment(Transaction tx)
+        public TxEnlistment(Transaction tx, string operationID)
         {
             tx.EnlistVolatile(this, EnlistmentOptions.None);
+            this.OperationID = operationID;
         }
 
         public TxEnlistment(string JournalId)
@@ -31,9 +32,8 @@ namespace ChinhDo.Transactions
         /// together with the other enlisted operations.
         /// </summary>
         /// <param name="operation"></param>
-        public void EnlistOperation(IRollbackableOperation operation, string operationID)
+        public void EnlistOperation(IRollbackableOperation operation)
         {
-            this.OperationID = operationID;
             operation.Execute();
             _journal.Add(operation);
         }

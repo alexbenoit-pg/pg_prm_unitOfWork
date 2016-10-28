@@ -53,20 +53,18 @@ namespace Core
                 CommitEachOperation();
             }
             catch (SerializationException e) {
-                Operations.RemoveAt(Operations.Count-1);
                 Rollback();
                 throw e;
             }
             catch (Exception e)
             {
-                Operations.RemoveAt(Operations.Count - 1);
                 Rollback();
             }
         }
 
         public void Rollback()
         {
-            Journal.DeleteUncommitableOperations(Operations);
+            Operations = Journal.DeleteUncommitableOperations(Operations);
 
             foreach (var operation in Operations)
             {
@@ -80,7 +78,15 @@ namespace Core
             foreach (var operation in Operations)
             {
                 Journal.Add(operation);
-                operation.Commit();
+                try
+                {
+                    operation.Commit();
+                }
+                catch (Exception e)
+                {
+                    Journal.Remove(operation);
+                    throw e;
+                }
             }
         }
 
