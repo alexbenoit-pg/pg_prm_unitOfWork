@@ -21,6 +21,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using Core.Journals;
+
 namespace Core
 {
     using System;
@@ -33,8 +35,9 @@ namespace Core
 
     public sealed class UnitOfWork
     {
-        public UnitOfWork(bool chechAfterCrush = true)
+        public UnitOfWork(bool chechAfterCrush = true, JournalTypes journalType = JournalTypes.JSON)
         {
+            this.journalType = journalType;
             FolderHelper.CreateJournalsFolder();
             if (chechAfterCrush)
                 CheckBadTransaction();
@@ -49,13 +52,17 @@ namespace Core
 
         public BussinesTransaction BeginTransaction()
         {
-            return new BussinesTransaction();
+            return new BussinesTransaction(JournalsFactory.GetJournal(this.journalType));
         }
         
         private void RollbackBadTransactions(string[] journals)
         {
             foreach (var journal in journals)
-                using (new BadBussinesTransaction(FolderHelper.GetJournalName(journal)));
+                using (new BadBussinesTransaction(
+                    JournalsFactory.GetJournal(this.journalType),
+                    FolderHelper.GetJournalName(journal)));
         }
+
+        private JournalTypes journalType;
     }
 }

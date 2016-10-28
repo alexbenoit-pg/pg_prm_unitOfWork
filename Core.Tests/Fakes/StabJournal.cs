@@ -28,7 +28,7 @@ namespace Core.Tests.Fakes
 
     using Core.Interfaces;
 
-    public class StabJournal : IJournal
+    internal class StabJournal
     {
         public void Add(ITransactionUnit transactionUnit)
         {
@@ -54,20 +54,12 @@ namespace Core.Tests.Fakes
         {
             throw new NotImplementedException();
         }
-
-        public void DeleteUncommitableOperations(List<ITransactionUnit> operations)
-        {
-            throw new NotImplementedException();
-        }
+       
 
         public List<ITransactionUnit> GetOperationsFromJournal()
         {
             throw new NotImplementedException();
         }
-
-        List<ITransactionUnit> IJournal.DeleteUncommitableOperations(List<ITransactionUnit> operations)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }

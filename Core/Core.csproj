@@ -54,6 +54,8 @@
     <Compile Include="Interfaces\IJournal.cs" />
     <Compile Include="Interfaces\ITransactionUnit.cs" />
     <Compile Include="Journals\BinaryJournal.cs" />
+    <Compile Include="Journals\JournalsFactory.cs" />
+    <Compile Include="Journals\JournalTypes.cs" />
     <Compile Include="Journals\JsonJournal.cs" />
     <Compile Include="Helpers\SerializibleOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

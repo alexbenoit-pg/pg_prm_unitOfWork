@@ -89,23 +89,6 @@ namespace Core.Journals
             return result;
         }
 
-        public void DeleteUncommitableOperations(List<ITransactionUnit> operations)
-        {
-            var operationsInJournal = ReadFromFile();
-            foreach (var operationInJournal in operationsInJournal)
-            {
-                var a = operations.Where(op =>
-                {
-                    return op.GetOperationId() == operationInJournal.OperationID
-                            && AssemblyHelper.GetAssemblyName(op) == operationInJournal.TransactionUnitAssembly
-                            && AssemblyHelper.GetTypeName(op) == operationInJournal.TransactionUnitName;
-                }).FirstOrDefault();
-
-                if (a != null)
-                    operations.Remove(a);
-            }
-        }
-        
         public void Delete()
         {
             File.Delete(PathToFile);
@@ -145,11 +128,6 @@ namespace Core.Journals
         public void Dispose()
         {
             Delete();
-        }
-
-        List<ITransactionUnit> IJournal.DeleteUncommitableOperations(List<ITransactionUnit> operations)
-        {
-            throw new NotImplementedException();
         }
 
         private string name;

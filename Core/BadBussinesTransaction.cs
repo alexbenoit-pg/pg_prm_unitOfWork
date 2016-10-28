@@ -31,12 +31,12 @@ namespace Core
 
     public sealed class BadBussinesTransaction : IDisposable
     {
-        public IJournal Journal { get; private set; }
+        internal IJournal Journal { get; private set; }
         public List<ITransactionUnit> Operations { get; private set; }
         
-        internal BadBussinesTransaction(string journalName)
+        internal BadBussinesTransaction(IJournal journal, string journalName)
         {
-            Journal = new BinaryJournal(journalName);
+            Journal = journal;
             Operations = Journal.GetOperationsFromJournal();
             RollbackAfterCrush();
         }

@@ -64,16 +64,16 @@ namespace Core.Tests
         /// <summary>
         /// Test for a possibility of creation journal instance.
         /// </summary>
-        [Test]
-        public void BussinesTransaction_CreateJournalInBussinesTransaction_IsNotNull()
-        {
-            // Arrange
-            var unitOfWork = new UnitOfWork();
-            var bussinesTransaction = unitOfWork.BeginTransaction();
+        //[Test]
+        //public void BussinesTransaction_CreateJournalInBussinesTransaction_IsNotNull()
+        //{
+        //    // Arrange
+        //    var unitOfWork = new UnitOfWork();
+        //    var bussinesTransaction = unitOfWork.BeginTransaction();
 
-            // Assert
-            Assert.IsNotNull(bussinesTransaction.Journal);
-        }
+        //    // Assert
+        //    Assert.IsNotNull(bussinesTransaction.Journal);
+        //}
         
         /// <summary>
         /// Test for a possibility of added operation to bussines transaction
