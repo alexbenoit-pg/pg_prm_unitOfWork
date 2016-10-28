@@ -6,6 +6,7 @@ using Core.Interfaces;
 
 namespace Units
 {
+    [Serializable]
     public class SqLiteTransaction : ITransactionUnit
     {
         public SQLiteConnection DbConnection = null;
