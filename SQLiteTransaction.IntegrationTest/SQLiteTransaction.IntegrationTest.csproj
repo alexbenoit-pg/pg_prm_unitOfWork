@@ -36,9 +36,6 @@
       <HintPath>..\packages\NUnit.3.0.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SQLiteTransaction">
-      <HintPath>..\SQLiteTransaction\bin\Debug\SQLiteTransaction.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite">
@@ -56,6 +53,10 @@
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{13EC2041-9B82-494A-88C7-9535D771CDAB}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Units\Units.csproj">
+      <Project>{62b353bf-4c99-44fe-b01d-19edbe8e6f3d}</Project>
+      <Name>Units</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

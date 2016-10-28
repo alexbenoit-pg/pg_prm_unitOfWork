@@ -55,9 +55,14 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TransactionUnitTest.cs" />
+    <Compile Include="SQLiteTransaction.Test.cs" />
+    <Compile Include="TransactionUnit.Test.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{13EC2041-9B82-494A-88C7-9535D771CDAB}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Units\Units.csproj">
       <Project>{62b353bf-4c99-44fe-b01d-19edbe8e6f3d}</Project>
       <Name>Units</Name>

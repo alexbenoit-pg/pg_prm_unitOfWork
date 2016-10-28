@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Core.Interfaces;
 
-namespace SQLiteTransaction
+namespace Units
 {
     internal class SqLiteJournal
     {
-        private string _pathToFolder = $"D:/Journal/";
+        private readonly string _pathToFolder = $"D:/Journal/";
 
         public void Dispose()
         {
             _pathToJournal = "";
-            _pathToDB = "";
+            _pathToDb = "";
             _rollBackCommands.Clear();
 
             GC.Collect();
@@ -22,12 +21,12 @@ namespace SQLiteTransaction
         public SqLiteJournal()
         { }
 
-        public void GetParameters(string operationID)
+        public void GetParameters(string operationId)
         {
-            _pathToJournal = _pathToFolder + operationID + ".txt";
+            _pathToJournal = _pathToFolder + operationId + ".txt";
             using (StreamReader sr = new StreamReader(_pathToJournal, System.Text.Encoding.Default))
             {
-                _pathToDB = sr.ReadLine();
+                _pathToDb = sr.ReadLine();
                 string line;
                 while ((line = sr.ReadLine()) != null)
                 {
@@ -36,13 +35,13 @@ namespace SQLiteTransaction
             }
         }
 
-        public void Write(string _databasePath, List<string> _rollbackCommands, string operationID)
+        public void Write(string databasePath, List<string> rollbackCommands, string operationId)
         {
-            _pathToJournal = _pathToFolder + operationID + ".txt";
+            _pathToJournal = _pathToFolder + operationId + ".txt";
             using (StreamWriter streamWriter = File.AppendText(_pathToJournal))
             {
-                streamWriter.WriteLine(_databasePath);
-                foreach (var command in _rollbackCommands)
+                streamWriter.WriteLine(databasePath);
+                foreach (var command in rollbackCommands)
                 {
                     streamWriter.WriteLineAsync(command);
                 }
@@ -52,10 +51,10 @@ namespace SQLiteTransaction
         private string _pathToJournal;
         public string PathToDataJournal => _pathToJournal;
 
-        private string _pathToDB;
-        public string PathToDataBase => _pathToDB;
+        private string _pathToDb;
+        public string PathToDataBase => _pathToDb;
 
-        private List<string> _rollBackCommands = new List<string>();
+        private readonly List<string> _rollBackCommands = new List<string>();
         public List<string> RollBackCommands => _rollBackCommands;
     }
 }

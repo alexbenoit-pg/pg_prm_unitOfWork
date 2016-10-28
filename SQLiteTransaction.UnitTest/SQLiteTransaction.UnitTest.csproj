@@ -65,10 +65,6 @@
       <Project>{13EC2041-9B82-494A-88C7-9535D771CDAB}</Project>
       <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SQLiteTransaction\SQLiteTransaction.csproj">
-      <Project>{fd76e48c-f8c5-441e-9cfc-ea8fea1c8541}</Project>
-      <Name>SQLiteTransaction</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
