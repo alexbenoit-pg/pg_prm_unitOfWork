@@ -40,13 +40,6 @@ namespace ChinhDo.Transactions
 
         public void Commit(Enlistment enlistment)
         {
-
-            //using (Stream fileStream = File.Open(OperationID, FileMode.Create))
-            //{
-            //    BinaryFormatter serializer = new BinaryFormatter();
-            //    serializer.Serialize(fileStream, _journal);
-            //} 
-
             using (var stream = new MemoryStream())
             {
                 new BinaryFormatter().Serialize(stream, _journal);
@@ -93,14 +86,6 @@ namespace ChinhDo.Transactions
 
         public void RollbackAfterCrash()
         {
-            //using (Stream fileStream = File.OpenRead(OperationID))
-            //{
-
-            //    BinaryFormatter deserializer = new BinaryFormatter();
-            //    fileStream.Position = 0;
-            //    _journal = (List<IRollbackableOperation>)deserializer.Deserialize(fileStream);
-            //}
-            
             byte[] arr = File.ReadAllBytes(FileUtils.journalFolder +"\\"+ OperationID);
 
             using (var stream = new MemoryStream(arr))

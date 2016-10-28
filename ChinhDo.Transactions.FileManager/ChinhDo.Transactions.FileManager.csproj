@@ -60,7 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileOperations.cs" />
-    <Compile Include="ExecuteHelper.cs" />
+    <Compile Include="Heplers\ExecuteHelper.cs" />
     <Compile Include="Operations\AppendAllTextOperation.cs" />
     <Compile Include="Operations\CreateFileOperation.cs" />
     <Compile Include="Operations\CopyOperation.cs" />
@@ -68,6 +68,7 @@
     <Compile Include="Operations\DeleteDirectoryOperation.cs" />
     <Compile Include="Operations\DeleteFileOperation.cs" />
     <Compile Include="FileEventHandler.cs" />
+    <Compile Include="Operations\RenameFileOperation.cs" />
     <Compile Include="Operations\SingleFileOperation.cs" />
     <Compile Include="Operations\MoveOperation.cs" />
     <Compile Include="Interfaces\IRollbackableOperation.cs" />
@@ -77,7 +78,7 @@
     <Compile Include="Interfaces\IFileOperations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TxEnlistment.cs" />
-    <Compile Include="FileUtils.cs" />
+    <Compile Include="Heplers\FileUtils.cs" />
     <Compile Include="Operations\WriteAllBytesOperation.cs" />
     <Compile Include="Operations\WriteAllTextOperation.cs" />
   </ItemGroup>

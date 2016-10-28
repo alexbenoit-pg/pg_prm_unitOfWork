@@ -121,6 +121,17 @@ namespace ChinhDo.Transactions
                 File.Move(srcFileName, destFileName);
             }
         }
+        public void Rename(string srcFileName, string destFileName)
+        {
+            if (IsInTransaction())
+            {
+                EnlistOperation(new RenameFileOperation(srcFileName, destFileName));
+            }
+            else
+            {
+                File.Move(srcFileName, destFileName);
+            }
+        }
 
         /// <summary>Take a snapshot of the specified file. The snapshot is used to rollback the file later if needed.</summary>
         /// <param name="fileName">The file to take a snapshot for.</param>

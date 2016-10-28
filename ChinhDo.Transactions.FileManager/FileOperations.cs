@@ -7,6 +7,7 @@
         CreateFile,
         Delete,
         Move,
+        Rename,
         WriteAllText
     }
 }

@@ -133,6 +133,15 @@ namespace Units
                 );
         }
 
+        public void Rename(string sourceFullFileName, string newName)
+        {
+            this.operations.Add(FileOperations.Rename);
+            this.parametersForOperations.Add(
+                this.operations.Count - 1,
+                new object[] { sourceFullFileName, newName }
+                );
+        }
+
         public void WriteAllText(string path, string contents)
         {
             this.operations.Add(FileOperations.WriteAllText);

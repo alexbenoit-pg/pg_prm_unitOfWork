@@ -11,8 +11,9 @@
 
             UnitOfWork FileManager = new UnitOfWork();
             FileTransactionUnit fileTransaction = new FileTransactionUnit();
-            fileTransaction.Delete(@"C:\Users\vuyan\Desktop\TestUNIT\1.txt");
-            fileTransaction.Move(@"C:\Users\vuyan\Desktop\TestUNIT\2.txt", @"C:\Users\vuyan\Desktop\TestUNIT\999.txt");
+            fileTransaction.Rename(@"C:\Users\vuyan\Desktop\TestUNIT\1.txt", "Hello world");
+            fileTransaction.Rename();
+
 
 
             FileTransactionUnit Katarsis = new FileTransactionUnit();
@@ -29,9 +30,9 @@
             using (var fileTrn = FileManager.BeginTransaction())
             {
                 fileTrn.RegisterOperation(fileTransaction);
-                fileTrn.RegisterOperation(Katarsis);
-                fileTrn.RegisterOperation(Frustration);
-                fileTrn.RegisterOperation(Sublimation);
+                //fileTrn.RegisterOperation(Katarsis);
+                //fileTrn.RegisterOperation(Frustration);
+                //fileTrn.RegisterOperation(Sublimation);
                 fileTrn.Commit();
             }
         }

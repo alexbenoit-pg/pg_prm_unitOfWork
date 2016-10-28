@@ -74,5 +74,8 @@ namespace ChinhDo.Transactions
         /// <param name="path">The file to write to.</param>
         /// <param name="contents">The bytes to write to the file.</param>
         void WriteAllBytes(string path, byte[] contents);
+
+        void Rename(string srcFileName, string destFileName);
+
     }
 }
