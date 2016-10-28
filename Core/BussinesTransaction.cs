@@ -65,7 +65,7 @@ namespace Core
 
         public void Rollback()
         {
-            Journal.DeleteUncommitableOperations(Operations);
+            Operations = Journal.DeleteUncommitableOperations(Operations);
 
             foreach (var operation in Operations)
             {
@@ -79,7 +79,15 @@ namespace Core
             foreach (var operation in Operations)
             {
                 Journal.Add(operation);
-                operation.Commit();
+                try
+                {
+                    operation.Commit();
+                }
+                catch (Exception e)
+                {
+                    Journal.Remove(operation);
+                    throw e;
+                }
             }
         }
 

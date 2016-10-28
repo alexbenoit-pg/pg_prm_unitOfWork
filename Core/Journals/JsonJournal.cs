@@ -146,7 +146,12 @@ namespace Core.Journals
         {
             Delete();
         }
-        
+
+        List<ITransactionUnit> IJournal.DeleteUncommitableOperations(List<ITransactionUnit> operations)
+        {
+            throw new NotImplementedException();
+        }
+
         private string name;
         private const string startSymbols = "[\n";
         private const string endSymbols = "\n]";
