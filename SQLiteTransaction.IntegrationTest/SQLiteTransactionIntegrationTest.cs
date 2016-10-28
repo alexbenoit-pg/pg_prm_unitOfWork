@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using NUnit.Framework;
-using System.Data.SQLite;
+﻿using System.Data.SQLite;
 using System.IO;
-using Core;
+using NUnit.Framework;
+using Units;
 using SQLiteTransaction = System.Data.SQLite.SQLiteTransaction;
 
 
@@ -45,8 +43,8 @@ namespace SQLiteTransaction.IntegrationTest
         {
             bool result = _sqLiteTransaction.ConnectDatabase(pathToDataBase);
             Assert.IsTrue(result);
-            Assert.AreNotEqual(null, _sqLiteTransaction._dbConnection);
-            Assert.AreNotEqual(null, _sqLiteTransaction._dbCommand);
+            Assert.AreNotEqual(null, _sqLiteTransaction.DbConnection);
+            Assert.AreNotEqual(null, _sqLiteTransaction.DbCommand);
             _sqLiteTransaction.Dispose();
         }
 
@@ -104,9 +102,22 @@ namespace SQLiteTransaction.IntegrationTest
         //[Test]
         //public void Commit_Work_a_few_SqLiteTransactions_ReturnTrue()
         //{
-        //    SqLiteTransaction sqLiteTransactionFirst = new SqLiteTransaction(pathToDataBase);
-        //    SqLiteTransaction sqLiteTransactionSecond = new SqLiteTransaction();
-        //    BussinesTransaction bussinesTransaction
+        //    string toDataBase = Path.GetTempPath() + "test.db";
+        //    string toDataBaseSecond = Path.GetTempPath() + "test.db";
+
+        //    SqLiteTransaction sqLiteTransactionFirst = new SqLiteTransaction(toDataBase);
+        //    sqLiteTransactionFirst.AddSqliteCommand("", "");
+
+        //    SqLiteTransaction sqLiteTransactionSecond = new SqLiteTransaction(toDataBaseSecond);
+        //    sqLiteTransactionSecond.AddSqliteCommand("", "");
+
+        //    UnitOfWork unit = new UnitOfWork();
+        //    using (var bussinesTransaction = unit.BeginTransaction())
+        //    {
+        //        bussinesTransaction.RegisterOperation(sqLiteTransactionFirst);
+        //        bussinesTransaction.RegisterOperation(sqLiteTransactionSecond);
+        //        bussinesTransaction.Commit();
+        //    }
         //}
 
         [OneTimeTearDown]
