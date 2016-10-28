@@ -1,39 +1,29 @@
 ﻿namespace TestApp
 {
     using Core;
-    using Units;
+    using Core.Tests.Fakes;
+    using System.IO;
 
     class Program
     {
         static void Main(string[] args)
         {
-            string path = @"C:\test";
+            var unit = new UnitOfWork();
 
-            UnitOfWork FileManager = new UnitOfWork();
-            FileTransactionUnit fileTransaction = new FileTransactionUnit();
-            fileTransaction.Rename(@"C:\Users\vuyan\Desktop\TestUNIT\1.txt", "Hello world");
-            fileTransaction.Rename();
+            var oper = new MockTransactionUnit();
+            oper.ID = "1";
+            var oper2 = new MockTransactionUnit();
+            oper2.ID = "2";
+            var oper3 = new MockBadTransactionUnit();
+            oper3.ID = "3";
+            var a = Path.GetTempPath();
 
-
-
-            FileTransactionUnit Katarsis = new FileTransactionUnit();
-            Katarsis.Delete(@"C:\Users\vuyan\Desktop\TestUNIT\5.txt");
-
-
-            FileTransactionUnit Frustration = new FileTransactionUnit();
-            Frustration.Copy(@"C:\Users\vuyan\Desktop\TestUNIT\999.txt", @"C:\Users\vuyan\Desktop\TestUNIT\123456.txt", true);
-            
-            //FAILOp
-            FileTransactionUnit Sublimation = new FileTransactionUnit();
-            Sublimation.Copy("dasdasdas", "dsadas", true);
-            
-            using (var fileTrn = FileManager.BeginTransaction())
+            using (var bo = unit.BeginTransaction())
             {
-                fileTrn.RegisterOperation(fileTransaction);
-                //fileTrn.RegisterOperation(Katarsis);
-                //fileTrn.RegisterOperation(Frustration);
-                //fileTrn.RegisterOperation(Sublimation);
-                fileTrn.Commit();
+                bo.RegisterOperation(oper);
+                bo.RegisterOperation(oper2);
+                //bo.RegisterOperation(oper3);
+                bo.Commit();
             }
         }
     }

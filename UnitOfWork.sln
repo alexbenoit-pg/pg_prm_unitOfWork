@@ -15,6 +15,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "TestApp\TestApp.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChinhDo.Transactions.FileManager", "ChinhDo.Transactions.FileManager\ChinhDo.Transactions.FileManager.csproj", "{E824ACBB-90C8-4C60-9D52-9C8020E98E3E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLiteTransaction", "SQLiteTransaction\SQLiteTransaction.csproj", "{FD76E48C-F8C5-441E-9CFC-EA8FEA1C8541}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLiteTransaction.UnitTest", "SQLiteTransaction.UnitTest\SQLiteTransaction.UnitTest.csproj", "{565179B0-3575-4990-B25C-7DB162CA14E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLiteTransaction.IntegrationTest", "SQLiteTransaction.IntegrationTest\SQLiteTransaction.IntegrationTest.csproj", "{8EDF4429-251A-416D-BB68-93F227191BCF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +51,18 @@ Global
 		{E824ACBB-90C8-4C60-9D52-9C8020E98E3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E824ACBB-90C8-4C60-9D52-9C8020E98E3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E824ACBB-90C8-4C60-9D52-9C8020E98E3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD76E48C-F8C5-441E-9CFC-EA8FEA1C8541}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD76E48C-F8C5-441E-9CFC-EA8FEA1C8541}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD76E48C-F8C5-441E-9CFC-EA8FEA1C8541}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD76E48C-F8C5-441E-9CFC-EA8FEA1C8541}.Release|Any CPU.Build.0 = Release|Any CPU
+		{565179B0-3575-4990-B25C-7DB162CA14E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{565179B0-3575-4990-B25C-7DB162CA14E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{565179B0-3575-4990-B25C-7DB162CA14E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{565179B0-3575-4990-B25C-7DB162CA14E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EDF4429-251A-416D-BB68-93F227191BCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EDF4429-251A-416D-BB68-93F227191BCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EDF4429-251A-416D-BB68-93F227191BCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EDF4429-251A-416D-BB68-93F227191BCF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
