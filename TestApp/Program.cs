@@ -31,7 +31,7 @@
                 fileTrn.RegisterOperation(fileTransaction);
                 fileTrn.RegisterOperation(Katarsis);
                 fileTrn.RegisterOperation(Frustration);
-              //  fileTrn.RegisterOperation(Sublimation);
+                fileTrn.RegisterOperation(Sublimation);
                 fileTrn.Commit();
             }
         }

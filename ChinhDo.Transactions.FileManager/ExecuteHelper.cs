@@ -21,11 +21,11 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Units.Helpers
+namespace ChinhDo.Transactions
 {
     using ChinhDo.Transactions;
 
-    public static class FileUnitExecuteHelper
+    public static class ExecuteHelper
     {
         public static void ExecuteOperation(IFileManager fileManager, FileOperations operation, object[] param)
         {

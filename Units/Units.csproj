@@ -43,7 +43,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileTransactionUnit.cs" />
-    <Compile Include="Helpers\FileUnitExecuteHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TransactionBadCommitUnit.cs" />
     <Compile Include="TransactionSimulationUnit.cs" />

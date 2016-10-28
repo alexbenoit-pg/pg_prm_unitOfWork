@@ -28,7 +28,7 @@ namespace Units
     using Core.Interfaces;
     using System.Transactions;
     using ChinhDo.Transactions;
-    using Units.Helpers;
+
     [Serializable]
     public class FileTransactionUnit : ITransactionUnit
     {
@@ -150,8 +150,7 @@ namespace Units
         {
             for (int i = 0; i < operations.Count; i++)
             {
-                FileUnitExecuteHelper.ExecuteOperation(
-                    this.target,
+                this.target.UniverseRun(
                     this.operations[i],
                     this.parametersForOperations[i]);
             }

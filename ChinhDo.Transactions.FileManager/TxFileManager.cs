@@ -244,6 +244,11 @@ namespace ChinhDo.Transactions
             return dirName;
         }
 
+        public void UniverseRun(FileOperations operationType, object[] operationParams)
+        {
+            ExecuteHelper.ExecuteOperation(this, operationType, operationParams);
+        }
+
         public string GetOperationID()
         {
             return OperationId;
