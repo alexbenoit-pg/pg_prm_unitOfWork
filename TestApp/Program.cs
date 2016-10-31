@@ -145,13 +145,13 @@ namespace TestApp
             //}
             //#endregion
             
-            var un1 = new MockTransactionUnit();
+            var un1 = new FileTransactionUnit();
 
-            var un2 = new MockTransactionUnit();
+            var un2 = new FileTransactionUnit();
 
-            var un4 = new MockTransactionUnit();
+            var un4 = new FileTransactionUnit();
 
-            var un3 = new MockTransactionUnit();
+            var un3 = new FileTransactionUnit();
 
             using(var bs = unit.BeginTransaction())
             {

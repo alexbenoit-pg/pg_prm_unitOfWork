@@ -81,7 +81,7 @@ namespace Core.Journals
             {
                 ITransactionUnit unit = (ITransactionUnit)Activator.CreateInstance(
                     op.TransactionUnitAssembly,
-                    op.TransactionUnitName);
+                    op.TransactionUnitName).Unwrap();
                 unit.SetOperationId(op.OperationID);
                 result.Add(unit);
             }

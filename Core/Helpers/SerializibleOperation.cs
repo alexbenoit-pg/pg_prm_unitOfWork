@@ -33,7 +33,8 @@ namespace Core.Helpers
     {
         public SerializibleOperation(){}
 
-        public SerializibleOperation(ITransactionUnit unit) {
+        public SerializibleOperation(ITransactionUnit unit)
+        {
             TransactionUnitAssembly = AssemblyHelper.GetAssemblyName(unit);
             TransactionUnitName = AssemblyHelper.GetTypeName(unit);
             OperationID = unit.GetOperationId();
