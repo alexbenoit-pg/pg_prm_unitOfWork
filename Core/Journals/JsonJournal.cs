@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="Journal.cs" company="Paragon Software Group">
+// <copyright file="JsonJournal.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -80,8 +80,8 @@ namespace Core.Journals
             foreach (var op in operationsInJson)
             {
                 ITransactionUnit unit = (ITransactionUnit)Activator.CreateInstance(
-                                                op.TransactionUnitAssembly,
-                                                op.TransactionUnitName);
+                    op.TransactionUnitAssembly,
+                    op.TransactionUnitName);
                 unit.SetOperationId(op.OperationID);
                 result.Add(unit);
             }

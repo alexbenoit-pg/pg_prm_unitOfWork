@@ -31,6 +31,8 @@ namespace Core.Helpers
     [DataContract]
     public class SerializibleOperation
     {
+        public SerializibleOperation(){}
+
         public SerializibleOperation(ITransactionUnit unit) {
             TransactionUnitAssembly = AssemblyHelper.GetAssemblyName(unit);
             TransactionUnitName = AssemblyHelper.GetTypeName(unit);

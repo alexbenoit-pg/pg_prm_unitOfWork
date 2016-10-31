@@ -34,7 +34,7 @@ namespace Core
         internal IJournal Journal { get; private set; }
         public List<ITransactionUnit> Operations { get; private set; }
         
-        internal BadBussinesTransaction(IJournal journal, string journalName)
+        internal BadBussinesTransaction(IJournal journal)
         {
             Journal = journal;
             Operations = Journal.GetOperationsFromJournal();

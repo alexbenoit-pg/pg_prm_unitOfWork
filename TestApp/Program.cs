@@ -1,4 +1,6 @@
-﻿namespace TestApp
+﻿using System.Runtime.InteropServices;
+
+namespace TestApp
 {
     using Core;
     using Units;
@@ -130,19 +132,38 @@
             //}
             //#endregion
 
-            #region SQL_unit_writetext
-            var su1 = new SqLiteTransaction(Root + "\\testdb.db");
-            su1.AddSqliteCommand(
-                "INSERT INTO test(name) VALUES ('Fedor'));",
-                "");
+            //#region SQL_unit_writetext
+            //var su1 = new SqLiteTransaction(Root + "\\testdb.db");
+            //su1.AddSqliteCommand(
+            //    "INSERT INTO test(name) VALUES ('Fedor'));",
+            //    "");
 
-            using (var bo = unit.BeginTransaction())
+            //using (var bo = unit.BeginTransaction())
+            //{
+            //    bo.RegisterOperation(su1);
+            //    bo.Commit();
+            //}
+            //#endregion
+            
+            var un1 = new MockTransactionUnit();
+
+            var un2 = new MockTransactionUnit();
+
+            var un4 = new MockTransactionUnit();
+
+            var un3 = new MockTransactionUnit();
+
+            using(var bs = unit.BeginTransaction())
             {
-                bo.RegisterOperation(su1);
-                bo.Commit();
-            }
-            #endregion
+                bs.RegisterOperation(un1);
 
+                bs.RegisterOperation(un2);
+
+                bs.RegisterOperation(un3);
+
+                bs.RegisterOperation(un4);
+                bs.Commit();
+            }
         }
     }
 }

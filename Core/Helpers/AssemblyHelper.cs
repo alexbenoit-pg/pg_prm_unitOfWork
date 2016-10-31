@@ -26,7 +26,7 @@ namespace Core.Helpers
     public static class AssemblyHelper
     {
         public static string GetAssemblyName(object obj){
-            return obj.GetType().Assembly.GetName().ToString().Split(',')[0];
+            return obj.GetType().Assembly.GetName().ToString()/*.Split(',')[0]*/;
         }
 
         public static string GetTypeName(object obj)

@@ -59,8 +59,9 @@ namespace Core
         {
             foreach (var journal in journals)
                 using (new BadBussinesTransaction(
-                    JournalsFactory.GetJournal(this.journalType),
-                    FolderHelper.GetJournalName(journal)));
+                    JournalsFactory.GetJournal(
+                            this.journalType,
+                            FolderHelper.GetJournalName(journal))));
         }
 
         private JournalTypes journalType;
