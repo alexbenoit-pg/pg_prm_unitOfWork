@@ -36,6 +36,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -51,6 +52,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ChinhDo.Transactions.FileManager\ChinhDo.Transactions.FileManager.csproj">
+      <Project>{e824acbb-90c8-4c60-9d52-9c8020e98e3e}</Project>
+      <Name>ChinhDo.Transactions.FileManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Core.Tests\Core.Tests.csproj">
       <Project>{8d4a8be5-2621-4230-92e2-a7b173d17592}</Project>
       <Name>Core.Tests</Name>

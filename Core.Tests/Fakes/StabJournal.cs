@@ -64,5 +64,10 @@ namespace Core.Tests.Fakes
         {
             throw new NotImplementedException();
         }
+
+        List<ITransactionUnit> IJournal.DeleteUncommitableOperations(List<ITransactionUnit> operations)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
