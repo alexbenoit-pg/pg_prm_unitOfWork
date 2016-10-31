@@ -1,8 +1,9 @@
-﻿using System;
-using System.IO;
-
-namespace ChinhDo.Transactions
+﻿namespace ChinhDo.Transactions.Operations
 {
+    using System;
+    using System.IO;
+    using ChinhDo.Transactions.Heplers;
+
     /// <summary>
     /// Rollbackable operation which deletes a file. An exception is not thrown if the file does not exist.
     /// </summary>

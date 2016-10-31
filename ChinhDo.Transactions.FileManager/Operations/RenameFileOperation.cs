@@ -1,9 +1,9 @@
-﻿using System;
-using System.IO;
-
-
-namespace ChinhDo.Transactions
+﻿namespace ChinhDo.Transactions
 {
+    using System;
+    using System.IO;
+    using ChinhDo.Transactions.Interfaces;
+
     /// <summary>
     /// Rollbackable operation which Rename a file Name
     /// </summary>
@@ -27,10 +27,17 @@ namespace ChinhDo.Transactions
         public void Execute()
         {
             FileInfo info = new FileInfo(sourceFileName);
-            string directoryPath = info.Directory.FullName + "\\" + destFileName;
+            if (info.Directory != null)
+            {
+                string directoryPath = info.Directory.FullName + "\\" + destFileName;
 
-            File.Move(sourceFileName, directoryPath);
-            destFileName = directoryPath;
+                File.Move(sourceFileName, directoryPath);
+                destFileName = directoryPath;
+            }
+            else
+            {
+                throw new Exception();
+            }
         }
 
         public void Rollback()

@@ -1,12 +1,13 @@
-﻿using System;
-using System.IO;
-
-namespace ChinhDo.Transactions
+﻿namespace ChinhDo.Transactions.Operations
 {
-    [Serializable]
+    using System;
+    using System.IO;
+    using ChinhDo.Transactions.Interfaces;
+
     /// <summary>
     /// Creates all directories in the specified path.
     /// </summary>
+    [Serializable]
     sealed class CreateDirectoryOperation : IRollbackableOperation
     {
         private readonly string path;

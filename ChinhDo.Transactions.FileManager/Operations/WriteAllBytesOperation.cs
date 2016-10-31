@@ -1,12 +1,13 @@
-﻿using System;
-using System.IO;
-
-namespace ChinhDo.Transactions
+﻿namespace ChinhDo.Transactions.Operations
 {
-    [Serializable]
+    using System;
+    using System.IO;
+    using ChinhDo.Transactions.Heplers;
+
     /// <summary>
     /// Creates a file, and writes the specified contents to it.
     /// </summary>
+    [Serializable]
     sealed class WriteAllBytesOperation : SingleFileOperation
     {
         private readonly byte[] contents;

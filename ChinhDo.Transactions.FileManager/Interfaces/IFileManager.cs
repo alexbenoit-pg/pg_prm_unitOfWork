@@ -1,4 +1,4 @@
-namespace ChinhDo.Transactions
+namespace ChinhDo.Transactions.Interfaces
 {
     /// <summary>
     /// Classes implementing this interface provide methods to work with files.
@@ -30,8 +30,16 @@ namespace ChinhDo.Transactions
         /// </summary>
         string GetTempFileName();
 
+        /// <summary>
+        /// Gets File Units Operation Id.
+        /// </summary>
+        /// <returns></returns>
         string GetOperationID();
 
+        /// <summary>
+        /// Rollback operation after crash file unit
+        /// </summary>
+        /// <param name="JournalID"></param>
         void RollbackAfterCrash(string JournalID);
     }
 }

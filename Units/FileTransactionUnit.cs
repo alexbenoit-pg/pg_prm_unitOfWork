@@ -72,7 +72,8 @@ namespace Units
 
         public void Rollback()
         {
-            this.target.RollbackAfterCrash(this.target.GetOperationID());
+            target.OperationId = ID;
+            this.target.RollbackAfterCrash(target.GetOperationID());
         }
 
         public void Rollback(string operationId)

@@ -1,12 +1,13 @@
-﻿using System;
-using System.IO;
-
-namespace ChinhDo.Transactions
+﻿namespace ChinhDo.Transactions.Operations
 {
-    [Serializable]
+    using System;
+    using System.IO;
+    using ChinhDo.Transactions.Interfaces;
+
     /// <summary>
     /// Rollbackable operation which moves a file to a new location.
     /// </summary>
+    [Serializable]
     sealed class MoveOperation : IRollbackableOperation
     {
         private readonly string sourceFileName;

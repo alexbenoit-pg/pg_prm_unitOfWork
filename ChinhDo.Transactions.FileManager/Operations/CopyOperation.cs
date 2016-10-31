@@ -1,12 +1,13 @@
-﻿using System;
-using System.IO;
-
-namespace ChinhDo.Transactions
+﻿namespace ChinhDo.Transactions.Operations
 {
-    [Serializable]
+    using System;
+    using System.IO;
+    using ChinhDo.Transactions.Heplers;
+
     /// <summary>
     /// Rollbackable operation which copies a file.
     /// </summary>
+    [Serializable]
     sealed class CopyOperation : SingleFileOperation
     {
         private readonly string sourceFileName;

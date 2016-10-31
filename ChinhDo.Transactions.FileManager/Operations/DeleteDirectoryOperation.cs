@@ -1,11 +1,14 @@
-﻿using System;
-using System.IO;
-
-namespace ChinhDo.Transactions
+﻿namespace ChinhDo.Transactions.Operations
 {
+    using System;
+    using System.IO;
+    using ChinhDo.Transactions.Heplers;
+    using ChinhDo.Transactions.Interfaces;
+
     /// <summary>
     /// Deletes the specified directory and all its contents.
     /// </summary>
+    [Serializable]
     sealed class DeleteDirectoryOperation : IRollbackableOperation, IDisposable
     {
         private readonly string path;
@@ -34,7 +37,7 @@ namespace ChinhDo.Transactions
         {
             if (Directory.Exists(path))
             {
-                string temp = FileUtils.GetTempFileName(String.Empty);
+                string temp = FileUtils.GetTempFileName(string.Empty);
                 MoveDirectory(path, temp);
                 backupPath = temp;
             }

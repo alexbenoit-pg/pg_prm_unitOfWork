@@ -1,10 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Transactions;
-
 namespace ChinhDo.Transactions
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Transactions;
+    using ChinhDo.Transactions.Heplers;
+    using ChinhDo.Transactions.Interfaces;
+    using ChinhDo.Transactions.Operations;
+
     [Serializable]
     public class TxFileManager : IFileManager
     {
@@ -308,40 +311,6 @@ namespace ChinhDo.Transactions
                 enlistment.EnlistOperation(operation);
             }
         }
-
-        ///// <summary>Dictionary of transaction enlistment objects for the current thread.</summary>
-        //[ThreadStatic]
-        //private static Dictionary<string, TxEnlistment> _enlistments;
-
-        //private static string StaticOperationId;
-
-        //private static readonly object _enlistmentsLock = new object();
-
-        //private static bool IsInTransaction()
-        //{
-        //    return Transaction.Current != null;
-        //}
-        ////tod
-        //private static void EnlistOperation(IRollbackableOperation operation)
-        //{
-        //    Transaction tx = Transaction.Current;
-        //    TxEnlistment enlistment;
-
-        //    lock (_enlistmentsLock)
-        //    {
-        //        if (_enlistments == null)
-        //        {
-        //            _enlistments = new Dictionary<string, TxEnlistment>();
-        //        }
-
-        //        if (!_enlistments.TryGetValue(tx.TransactionInformation.LocalIdentifier, out enlistment))
-        //        {
-        //            enlistment = new TxEnlistment(tx, FileUtils.GetID(OperationId));
-        //            _enlistments.Add(tx.TransactionInformation.LocalIdentifier, enlistment);
-        //        }
-        //        enlistment.EnlistOperation(operation);
-        //    }
-        //}
 
         public void RollbackAfterCrash(string JournalID)
         {

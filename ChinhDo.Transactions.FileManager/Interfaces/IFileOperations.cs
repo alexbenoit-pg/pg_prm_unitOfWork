@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ChinhDo.Transactions
+namespace ChinhDo.Transactions.Interfaces
 {
     /// <summary>
     /// Classes implementing this interface provide methods to manipulate files.
@@ -75,6 +71,11 @@ namespace ChinhDo.Transactions
         /// <param name="contents">The bytes to write to the file.</param>
         void WriteAllBytes(string path, byte[] contents);
 
+        /// <summary>
+        /// Rename file
+        /// </summary>
+        /// <param name="srcFileName"></param>
+        /// <param name="destFileName"></param>
         void Rename(string srcFileName, string destFileName);
 
     }

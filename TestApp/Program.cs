@@ -132,11 +132,11 @@ namespace TestApp
             //}
             //#endregion
 
-            #region SQL_unit_writetext
-            var su1 = new SqLiteTransaction(Root + "\\testdb.db");
-            su1.AddSqliteCommand(
-                "INSERT INTO test(name) VALUES ('Fedor');",
-                "DELETE FROM test WHERE ID = 3; ");
+            //#region SQL_unit_writetext
+            //var su1 = new SqLiteTransaction(Root + "\\testdb.db");
+            //su1.AddSqliteCommand(
+            //    "INSERT INTO test(name) VALUES ('Fedor');",
+            //    "DELETE FROM test WHERE ID = 3; ");
             //var su2 = new SqLiteTransaction(Root + "\\testdb.db");
             //su2.AddSqliteCommand(
             //    "INSERT INTO test(name) VALUES ('Dima');",
@@ -150,12 +150,12 @@ namespace TestApp
             //    "INSERT INTO test(name) VALUES ('Max, Mad Max');",
             //    "DELETE FROM test WHERE ID = 3; ");
 
-            using (var bo = unit.BeginTransaction())
-            {
-                bo.RegisterOperation(su1);
-                bo.Commit();
-            }
-            #endregion
+            //using (var bo = unit.BeginTransaction())
+            //{
+            //    bo.RegisterOperation(su1);
+            //    bo.Commit();
+            //}
+            //#endregion
 
             //var un1 = new FileTransactionUnit();
 
@@ -176,6 +176,31 @@ namespace TestApp
             //    bs.RegisterOperation(un4);
             //    bs.Commit();
             //}
-    }
+
+
+
+            #region File_unit_create
+            var fu1 = new FileTransactionUnit();
+            fu1.CreateFile(@"C:\Users\vuyan\Desktop\TestUnitOfWork\pg_prm_unitOfWork\", "1", "txt");
+            var fu2 = new FileTransactionUnit();
+            fu2.CreateFile(@"C:\Users\vuyan\Desktop\TestUnitOfWork\pg_prm_unitOfWork\", "12", "txt");
+
+            var fu3 = new FileTransactionUnit();
+            fu3.CreateFile(@"C:\Users\vuyan\Desktop\TestUnitOfWork\pg_prm_unitOfWork\", "123", "txt");
+
+            var fu4 = new FileTransactionUnit();
+            fu4.CreateFile(@"C:\Users\vuyan\Desktop\TestUnitOfWork\pg_prm_unitOfWork\fdsfdsfs\", "12345", "txt");
+
+
+            using (var bo = unit.BeginTransaction())
+            {
+                bo.RegisterOperation(fu1);
+                bo.RegisterOperation(fu2);
+                bo.RegisterOperation(fu3);
+                bo.RegisterOperation(fu4);
+                bo.Commit();
+            }
+            #endregion
+         }
     }
 }
