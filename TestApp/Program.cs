@@ -138,25 +138,25 @@ namespace TestApp
                 "INSERT INTO test(name) VALUES ('Fedor');",
                 "");
 
-            //var su2 = new SqLiteTransaction(Root + "\\testdb.db");
-            //su2.AddSqliteCommand(
-            //    "INSERT INTO test(name) VALUES ('Dima');",
-            //    "DELETE FROM test WHERE ID = 3; ");
-            //var su3 = new SqLiteTransaction(Root + "\\testdb.db");
-            //su3.AddSqliteCommand(
-            //    "INSERT INTO test(name) VALUES ('Igor');",
-            //    "DELETE FROM test WHERE ID = 3; ");
-            //var su4 = new SqLiteTransaction(Root + "\\testdb.db");
-            //su4.AddSqliteCommand(
-            //    "INSERT INTO test(name) VALUES ('Max, Mad Max');",
-            //    "DELETE FROM test WHERE ID = 3; ");
+            var su2 = new SqLiteTransaction(Root + "\\testdb.db");
+            su2.AddSqliteCommand(
+                "INSERT INTO test(name) VALUES ('Dima');",
+                "DELETE FROM test WHERE ID = 3; ");
+            var su3 = new SqLiteTransaction(Root + "\\testdb.db");
+            su3.AddSqliteCommand(
+                "INSERT INTO test(name) VALUES ('Igor');",
+                "DELETE FROM test WHERE ID = 3; ");
+            var su4 = new SqLiteTransaction(Root + "\\testdb.db");
+            su4.AddSqliteCommand(
+                "INSERT INTO test(name) VALUES ('Max, Mad Max');",
+                "DELETE FROM test WHERE ID = 3; ");
 
             using (var bo = unit.BeginTransaction())
             {
                 bo.RegisterOperation(su1);
-                //bo.RegisterOperation(su2);
-                //bo.RegisterOperation(su3);
-                //bo.RegisterOperation(su4);
+                bo.RegisterOperation(su2);
+                bo.RegisterOperation(su3);
+                bo.RegisterOperation(su4);
                 bo.Commit();
             }
             #endregion
