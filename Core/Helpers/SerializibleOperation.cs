@@ -24,8 +24,6 @@
 namespace Core.Helpers
 {
     using System.Runtime.Serialization;
-
-    using Core.Helpers;
     using Core.Interfaces;
 
     [DataContract]

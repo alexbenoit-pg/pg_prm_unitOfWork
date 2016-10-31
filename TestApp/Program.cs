@@ -132,38 +132,50 @@ namespace TestApp
             //}
             //#endregion
 
-            //#region SQL_unit_writetext
-            //var su1 = new SqLiteTransaction(Root + "\\testdb.db");
-            //su1.AddSqliteCommand(
-            //    "INSERT INTO test(name) VALUES ('Fedor'));",
-            //    "");
+            #region SQL_unit_writetext
+            var su1 = new SqLiteTransaction(Root + "\\testdb.db");
+            su1.AddSqliteCommand(
+                "INSERT INTO test(name) VALUES ('Fedor');",
+                "DELETE FROM test WHERE ID = 3; ");
+            //var su2 = new SqLiteTransaction(Root + "\\testdb.db");
+            //su2.AddSqliteCommand(
+            //    "INSERT INTO test(name) VALUES ('Dima');",
+            //    "DELETE FROM test WHERE ID = 3; ");
+            //var su3 = new SqLiteTransaction(Root + "\\testdb.db");
+            //su3.AddSqliteCommand(
+            //    "INSERT INTO test(name) VALUES ('Igor');",
+            //    "DELETE FROM test WHERE ID = 3; ");
+            //var su4 = new SqLiteTransaction(Root + "\\testdb.db");
+            //su4.AddSqliteCommand(
+            //    "INSERT INTO test(name) VALUES ('Max, Mad Max');",
+            //    "DELETE FROM test WHERE ID = 3; ");
 
-            //using (var bo = unit.BeginTransaction())
-            //{
-            //    bo.RegisterOperation(su1);
-            //    bo.Commit();
-            //}
-            //#endregion
-            
-            var un1 = new FileTransactionUnit();
-
-            var un2 = new FileTransactionUnit();
-
-            var un4 = new FileTransactionUnit();
-
-            var un3 = new FileTransactionUnit();
-
-            using(var bs = unit.BeginTransaction())
+            using (var bo = unit.BeginTransaction())
             {
-                bs.RegisterOperation(un1);
-
-                bs.RegisterOperation(un2);
-
-                bs.RegisterOperation(un3);
-
-                bs.RegisterOperation(un4);
-                bs.Commit();
+                bo.RegisterOperation(su1);
+                bo.Commit();
             }
-        }
+            #endregion
+
+            //var un1 = new FileTransactionUnit();
+
+            //var un2 = new FileTransactionUnit();
+
+            //var un4 = new FileTransactionUnit();
+
+            //var un3 = new FileTransactionUnit();
+
+            //using(var bs = unit.BeginTransaction())
+            //{
+            //    bs.RegisterOperation(un1);
+
+            //    bs.RegisterOperation(un2);
+
+            //    bs.RegisterOperation(un3);
+
+            //    bs.RegisterOperation(un4);
+            //    bs.Commit();
+            //}
+    }
     }
 }

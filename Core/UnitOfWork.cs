@@ -25,12 +25,7 @@ using Core.Journals;
 
 namespace Core
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
     using System.IO;
-
-    using Core.Interfaces;
     using Core.Helpers;
 
     public sealed class UnitOfWork
@@ -57,11 +52,14 @@ namespace Core
         
         private void RollbackBadTransactions(string[] journals)
         {
-            foreach (var journal in journals)
-                using (new BadBussinesTransaction(
-                    JournalsFactory.GetJournal(
-                            this.journalType,
-                            FolderHelper.GetJournalName(journal))));
+            foreach (var journalPath in journals)
+            {
+                var journal = JournalsFactory.GetJournal(
+                                    this.journalType,
+                                    FolderHelper.GetJournalName(journalPath));
+
+                using (new BadBussinesTransaction(journal));
+            }
         }
 
         private JournalTypes journalType;

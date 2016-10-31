@@ -25,9 +25,10 @@ namespace Units
 {
     using System;
     using System.Collections.Generic;
-    using Core.Interfaces;
     using System.Transactions;
+
     using ChinhDo.Transactions;
+    using Core.Interfaces;
 
     [Serializable]
     public class FileTransactionUnit : ITransactionUnit
