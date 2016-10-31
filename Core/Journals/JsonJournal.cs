@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="Journal.cs" company="Paragon Software Group">
+// <copyright file="JsonJournal.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -80,8 +80,8 @@ namespace Core.Journals
             foreach (var op in operationsInJson)
             {
                 ITransactionUnit unit = (ITransactionUnit)Activator.CreateInstance(
-                                                op.TransactionUnitAssembly,
-                                                op.TransactionUnitName);
+                    op.TransactionUnitAssembly,
+                    op.TransactionUnitName).Unwrap();
                 unit.SetOperationId(op.OperationID);
                 result.Add(unit);
             }
@@ -89,23 +89,6 @@ namespace Core.Journals
             return result;
         }
 
-        public void DeleteUncommitableOperations(List<ITransactionUnit> operations)
-        {
-            var operationsInJournal = ReadFromFile();
-            foreach (var operationInJournal in operationsInJournal)
-            {
-                var a = operations.Where(op =>
-                {
-                    return op.GetOperationId() == operationInJournal.OperationID
-                            && AssemblyHelper.GetAssemblyName(op) == operationInJournal.TransactionUnitAssembly
-                            && AssemblyHelper.GetTypeName(op) == operationInJournal.TransactionUnitName;
-                }).FirstOrDefault();
-
-                if (a != null)
-                    operations.Remove(a);
-            }
-        }
-        
         public void Delete()
         {
             File.Delete(PathToFile);
@@ -145,11 +128,6 @@ namespace Core.Journals
         public void Dispose()
         {
             Delete();
-        }
-
-        List<ITransactionUnit> IJournal.DeleteUncommitableOperations(List<ITransactionUnit> operations)
-        {
-            throw new NotImplementedException();
         }
 
         private string name;

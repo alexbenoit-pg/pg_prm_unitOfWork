@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="AssemblyHelper.cs" company="Paragon Software Group">
+// <copyright file="JournalsFactory.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,18 +21,36 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core.Helpers
+namespace Core.Journals
 {
-    public static class AssemblyHelper
+    using Core.Interfaces;
+
+    internal static class JournalsFactory
     {
-        public static string GetAssemblyName(object obj){
-            return obj.GetType().Assembly.GetName().ToString()/*.Split(',')[0]*/;
+        internal static IJournal GetJournal(JournalTypes type)
+        {
+            switch (type)
+            {
+                case JournalTypes.JSON:
+                    return new JsonJournal();
+                case JournalTypes.Binary:
+                    return new BinaryJournal();
+                default:
+                    return new JsonJournal();
+            }
         }
 
-        public static string GetTypeName(object obj)
+        internal static IJournal GetJournal(JournalTypes type, string journalName)
         {
-            return obj.GetType().ToString();
+            switch (type)
+            {
+                case JournalTypes.JSON:
+                    return new JsonJournal(journalName);
+                case JournalTypes.Binary:
+                    return new BinaryJournal(journalName);
+                default:
+                    return new JsonJournal(journalName);
+            }
         }
     }
 }
-

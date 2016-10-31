@@ -25,9 +25,10 @@ namespace Units
 {
     using System;
     using System.Collections.Generic;
-    using Core.Interfaces;
     using System.Transactions;
+
     using ChinhDo.Transactions;
+    using Core.Interfaces;
 
     [Serializable]
     public class FileTransactionUnit : ITransactionUnit
@@ -71,7 +72,8 @@ namespace Units
 
         public void Rollback()
         {
-            this.target.RollbackAfterCrash(this.target.GetOperationID());
+            target.OperationId = ID;
+            this.target.RollbackAfterCrash(target.GetOperationID());
         }
 
         public void Rollback(string operationId)

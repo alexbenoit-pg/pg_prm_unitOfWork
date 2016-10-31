@@ -1,7 +1,8 @@
-﻿using System.IO;
-
-namespace ChinhDo.Transactions
+﻿namespace ChinhDo.Transactions.Operations
 {
+    using System.IO;
+    using ChinhDo.Transactions.Heplers;
+
     /// <summary>
     /// Rollbackable operation which takes a snapshot of a file. The snapshot is used to rollback the file later if needed.
     /// </summary>

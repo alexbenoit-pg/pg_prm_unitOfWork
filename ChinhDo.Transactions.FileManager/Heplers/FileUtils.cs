@@ -18,11 +18,6 @@ namespace ChinhDo.Transactions
                 Directory.CreateDirectory(tempFolder);
             }
         }
-        
-        public static string GetID(string s)
-        {
-            return s;
-        }
 
         /// <summary>
         /// Ensures that the folder that contains the temporary files exists.

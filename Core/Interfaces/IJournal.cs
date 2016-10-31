@@ -26,7 +26,7 @@ namespace Core.Interfaces
     using System;
     using System.Collections.Generic;
 
-    public interface IJournal : IDisposable
+    internal interface IJournal : IDisposable
     {
         /// <summary>
         /// Add commited instance of transaction unit to journal.
@@ -51,11 +51,5 @@ namespace Core.Interfaces
         /// <param name="journalName"></param>
         /// <returns></returns>
         List<ITransactionUnit> GetOperationsFromJournal();
-
-        /// <summary>
-        /// Delete uncommited instances of transaction units from operation collection in instance of bussines transaction.
-        /// </summary>
-        /// <param name="operations"></param>
-        List<ITransactionUnit> DeleteUncommitableOperations(List<ITransactionUnit> operations);
     }
 }

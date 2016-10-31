@@ -32,12 +32,12 @@ namespace Core
 
     public sealed class BussinesTransaction : IDisposable
     {
-        public IJournal Journal { get; private set; }
+        internal IJournal Journal { get; private set; }
         public List<ITransactionUnit> Operations { get; private set; }
 
-        internal BussinesTransaction()
+        internal BussinesTransaction(IJournal journal)               
         {
-            Journal = new BinaryJournal();
+            Journal = journal;
             Operations = new List<ITransactionUnit>();
         }
 
@@ -65,7 +65,7 @@ namespace Core
 
         public void Rollback()
         {
-            Operations = Journal.DeleteUncommitableOperations(Operations);
+            Operations = Journal.GetOperationsFromJournal();
 
             foreach (var operation in Operations)
             {

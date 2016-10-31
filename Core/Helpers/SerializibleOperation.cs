@@ -24,14 +24,15 @@
 namespace Core.Helpers
 {
     using System.Runtime.Serialization;
-
-    using Core.Helpers;
     using Core.Interfaces;
 
     [DataContract]
     public class SerializibleOperation
     {
-        public SerializibleOperation(ITransactionUnit unit) {
+        public SerializibleOperation(){}
+
+        public SerializibleOperation(ITransactionUnit unit)
+        {
             TransactionUnitAssembly = AssemblyHelper.GetAssemblyName(unit);
             TransactionUnitName = AssemblyHelper.GetTypeName(unit);
             OperationID = unit.GetOperationId();

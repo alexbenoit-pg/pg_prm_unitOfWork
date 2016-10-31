@@ -1,12 +1,13 @@
-﻿using System;
-using System.IO;
-
-namespace ChinhDo.Transactions
+﻿namespace ChinhDo.Transactions.Operations
 {
-    [Serializable]
+    using System;
+    using System.IO;
+    using ChinhDo.Transactions.Heplers;
+
     /// <summary>
     /// Rollbackable operation which appends a string to an existing file, or creates the file if it doesn't exist.
     /// </summary>
+    [Serializable]
     sealed class AppendAllTextOperation : SingleFileOperation
     {
         private readonly string contents;
@@ -24,7 +25,6 @@ namespace ChinhDo.Transactions
 
         public override void Execute()
         {
-
             if (File.Exists(path))
             {
                 string temp = FileUtils.GetTempFileName(Path.GetExtension(path));

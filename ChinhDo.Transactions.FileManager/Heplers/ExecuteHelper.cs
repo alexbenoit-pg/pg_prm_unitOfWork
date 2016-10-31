@@ -21,10 +21,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace ChinhDo.Transactions
-{
-    using ChinhDo.Transactions;
+using ChinhDo.Transactions.Interfaces;
 
+namespace ChinhDo.Transactions.Heplers
+{
     public static class ExecuteHelper
     {
         public static void ExecuteOperation(IFileManager fileManager, FileOperations operation, object[] param)
@@ -79,40 +79,6 @@ namespace ChinhDo.Transactions
 
                 fileManager.WriteAllText(path, contents);
             }
-
-
-            //switch (operation) {
-            //    case FileOperations.AppendAllText:
-            //            string path = param[0].ToString();
-            //            string contents = param[1].ToString();
-
-            //            fileManager.AppendAllText(path, contents);
-            //        break;
-            //    case FileOperations.Copy:
-            //            string sourceFileName = param[0].ToString();
-            //            string destFileName = param[1].ToString();
-            //            bool overwrite = (bool) param[2];
-
-            //            fileManager.Copy(sourceFileName,destFileName,overwrite);
-            //        break;
-            //    case FileOperations.CreateFile:
-            //            string pathToFile = param[0].ToString();
-            //            string fileName = param[1].ToString();
-            //            string fileExtention = param[2].ToString();
-
-            //            fileManager.CreateFile(pathToFile, fileName, fileExtention);
-            //        break;
-            //    case FileOperations.Delete:
-            //            string path = param[0].ToString();
-
-            //            fileManager.Delete(path);
-            //        break;
-            //    case FileOperations.Move:
-            //        break;
-            //    case FileOperations.WriteAllText:
-            //        break;
-            //}
         }
-        
     }
 }
