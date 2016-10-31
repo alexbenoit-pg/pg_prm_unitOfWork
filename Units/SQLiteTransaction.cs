@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
+using System.Runtime.InteropServices;
 using Core.Interfaces;
 
 namespace Units
@@ -9,10 +10,11 @@ namespace Units
     public class SqLiteTransaction : ITransactionUnit
     {
         public SQLiteConnection DbConnection = null;
-        private System.Data.SQLite.SQLiteTransaction _dbTransaction;
+        private SQLiteTransaction _dbTransaction;
         public SQLiteCommand DbCommand = null;
         private readonly SqLiteJournal _sqLiteJournal = new SqLiteJournal();
         private readonly List<string> _rollbackCommands = new List<string>();
+        private readonly List<string> _commitCommands = new List<string>();
         private string _operationId;
         private string _databasePath;
 
@@ -23,7 +25,7 @@ namespace Units
 
         public SqLiteTransaction(string databasePath)
         {
-            ConnectDatabase(databasePath);
+            _databasePath = databasePath;
             _operationId = GetOperationId();
         }
 
@@ -47,12 +49,11 @@ namespace Units
             {
                 if (File.Exists(databasePath))
                 {
-                    DbConnection = new SQLiteConnection(string.Format("Data Source={0}", databasePath));
+                    DbConnection = new SQLiteConnection(string.Format("Data Source={0}; Version=3;", databasePath));
                     DbCommand = DbConnection.CreateCommand();
                     DbConnection.Open();
                     _dbTransaction = DbConnection.BeginTransaction();
                     DbCommand.Transaction = _dbTransaction;
-                    _databasePath = databasePath;
                     return true;
                 }
                 else
@@ -70,15 +71,9 @@ namespace Units
 
         public bool AddSqliteCommand(string sqlCommand, string rollbackCommand)
         {
-            if (DbConnection != null)
-            {
-                this._rollbackCommands.Add(rollbackCommand);
-                DbCommand.CommandText = sqlCommand;
-                DbCommand.ExecuteNonQuery();
-                return true;
-            }
-            Console.WriteLine("");
-            return false;
+            this._rollbackCommands.Add(rollbackCommand);
+            this._commitCommands.Add(sqlCommand);
+            return true;
         }
 
         private void SqLiteCommit()
@@ -186,6 +181,12 @@ namespace Units
 
         public void Commit()
         {
+            ConnectDatabase(_databasePath);
+            foreach (var command in _commitCommands)
+            {
+                DbCommand.CommandText = command;
+                DbCommand.ExecuteNonQueryAsync();
+            }
             SqLiteCommit();
             _sqLiteJournal.Write(_databasePath, _rollbackCommands, _operationId);
         }
