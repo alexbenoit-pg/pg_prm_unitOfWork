@@ -70,15 +70,15 @@ namespace ChinhDo.Transactions
 
         /// <summary>Creates all directories in the specified path.</summary>
         /// <param name="path">The directory path to create.</param>
-        public void CreateFile(string pathToFile, string fileName, string fileExtention)
+        public void CreateFile(string pathToFile)
         {
             if (IsInTransaction())
             {
-                EnlistOperation(new CreateFileOperation(pathToFile, fileName, fileExtention));
+                EnlistOperation(new CreateFileOperation(pathToFile));
             }
             else
             {
-                File.Create($"{pathToFile}\\{fileName}.{fileExtention}");
+                File.Create(pathToFile);
             }
         }
 
@@ -118,17 +118,6 @@ namespace ChinhDo.Transactions
             if (IsInTransaction())
             {
                 EnlistOperation(new MoveOperation(srcFileName, destFileName));
-            }
-            else
-            {
-                File.Move(srcFileName, destFileName);
-            }
-        }
-        public void Rename(string srcFileName, string destFileName)
-        {
-            if (IsInTransaction())
-            {
-                EnlistOperation(new RenameFileOperation(srcFileName, destFileName));
             }
             else
             {

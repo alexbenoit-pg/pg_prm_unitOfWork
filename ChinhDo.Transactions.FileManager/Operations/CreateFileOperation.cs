@@ -12,9 +12,9 @@ namespace ChinhDo.Transactions.Operations
     {
         public readonly string path;
 
-        public CreateFileOperation(string pathToFile, string fileName, string fileExtention)
+        public CreateFileOperation(string pathToFile)
         {
-            this.path = $"{pathToFile}\\{fileName}.{fileExtention}";
+            this.path = pathToFile;
         }
 
         public void Execute()

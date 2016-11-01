@@ -108,12 +108,12 @@ namespace Units
                 );
         }
 
-        public void CreateFile(string pathToFile, string fileName, string fileExtention)
+        public void CreateFile(string pathToFile)
         {
             this.operations.Add(FileOperations.CreateFile);
             this.parametersForOperations.Add(
                 this.operations.Count - 1,
-                new object[] { pathToFile, fileName, fileExtention }
+                new object[] { pathToFile }
                 );
         }
 

@@ -47,10 +47,8 @@ namespace ChinhDo.Transactions.Heplers
             else if (operation == FileOperations.CreateFile)
             {
                 string pathToFile = param[0].ToString();
-                string fileName = param[1].ToString();
-                string fileExtention = param[2].ToString();
 
-                fileManager.CreateFile(pathToFile, fileName, fileExtention);
+                fileManager.CreateFile(pathToFile);
             }
             else if (operation == FileOperations.Delete)
             {
