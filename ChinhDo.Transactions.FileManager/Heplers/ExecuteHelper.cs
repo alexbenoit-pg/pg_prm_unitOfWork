@@ -65,13 +65,6 @@ namespace ChinhDo.Transactions.Heplers
 
                 fileManager.Move(sourceFileName, destFileName);
             }
-            else if (operation == FileOperations.Rename)
-            {
-                string sourceFileName = param[0].ToString();
-                string destFileName = param[1].ToString();
-
-                fileManager.Rename(sourceFileName, destFileName);
-            }
             else if (operation == FileOperations.WriteAllText)
             {
                 string path = param[0].ToString();

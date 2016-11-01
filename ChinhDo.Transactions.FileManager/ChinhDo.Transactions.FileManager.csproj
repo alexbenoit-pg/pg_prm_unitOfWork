@@ -68,7 +68,6 @@
     <Compile Include="Operations\DeleteDirectoryOperation.cs" />
     <Compile Include="Operations\DeleteFileOperation.cs" />
     <Compile Include="FileEventHandler.cs" />
-    <Compile Include="Operations\RenameFileOperation.cs" />
     <Compile Include="Operations\SingleFileOperation.cs" />
     <Compile Include="Operations\MoveOperation.cs" />
     <Compile Include="Interfaces\IRollbackableOperation.cs" />
