@@ -59,14 +59,12 @@ namespace Units
                 }
                 else
                 {
-                    Console.WriteLine("no such file");
-                    return false;
+                    throw new Exception("No such database file.");
                 }
             }
             catch (SQLiteException exception)
             {
-                Console.WriteLine(exception.Message);
-                return false;
+                throw exception;
             }
         }
 
@@ -85,21 +83,19 @@ namespace Units
                 {
                     _dbTransaction.Commit();
                 }
-
             }
             catch (SQLiteException exception)
             {
-                Console.WriteLine("Error: {0}", exception.Message);
                 if (_dbTransaction != null)
                 {
                     try
                     {
                         _dbTransaction.Rollback();
+                        throw exception;
                     }
                     catch (SQLiteException secondException)
                     {
-                        Console.WriteLine("Transaction rollback failed.");
-                        Console.WriteLine("Error: {0}", secondException.Message);
+                        throw secondException;
                     }
                     finally
                     {
@@ -118,15 +114,10 @@ namespace Units
                     try
                     {
                         DbConnection.Close();
-
-
                     }
                     catch (SQLiteException exception)
                     {
-
-                        Console.WriteLine("Closing connection failed.");
-                        Console.WriteLine("Error: {0}", exception.ToString());
-
+                        throw exception;
                     }
                     finally
                     {
@@ -165,19 +156,18 @@ namespace Units
                         foreach (string line in journal.RollBackCommands)
                         {
                             cmd.CommandText = line;
-                            cmd.ExecuteNonQuery();
+                            cmd.ExecuteNonQueryAsync();
                         }
                         _dbTransaction.Commit();
-                        File.Delete(journal.PathToDataBase);
+                        File.Delete(journal.PathToDataJournal);
                     }
                 }
             }
-
         }
 
         public void Rollback()
         {
-            _dbTransaction.Rollback();
+            Rollback(GetOperationId());
         }
 
         public void Commit()
@@ -186,7 +176,14 @@ namespace Units
             foreach (var command in _commitCommands)
             {
                 DbCommand.CommandText = command;
-                DbCommand.ExecuteNonQueryAsync();
+                try
+                {
+                    DbCommand.ExecuteNonQuery();
+                }
+                catch (Exception e) {
+                    Dispose();
+                    throw e;
+                }
             }
             SqLiteCommit();
             _sqLiteJournal.Write(_databasePath, _rollbackCommands, _operationId);
