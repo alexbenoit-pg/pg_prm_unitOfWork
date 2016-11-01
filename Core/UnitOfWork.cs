@@ -30,6 +30,8 @@ namespace Core
 
     public sealed class UnitOfWork
     {
+        private JournalTypes journalType;
+
         public UnitOfWork(bool chechAfterCrush = true, JournalTypes journalType = JournalTypes.JSON)
         {
             this.journalType = journalType;
@@ -61,7 +63,5 @@ namespace Core
                 using (new BadBussinesTransaction(journal));
             }
         }
-
-        private JournalTypes journalType;
     }
 }
