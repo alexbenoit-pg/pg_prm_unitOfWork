@@ -32,11 +32,15 @@ namespace Core
     {
         private JournalTypes journalType;
 
-        public UnitOfWork(bool chechAfterCrush = true, JournalTypes journalType = JournalTypes.JSON)
+        public UnitOfWork():this(true, JournalTypes.JSON)
+        {
+        }
+
+        public UnitOfWork(bool checkAfterCrush, JournalTypes journalType)
         {
             this.journalType = journalType;
             FolderHelper.CreateJournalsFolder();
-            if (chechAfterCrush)
+            if (checkAfterCrush)
                 CheckBadTransaction();
         }
 

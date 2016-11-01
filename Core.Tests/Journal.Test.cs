@@ -59,7 +59,7 @@ namespace Core.Tests
             var operation = new MockTransactionUnit();
 
             // Assert
-            Assert.That(() => journal.Add(operation),
+            Assert.That(() => journal.Write(operation),
                 Throws.Nothing);
         }
         

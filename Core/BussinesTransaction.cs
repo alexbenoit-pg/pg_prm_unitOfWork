@@ -78,7 +78,7 @@ namespace Core
         {
             foreach (var operation in Operations)
             {
-                Journal.Add(operation);
+                Journal.Write(operation);
                 try
                 {
                     operation.Commit();

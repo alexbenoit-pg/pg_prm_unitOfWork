@@ -32,7 +32,7 @@ namespace Core.Interfaces
         /// Add commited instance of transaction unit to journal.
         /// </summary>
         /// <param name="transactionUnit"></param>
-        void Add(ITransactionUnit transactionUnit);
+        void Write(ITransactionUnit transactionUnit);
 
         /// <summary>
         /// Remove instance of transaction unit from journal.

@@ -51,7 +51,7 @@ namespace Core.Journals
             }
         }
         
-        public void Add(ITransactionUnit operation)
+        public void Write(ITransactionUnit operation)
         {
             if (operation == null)
                 throw new NullReferenceException();
