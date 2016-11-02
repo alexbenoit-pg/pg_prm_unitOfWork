@@ -182,9 +182,9 @@ namespace Units
                 {
                     DbCommand.ExecuteNonQuery();
                 }
-                catch (Exception e) {
+                catch (Exception exception) {
                     Dispose();
-                    throw e;
+                    throw exception;
                 }
             }
             SqLiteCommit();

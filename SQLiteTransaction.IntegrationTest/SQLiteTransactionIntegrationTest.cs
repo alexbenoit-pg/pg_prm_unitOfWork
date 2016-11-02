@@ -15,7 +15,6 @@ namespace SQLiteTransaction.IntegrationTest
         private readonly SqLiteTransaction _sqLiteTransaction = new SqLiteTransaction();
         private string pathToDataBase = Path.GetTempPath() + "test.db";
         private string toDataBase = Path.GetTempPath() + "Work_a_few_SqLiteTransactions.db";
-       
 
         [OneTimeSetUp]
         public void TestFixtureSetup()
@@ -70,7 +69,7 @@ namespace SQLiteTransaction.IntegrationTest
             Assert.IsTrue(result);
             _sqLiteTransaction.Dispose();
         }
-     
+
         [Test]
         public void Commit_CheckWriteData_ReturnTrue()
         {
