@@ -50,11 +50,13 @@ namespace Units
             {
                 if (File.Exists(databasePath))
                 {
+                    this.Dispose();
                     DbConnection = new SQLiteConnection(string.Format("Data Source={0}; Version=3;", databasePath));
                     DbCommand = DbConnection.CreateCommand();
                     DbConnection.Open();
                     _dbTransaction = DbConnection.BeginTransaction();
                     DbCommand.Transaction = _dbTransaction;
+                    _databasePath = databasePath;
                     return true;
                 }
                 else
