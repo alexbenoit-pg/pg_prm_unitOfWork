@@ -12,13 +12,34 @@ namespace SQLiteTransaction.IntegrationTest
     public class SqLiteTransactionIntegrationTest
     {
         private readonly SqLiteTransaction _sqLiteTransaction = new SqLiteTransaction();
-        private string pathToDataBase = "";
+        private string pathToDataBase = Path.GetTempPath() + "test.db";
+        private string toDataBase = Path.GetTempPath() + "Work_a_few_SqLiteTransactions.db";
+       
 
         [OneTimeSetUp]
         public void TestFixtureSetup()
         {
-            pathToDataBase = Path.GetTempPath() + "test.db";
+            if (File.Exists(pathToDataBase))
+                File.Delete(pathToDataBase);
+
+            if (File.Exists(toDataBase))
+                File.Delete(toDataBase);
+
             CreatDataBase(pathToDataBase);
+            CreatDataBase(toDataBase);
+        }
+
+        [OneTimeTearDown]
+        public void TestFixtureTearDown()
+        {
+            if (File.Exists(pathToDataBase))
+            {
+                _sqLiteTransaction.Dispose();
+                File.Delete(pathToDataBase);
+            }
+
+            if (File.Exists(toDataBase))
+                File.Delete(toDataBase);
         }
 
         private void CreatDataBase(string pathToDataBase)
@@ -106,71 +127,44 @@ namespace SQLiteTransaction.IntegrationTest
         }
 
         [Test]
-        //дорабатываю
         public void Commit_Work_a_few_SqLiteTransactions_ReturnTrue()
         {
-            string toDataBase = Path.GetTempPath() + "OneTable.db";
-            CreatDataBase(toDataBase);
-            string toDataBaseWithError = Path.GetTempPath() + "TwoTable.db";
-            CreatDataBase(toDataBaseWithError);
-            
+            string firstname = "";
+            string lastname = "";
+
             SqLiteTransaction sqLiteTransactionGood = new SqLiteTransaction(toDataBase);
-            sqLiteTransactionGood.AddSqliteCommand("INSERT INTO person(id , first_name, last_name, sex, birth_date) VALUES (1, 'Commit1', 'Check1', 0, strftime('%s', '1993-10-10'));",
-                                                    "DELETE FROM person WHERE first_name = 'Commit1'");
-            sqLiteTransactionGood.AddSqliteCommand("INSERT INTO person(first_name, last_name, sex, birth_date) VALUES ('Commit2', 'Check2', 0, strftime('%s', '1993-10-10'));",
-                                                    "DELETE FROM person WHERE first_name = 'Commit2'");
+            sqLiteTransactionGood.AddSqliteCommand("INSERT INTO person(id, first_name, last_name) VALUES (1, 'Commit1', 'Check1');","DELETE FROM person WHERE first_name = 'Commit1'");
+            sqLiteTransactionGood.AddSqliteCommand("INSERT INTO person(first_name, last_name) VALUES ('Commit2', 'Check2');","");
 
             SqLiteTransaction sqLiteTransactiondWithError = new SqLiteTransaction(toDataBase);
-            sqLiteTransactiondWithError.AddSqliteCommand("INSERT INTO person(id , first_name, last_name, sex, birth_date) VALUES (1, 'Commit3', 'Check3', 0, strftime('%s', '1993-10-10'));",
-                                                    "DELETE FROM person WHERE first_name = 'Commit1'");
-            sqLiteTransactionGood.AddSqliteCommand("INSERT INTO person(first_name, last_name, sex, birth_date) VALUES ('Commit5', 'Check5', 0, strftime('%s', '1993-10-10'));",
-                                                    "DELETE FROM person WHERE first_name = 'Commit2'");
-
-            SqLiteTransaction sqLiteTransactiondWithError2 = new SqLiteTransaction(toDataBase);
-            sqLiteTransactiondWithError2.AddSqliteCommand("INSERT INTO person(id, first_name, last_name, sex, birth_date) VALUES (1, 'Commit4', 'Check4', 0, strftime('%s', '1993-10-10'));",
-                                                    "DELETE FROM person WHERE first_name = 'Commit1'");
-
-            sqLiteTransactionGood.Commit();
-            sqLiteTransactiondWithError.Commit();
-            sqLiteTransactiondWithError2.Commit();
+            sqLiteTransactiondWithError.AddSqliteCommand("INSERT INTO person(id, first_name, last_name) VALUES (1, 'Commit3', 'Check3');","");
 
             UnitOfWork unit = new UnitOfWork();
             using (var bussinesTransaction = unit.BeginTransaction())
             {
                 bussinesTransaction.RegisterOperation(sqLiteTransactionGood);
                 bussinesTransaction.RegisterOperation(sqLiteTransactiondWithError);
-                bussinesTransaction.RegisterOperation(sqLiteTransactiondWithError2);
                 bussinesTransaction.Commit();
             }
 
             using (SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0}", toDataBase)))
             {
                 connection.Open();
-                using (SQLiteCommand command = new SQLiteCommand("SELECT * FROM person  WHERE first_name = 'Commit1'", connection))
+                using (SQLiteCommand command = new SQLiteCommand("SELECT * FROM person  WHERE first_name = 'Commit2'", connection))
                 {
                     using (SQLiteDataReader rdr = command.ExecuteReader())
                     {
                         while (rdr.Read())
                         {
-                            Assert.AreEqual("Commit", rdr["first_name"]);
-                            Assert.AreEqual("Check", rdr["last_name"]);
+                            firstname = rdr["first_name"].ToString();
+                            lastname = rdr["last_name"].ToString();
                         }
                     }
                 }
-                connection.Close();
             }
-            File.Delete(toDataBase);
-            File.Delete(toDataBaseWithError);
-        }
 
-        [OneTimeTearDown]
-        public void TestFixtureTearDown()
-        {
-            if (File.Exists(pathToDataBase))
-            {
-                _sqLiteTransaction.Dispose();
-                File.Delete(pathToDataBase);
-            }
+            Assert.AreEqual("Commit2", firstname);
+            Assert.AreEqual("Check2", lastname);
         }
     }
 }
