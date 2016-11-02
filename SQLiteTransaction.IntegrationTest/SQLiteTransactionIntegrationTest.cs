@@ -1,4 +1,5 @@
-﻿using System.Data.SQLite;
+﻿using System;
+using System.Data.SQLite;
 using System.IO;
 using Core;
 using NUnit.Framework;
@@ -89,13 +90,8 @@ namespace SQLiteTransaction.IntegrationTest
         [Test]
         public void AddSqliteCommand_AddComandToWrongDatabase_ReturnFalse()
         {
-            _sqLiteTransaction.ConnectDatabase("");
-
-            bool result = _sqLiteTransaction.AddSqliteCommand(
-                 "INSERT INTO person(first_name, last_name, sex, birth_date) VALUES ('AddComand', 'WrongDatabase', 0, strftime('%s', '1993-10-10'));","");
-
-            Assert.IsFalse(result);
-            _sqLiteTransaction.Dispose();
+            var exception = Assert.Catch<Exception>(() => _sqLiteTransaction.ConnectDatabase(""));
+            StringAssert.Contains("No such database file.",exception.Message);
         }
 
         [Test]
