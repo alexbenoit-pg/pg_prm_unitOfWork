@@ -43,27 +43,11 @@ namespace SQLiteTransaction.IntegrationTest
                 File.Delete(toDataBase);
         }
 
-        private void CreatDataBase(string pathToDataBase)
-        {
-            SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0}; Version=3;", pathToDataBase));
-            SQLiteCommand command = new SQLiteCommand("CREATE TABLE person("
-                                                        + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                                                        + "first_name TEXT, "
-                                                        + "last_name TEXT, "
-                                                        + "sex INTEGER, "
-                                                        + "birth_date INTEGER);",
-                                                        connection);
-            connection.Open();
-            command.ExecuteNonQuery();
-            connection.Close();
-            connection.Dispose();
-        }
-
         [Test]
         public void ConnectDatabase_ConnectToTheWrongName_RetrunFalse()
         {
-            bool result = _sqLiteTransaction.ConnectDatabase("");
-            Assert.IsFalse(result);
+            var exception = Assert.Catch<Exception>(() => _sqLiteTransaction.ConnectDatabase(""));
+            StringAssert.Contains("No such database file.", exception.Message);
         }
 
         [Test]
@@ -86,20 +70,16 @@ namespace SQLiteTransaction.IntegrationTest
             Assert.IsTrue(result);
             _sqLiteTransaction.Dispose();
         }
-
-        [Test]
-        public void AddSqliteCommand_AddComandToWrongDatabase_ReturnFalse()
-        {
-            var exception = Assert.Catch<Exception>(() => _sqLiteTransaction.ConnectDatabase(""));
-            StringAssert.Contains("No such database file.",exception.Message);
-        }
-
+     
         [Test]
         public void Commit_CheckWriteData_ReturnTrue()
         {
+            string firstname = "";
+            string lastname = "";
+
             _sqLiteTransaction.ConnectDatabase(pathToDataBase);
             bool rezult = _sqLiteTransaction.AddSqliteCommand(
-                 "INSERT INTO person(first_name, last_name, sex, birth_date) VALUES ('Commit', 'Check', 0, strftime('%s', '1993-10-10'));",
+                 "INSERT INTO person(first_name, last_name) VALUES ('Commit', 'Check');",
                  "DELETE FROM person WHERE first_name = 'Commit'");
             _sqLiteTransaction.Commit();
             Assert.IsTrue(rezult);
@@ -113,13 +93,17 @@ namespace SQLiteTransaction.IntegrationTest
                     {
                         while (rdr.Read())
                         {
-                            Assert.AreEqual("Commit", rdr["first_name"]);
-                            Assert.AreEqual("Check", rdr["last_name"]);
+                            firstname = rdr["first_name"].ToString();
+                            lastname = rdr["last_name"].ToString();
                         }
                     }
                 }
                 connection.Close();
             }
+
+            Assert.IsTrue(rezult);
+            Assert.AreEqual("Commit", firstname);
+            Assert.AreEqual("Check", lastname);
         }
 
         [Test]
@@ -161,6 +145,22 @@ namespace SQLiteTransaction.IntegrationTest
 
             Assert.AreEqual("Commit2", firstname);
             Assert.AreEqual("Check2", lastname);
+        }
+
+        private void CreatDataBase(string pathToDataBase)
+        {
+            SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0}; Version=3;", pathToDataBase));
+            SQLiteCommand command = new SQLiteCommand("CREATE TABLE person("
+                                                        + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                                                        + "first_name TEXT, "
+                                                        + "last_name TEXT, "
+                                                        + "sex INTEGER, "
+                                                        + "birth_date INTEGER);",
+                                                        connection);
+            connection.Open();
+            command.ExecuteNonQuery();
+            connection.Close();
+            connection.Dispose();
         }
     }
 }
