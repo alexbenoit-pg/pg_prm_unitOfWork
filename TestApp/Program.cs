@@ -26,7 +26,7 @@ namespace TestApp
             //    bo.Commit();
             //}
             //#endregion
-            
+
             //#region File_unit_move
             //var fu3 = new FileTransactionUnit();
             //fu3.Move(Root + "\\3\\1.txt", Root + "\\3\\target\\1.txt");
@@ -85,21 +85,25 @@ namespace TestApp
             //#endregion
 
 
-            //#region File_unit_Full
-            //var fu8 = new FileTransactionUnit();
-            //fu8.WriteAllText(Root + "\\8\\1.txt", "azaaza");
-            //fu8.AppendAllText(Root + "\\8\\2.txt", "azaaza");
-            //fu8.Copy(Root + "\\8\\2.txt", Root + "\\8\\2_myCopy.txt", false);
-            //fu8.Delete(Root + "\\8\\3.txt");
-            //fu8.Move(Root + "\\8\\4.txt", Root + "\\8\\target\\4_move.txt");
-            ////fu8.CreateFile(Root + "\\8", "CREATED", "txt");
+            #region File_unit_Full
+            var fu8 = new FileTransactionUnit();
+            fu8.WriteAllText(Root + "8\\1.txt", "azaaza");
+            fu8.AppendAllText(Root + "8\\2.txt", "azaaza");
+            fu8.Copy(Root + "8\\2.txt", Root + "8\\2_myCopy.txt", false);
+            fu8.Delete(Root + "8\\3.txt");
+            fu8.Move(Root + "8\\4.txt", Root + "8\\target\\4_move.txt");
+            fu8.CreateFile(Root + "8\\CREATED.txt");
 
-            //using (var bo = unit.BeginTransaction())
-            //{
-            //    bo.RegisterOperation(fu8);
-            //    bo.Commit();
-            //}
-            //#endregion
+            var fu8_1 = new FileTransactionUnit();
+            fu8_1.Copy(Root + "\\8\\nine.txt", Root + "\\8\\12312312312_myCopy.txt", true);
+
+            using (var bo = unit.BeginTransaction())
+            {
+                bo.RegisterOperation(fu8);
+                bo.RegisterOperation(fu8_1);
+                bo.Commit();
+            }
+            #endregion
 
 
             //#region File_unit_negative
@@ -109,7 +113,7 @@ namespace TestApp
             //fu9.Copy(Root + "\\9\\2.txt", Root + "\\9\\2_myCopy.txt", true);
             //fu9.Move(Root + "\\9\\4.txt", Root + "\\9\\target\\4_move.txt");
             //fu9.Delete(Root + "\\9\\3.txt");
-            //fu9.CreateFile(Root + "\\9", "CREATED", "txt");
+            //fu9.CreateFile(Root + "9\\CREATED.txt");
             //fu9.Copy(Root + "\\9\\nine.txt", Root + "\\9\\12312312312_myCopy.txt", true);
 
             //using (var bo = unit.BeginTransaction())

@@ -84,6 +84,7 @@ namespace Units
         public void SetOperationId(string operationId)
         {
             ID = operationId;
+            target.OperationId = operationId;
         }
 
         #endregion ITransactionUnit implimentation

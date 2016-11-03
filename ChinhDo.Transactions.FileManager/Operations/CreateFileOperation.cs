@@ -32,7 +32,7 @@ namespace ChinhDo.Transactions.Operations
             }
 
             if (!File.Exists(path))
-                File.Create(path);
+                File.Create(path).Close();
         }
 
         public void Rollback()
