@@ -43,7 +43,7 @@ namespace SQLiteTransaction.IntegrationTest
         }
 
         [Test]
-        public void ConnectDatabase_ConnectToTheWrongName_RetrunFalse()
+        public void ConnectDatabase_ConnectToTheWrongName_Throw()
         {
             var exception = Assert.Catch<Exception>(() => _sqLiteTransaction.ConnectDatabase(""));
             StringAssert.Contains("No such database file.", exception.Message);
