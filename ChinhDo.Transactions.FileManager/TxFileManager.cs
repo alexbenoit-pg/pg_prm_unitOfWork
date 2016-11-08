@@ -11,14 +11,15 @@ namespace ChinhDo.Transactions
     [Serializable]
     public class TxFileManager : IFileManager
     {
+        private string jsonJournal;
+
         /// <summary>
         /// Initializes the <see cref="TxFileManager"/> class.
         /// </summary>
         public TxFileManager()
         {
             FileUtils.EnsureTempFolderExists();
-            FileUtils.EnsureJournalFolder();
-            OperationId = Guid.NewGuid().ToString();
+            jsonJournal = "";
         }
 
         #region IFileOperations
@@ -252,23 +253,8 @@ namespace ChinhDo.Transactions
             ExecuteHelper.ExecuteOperation(this, operationType, operationParams);
         }
 
-        public string GetOperationID()
-        {
-            return OperationId;
-        }
-
         #region Private
-
-        private string pperationId;
-        public string OperationId {
-            get { return pperationId; }
-            set
-            {
-                this.pperationId = value;
-            }
-        }
-
-
+        
         /// <summary>Dictionary of transaction enlistment objects for the current thread.</summary>
         
         private Dictionary<string, TxEnlistment> _enlistments;
@@ -294,28 +280,25 @@ namespace ChinhDo.Transactions
 
                 if (!_enlistments.TryGetValue(tx.TransactionInformation.LocalIdentifier, out enlistment))
                 {
-                    enlistment = new TxEnlistment(tx, OperationId);
+                    enlistment = new TxEnlistment(tx);
                     _enlistments.Add(tx.TransactionInformation.LocalIdentifier, enlistment);
                 }
                 enlistment.EnlistOperation(operation);
+                this.jsonJournal = enlistment.GetJsonJournal();
             }
         }
 
-        public void RollbackAfterCrash(string JournalID)
+        public string GetJsonJournal() {
+            return this.jsonJournal;
+        }
+
+        public void RollbackAfterCrash(string jsonJournal)
         {
-            TxEnlistment enlistment = new TxEnlistment(JournalID);
-            enlistment.RollbackAfterCrash();
+            new TxEnlistment().RollbackAfterCrash(jsonJournal);
         }
 
         ~TxFileManager()
         {
-            var tempFiles = Directory.GetFiles(FileUtils.tempFolder, OperationId+"*");
-            foreach (var filePath in tempFiles)
-            {
-                File.Delete(filePath);
-            }
-
-            File.Delete(FileUtils.journalFolder + "\\" + OperationId);
         }
 
         #endregion

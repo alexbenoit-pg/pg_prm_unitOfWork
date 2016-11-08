@@ -36,6 +36,12 @@ namespace Core
         {
         }
 
+        public BussinesTransaction BeginTransaction()
+        {
+            return new BussinesTransaction(JournalsFactory.GetJournal(this.journalType));
+        }
+
+
         public UnitOfWork(bool checkAfterCrush, JournalTypes journalType)
         {
             this.journalType = journalType;
@@ -51,11 +57,6 @@ namespace Core
                 RollbackBadTransactions(journals);
         }
 
-        public BussinesTransaction BeginTransaction()
-        {
-            return new BussinesTransaction(JournalsFactory.GetJournal(this.journalType));
-        }
-        
         private void RollbackBadTransactions(string[] journals)
         {
             foreach (var journalPath in journals)

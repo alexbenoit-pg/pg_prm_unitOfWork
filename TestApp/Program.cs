@@ -1,20 +1,14 @@
-﻿using System.Runtime.InteropServices;
-
-namespace TestApp
+﻿namespace TestApp
 {
-    using Core;
     using Units;
-    using Core.Tests.Fakes;
-    using System.IO;
+    using Core;
 
     class Program
     {
         static public string Root = @"C:\TestWoU\";
         static void Main(string[] args)
         {
-
-            var unit = new UnitOfWork();
-
+            Core.UnitOfWork unit = new Core.UnitOfWork();
 
             //#region File_unit_create
             //var fu1 = new FileTransactionUnit();
@@ -26,7 +20,7 @@ namespace TestApp
             //    bo.Commit();
             //}
             //#endregion
-            
+
             //#region File_unit_move
             //var fu3 = new FileTransactionUnit();
             //fu3.Move(Root + "\\3\\1.txt", Root + "\\3\\target\\1.txt");
@@ -120,28 +114,28 @@ namespace TestApp
             //#endregion
 
 
-            //#region SQL_unit_write
-            //var su10 = new SqLiteTransaction(Root + "\\testdb.db");
-            //su10.AddSqliteCommand(
-            //    "INSERT INTO test(name) VALUES ('Fedor');",
-            //    "DELETE FROM test WHERE ID = 1;");
-            //var su11 = new SqLiteTransaction(Root + "\\testdb.db");
-            //su11.AddSqliteCommand(
-            //    "INSERT INTO test(name) VALUES ('Dima');",
-            //    "DELETE FROM test WHERE ID = 2;");
-            //var su12 = new SqLiteTransaction(Root + "\\testdb.db");
-            //su12.AddSqliteCommand(
-            //    "INSERT INTO test(name) VALUES ('Igor');",
-            //    "DELETE FROM test WHERE ID = 3;");
+            #region SQL_unit_write
+            var su10 = new SqLiteTransaction(Root + "\\testdb.db");
+            su10.AddSqliteCommand(
+                "INSERT INTO test(name) VALUES ('Fedor');",
+                "DELETE FROM test WHERE ID = 1;");
+            var su11 = new SqLiteTransaction(Root + "\\testdb.db");
+            su11.AddSqliteCommand(
+                "INSERT INTO test(name) VALUES ('Dima');",
+                "DELETE FROM test WHERE ID = 2;");
+            var su12 = new SqLiteTransaction(Root + "\\testdb.db");
+            su12.AddSqliteCommand(
+                "INSERT INTO test(name) VALUES ('Igor');",
+                "DELETE FROM test WHERE ID = 3;");
 
-            //using (var bo = unit.BeginTransaction())
-            //{
-            //    bo.RegisterOperation(su10);
-            //    bo.RegisterOperation(su11);
-            //    bo.RegisterOperation(su12);
-            //    bo.Commit();
-            //}
-            //#endregion
+            using (var bo = unit.BeginTransaction())
+            {
+                bo.RegisterOperation(su10);
+                bo.RegisterOperation(su11);
+                bo.RegisterOperation(su12);
+                bo.Commit();
+            }
+            #endregion
 
 
             //#region SQL_unit_set

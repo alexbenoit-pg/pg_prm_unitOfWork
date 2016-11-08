@@ -38,6 +38,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\System.Data.SQLite.Core.1.0.103\lib\net451\System.Data.SQLite.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -49,7 +50,6 @@
   <ItemGroup>
     <Compile Include="FileTransactionUnit\FileTransactionUnit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SQLiteTransactionUnit\SQLiteJournal.cs" />
     <Compile Include="SQLiteTransactionUnit\SQLiteTransaction.cs" />
     <Compile Include="EmitationTransactionUnits\TransactionBadCommitUnit.cs" />
     <Compile Include="EmitationTransactionUnits\TransactionSimulationUnit.cs" />

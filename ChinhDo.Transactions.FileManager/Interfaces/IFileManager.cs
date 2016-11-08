@@ -29,17 +29,12 @@ namespace ChinhDo.Transactions.Interfaces
         /// Gets a temporary filename. The file is not automatically created.
         /// </summary>
         string GetTempFileName();
-
-        /// <summary>
-        /// Gets File Units Operation Id.
-        /// </summary>
-        /// <returns></returns>
-        string GetOperationID();
+        
 
         /// <summary>
         /// Rollback operation after crash file unit
         /// </summary>
-        /// <param name="JournalID"></param>
-        void RollbackAfterCrash(string JournalID);
+        /// <param name="jsonJournal"></param>
+        void RollbackAfterCrash(string jsonJournal);
     }
 }

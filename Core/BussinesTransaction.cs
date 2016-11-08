@@ -29,16 +29,19 @@ namespace Core
 
     using Core.Interfaces;
     using Core.Journals;
-
+    using Newtonsoft.Json;
+    using System.IO;
     public sealed class BussinesTransaction : IDisposable
     {
         internal IJournal Journal { get; private set; }
         public List<ITransactionUnit> Operations { get; private set; }
+        public List<ITransactionUnit> CommitedOperations { get; private set; }
 
         internal BussinesTransaction(IJournal journal)               
         {
             Journal = journal;
             Operations = new List<ITransactionUnit>();
+            CommitedOperations = new List<ITransactionUnit>();
         }
 
         public void RegisterOperation(ITransactionUnit operation)
@@ -65,6 +68,7 @@ namespace Core
 
         public void Rollback()
         {
+            var json = File.ReadAllText(@"C:\TestWoU\test.txt");
             Operations = Journal.GetOperationsFromJournal();
 
             foreach (var operation in Operations)
@@ -82,10 +86,17 @@ namespace Core
                 try
                 {
                     operation.Commit();
+                    CommitedOperations.Add(operation);
+                    string json = JsonConvert.SerializeObject(CommitedOperations, Formatting.Indented);
+                    File.Create(@"C:\TestWoU\test.txt").Close();
+                    File.WriteAllText(@"C:\TestWoU\test.txt", json);
                 }
                 catch (Exception e)
                 {
-                    Journal.Remove(operation);
+                    string json = JsonConvert.SerializeObject(CommitedOperations, Formatting.Indented);
+                    File.Create(@"C:\TestWoU\test.txt").Close();
+                    File.WriteAllText(@"C:\TestWoU\test.txt", json);
+                    CommitedOperations.Remove(operation);
                     throw e;
                 }
             }

@@ -1,33 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SQLite;
-using System.IO;
-using System.Runtime.InteropServices;
-using Core.Interfaces;
-
-namespace Units
+﻿namespace Units
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data.SQLite;
+    using System.IO;
+    using System.Runtime.Serialization;
+    using Core.Interfaces;
+
+    [DataContract]
     public class SqLiteTransaction : ITransactionUnit
     {
         public SQLiteConnection DbConnection = null;
         private SQLiteTransaction _dbTransaction;
         public SQLiteCommand DbCommand = null;
-        private readonly SqLiteJournal _sqLiteJournal = new SqLiteJournal();
-        private readonly List<string> _rollbackCommands = new List<string>();
         private readonly List<string> _commitCommands = new List<string>();
-        private string _operationId;
+
+        [DataMember]
         private string _databasePath;
+        [DataMember]
+        private readonly List<string> _rollbackCommands = new List<string>();
 
         public SqLiteTransaction()
         {
-            _operationId = GetOperationId();
         }
 
         public SqLiteTransaction(string databasePath)
         {
             _databasePath = databasePath;
-            _operationId = GetOperationId();
         }
 
         public void Dispose()
@@ -129,47 +128,25 @@ namespace Units
                 }
             }
         }
-
-        public string GetOperationId()
+        
+        public void Rollback()
         {
-            if (_operationId == null)
-            {
-                _operationId = Guid.NewGuid().ToString();
-            }
-            return _operationId;
-        }
-
-        public void SetOperationId(string operationId)
-        {
-            _operationId = operationId;
-        }
-
-        public void Rollback(string operationId)
-        {
-            SqLiteJournal journal = new SqLiteJournal();
-            journal.GetParameters(operationId);
-            using (DbConnection = new SQLiteConnection(string.Format("Data Source={0}", journal.PathToDataBase)))
+            using (DbConnection = new SQLiteConnection(string.Format("Data Source={0}", this._databasePath)))
             {
                 DbConnection.Open();
                 using (_dbTransaction = DbConnection.BeginTransaction())
                 {
                     using (var cmd = new SQLiteCommand(DbConnection) { Transaction = _dbTransaction })
                     {
-                        foreach (string line in journal.RollBackCommands)
+                        foreach (string line in this._rollbackCommands)
                         {
                             cmd.CommandText = line;
                             cmd.ExecuteNonQueryAsync();
                         }
                         _dbTransaction.Commit();
-                        File.Delete(journal.PathToDataJournal);
                     }
                 }
             }
-        }
-
-        public void Rollback()
-        {
-            Rollback(GetOperationId());
         }
 
         public void Commit()
@@ -188,7 +165,6 @@ namespace Units
                 }
             }
             SqLiteCommit();
-            _sqLiteJournal.Write(_databasePath, _rollbackCommands, _operationId);
         }
     }
 }

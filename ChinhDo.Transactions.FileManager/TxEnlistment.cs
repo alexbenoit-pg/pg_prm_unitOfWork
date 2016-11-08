@@ -7,25 +7,24 @@ namespace ChinhDo.Transactions
     using System.Transactions;
     using ChinhDo.Transactions.Heplers;
     using ChinhDo.Transactions.Interfaces;
+    using Newtonsoft.Json;
 
     /// <summary>Provides two-phase commits/rollbacks/etc for a single <see cref="Transaction"/>.</summary>
     [Serializable]
     sealed class TxEnlistment : IEnlistmentNotification
     {
         private List<IRollbackableOperation> _journal = new List<IRollbackableOperation>();
-        private string OperationID;
+        private string jsonJournal;
 
         /// <summary>Initializes a new instance of the <see cref="TxEnlistment"/> class.</summary>
         /// <param name="tx">The Transaction.</param>
-        public TxEnlistment(Transaction tx, string operationID)
+        public TxEnlistment(Transaction tx)
         {
             tx.EnlistVolatile(this, EnlistmentOptions.None);
-            this.OperationID = operationID;
         }
 
-        public TxEnlistment(string JournalId)
+        public TxEnlistment()
         {
-            this.OperationID = JournalId;
         }
 
         /// <summary>
@@ -37,17 +36,15 @@ namespace ChinhDo.Transactions
         {
             operation.Execute();
             _journal.Add(operation);
+            jsonJournal = JsonConvert.SerializeObject(_journal, Formatting.Indented);
+        }
+
+        public string GetJsonJournal() {
+            return jsonJournal;
         }
 
         public void Commit(Enlistment enlistment)
         {
-            using (var stream = new MemoryStream())
-            {
-                new BinaryFormatter().Serialize(stream, _journal);
-
-                File.WriteAllBytes(FileUtils.journalFolder + "\\" + OperationID, stream.ToArray());
-            }
-
             DisposeJournal();
             enlistment.Done();
         }
@@ -85,15 +82,9 @@ namespace ChinhDo.Transactions
             enlistment.Done();
         }
 
-        public void RollbackAfterCrash()
+        public void RollbackAfterCrash(string jsonJournal)
         {
-            byte[] arr = File.ReadAllBytes(FileUtils.journalFolder + "\\" + OperationID);
-
-            using (var stream = new MemoryStream(arr))
-            {
-                stream.Seek(0, SeekOrigin.Begin);
-                _journal = (List<IRollbackableOperation>)new BinaryFormatter().Deserialize(stream);
-            }
+            _journal = (List<IRollbackableOperation>) JsonConvert.DeserializeObject(jsonJournal);
 
             try
             {
