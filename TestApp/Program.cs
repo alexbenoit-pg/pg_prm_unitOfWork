@@ -11,7 +11,7 @@ namespace TestApp
     using System.IO;
 
     [TestFixture]
-    class TestAppIntegrationTest
+    public class TestAppIntegrationTest
     {
         private string _pathToSaveDirectory = Path.GetTempPath() + @"FileAndSQLiteTransaction\";
         private string pathToDataBase;
@@ -96,8 +96,7 @@ namespace TestApp
 
             var sqliteTransactionSecond = new SqLiteTransaction(pathToDataBase);
             sqliteTransactionSecond.AddSqliteCommand(
-                "UPDATE person set first_name = 'pit' WHERE id = 2",
-                "UPDATE person set first_name = 'max' WHERE id = 2");
+                "UPDATE somethink set first_name = 'pit' WHERE id = 2","");
 
             using (var bussinesTransaction = _unit.BeginTransaction())
             {
@@ -128,9 +127,9 @@ namespace TestApp
             }
             #endregion
 
-            Assert.IsTrue(File.Exists(_pathToSaveDirectory + "CreateFileTest.txt"));
-            Assert.AreEqual("pit", firstname);
-            Assert.AreEqual("Check1", lastname);
+            Assert.IsFalse(File.Exists(_pathToSaveDirectory + "CreateFileTest.txt"));
+            Assert.AreNotEqual("pit", firstname);
+            Assert.AreNotEqual("Check1", lastname);
         }
 
         private void CreatDataBase(string pathDataBase)
@@ -147,9 +146,9 @@ namespace TestApp
             connection.Dispose();
         }
 
-        static void Main(string[] args)
+        static void Main()
         {
-            var unit = new UnitOfWork();
+            
         }
     }
 }
