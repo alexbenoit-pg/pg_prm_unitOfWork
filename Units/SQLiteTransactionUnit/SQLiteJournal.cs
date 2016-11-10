@@ -29,43 +29,42 @@ namespace Units
 
     internal class SqLiteJournal
     {
-        private readonly string _pathToFolder = Path.Combine(
+        private readonly string pathToFolder = Path.Combine(
             Path.GetTempPath(), 
             "UnitOfWorkSQLiteTransaction");
+        public SqLiteJournal()
+        {
+            this.EnsureExistJournalFolder();
+        }
 
         public void Dispose()
         {
-            _pathToJournal = "";
-            _pathToDb = "";
-            _rollBackCommands.Clear();
+            this.pathToJournal = string.Empty;
+            this.pathToDb = string.Empty;
+            this.rollBackCommands.Clear();
 
             GC.Collect();
             GC.SuppressFinalize(this);
         }
-
-        public SqLiteJournal()
-        {
-            EnsureExistJournalFolder();
-        }
-
+        
         public void GetParameters(string operationId)
         {
-            _pathToJournal = Path.Combine(_pathToFolder, operationId + ".txt");
-            using (StreamReader sr = new StreamReader(_pathToJournal, System.Text.Encoding.Default))
+            this.pathToJournal = Path.Combine(this.pathToFolder, operationId + ".txt");
+            using (StreamReader sr = new StreamReader(this.pathToJournal, System.Text.Encoding.Default))
             {
-                _pathToDb = sr.ReadLine();
+                this.pathToDb = sr.ReadLine();
                 string line;
                 while ((line = sr.ReadLine()) != null)
                 {
-                    _rollBackCommands.Add(line);
+                    this.rollBackCommands.Add(line);
                 }
             }
         }
 
         public void Write(string databasePath, List<string> rollbackCommands, string operationId)
         {
-            _pathToJournal = Path.Combine(_pathToFolder, operationId + ".txt");
-            using (StreamWriter streamWriter = File.AppendText(_pathToJournal))
+            this.pathToJournal = Path.Combine(this.pathToFolder, operationId + ".txt");
+            using (StreamWriter streamWriter = File.AppendText(this.pathToJournal))
             {
                 streamWriter.WriteLine(databasePath);
                 foreach (var command in rollbackCommands)
@@ -77,17 +76,17 @@ namespace Units
 
         private void EnsureExistJournalFolder()
         {
-            if (!Directory.Exists(_pathToFolder))
-                Directory.CreateDirectory(_pathToFolder);
+            if (!Directory.Exists(this.pathToFolder))
+                Directory.CreateDirectory(this.pathToFolder);
         }
 
-        private string _pathToJournal;
-        public string PathToDataJournal => _pathToJournal;
+        private string pathToJournal;
+        public string PathToDataJournal => this.pathToJournal;
 
-        private string _pathToDb;
-        public string PathToDataBase => _pathToDb;
+        private string pathToDb;
+        public string PathToDataBase => this.pathToDb;
 
-        private readonly List<string> _rollBackCommands = new List<string>();
-        public List<string> RollBackCommands => _rollBackCommands;
+        private readonly List<string> rollBackCommands = new List<string>();
+        public List<string> RollBackCommands => this.rollBackCommands;
     }
 }

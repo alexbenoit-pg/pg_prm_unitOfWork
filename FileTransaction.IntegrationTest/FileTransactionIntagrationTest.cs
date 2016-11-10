@@ -1,21 +1,21 @@
-﻿using System;
-using NUnit.Framework;
-using System.IO;
-using Core;
-using Units;
-
-namespace FileTransaction.IntegrationTest
+﻿namespace FileTransaction.IntegrationTest
 {
+    using System;
+    using System.IO;
+    using Core;
+    using NUnit.Framework;
+    using Units;
+
     [TestFixture]
     public class FileTransactionIntagrationTest
     {
-        private string _pathToSaveDirectory = Path.GetTempPath() + @"TestFileTransaction\";
-        private UnitOfWork _unit = new UnitOfWork();
+        private string pathToSaveDirectory = Path.GetTempPath() + @"TestFileTransaction\";
+        private UnitOfWork unit = new UnitOfWork();
 
         [OneTimeSetUp]
         public void TestFixtureSetup()
         {
-            Directory.CreateDirectory(_pathToSaveDirectory);
+            Directory.CreateDirectory(this.pathToSaveDirectory);
         }
 
         [OneTimeTearDown]
@@ -23,79 +23,85 @@ namespace FileTransaction.IntegrationTest
         {
             GC.Collect();
             GC.SuppressFinalize(this);
-            Directory.Delete(_pathToSaveDirectory,true);
+            Directory.Delete(this.pathToSaveDirectory,true);
         }
 
         [Test]
         public void FileTransactionUnit_CreateFile_ReturnTrue()
         {
             var filetransaction = new FileTransactionUnit();
-            filetransaction.CreateFile(_pathToSaveDirectory + "CreateFileTest.txt");
+            filetransaction.CreateFile(this.pathToSaveDirectory + "CreateFileTest.txt");
 
-            using (var bussinesTransaction = _unit.BeginTransaction())
+            using (var bussinesTransaction = this.unit.BeginTransaction())
             {
                 bussinesTransaction.RegisterOperation(filetransaction);
                 bussinesTransaction.Commit();
             }
 
-            Assert.IsTrue(File.Exists(_pathToSaveDirectory + "CreateFileTest.txt"));
+            Assert.IsTrue(File.Exists(this.pathToSaveDirectory + "CreateFileTest.txt"));
         }
 
         [Test]
         public void FileTransactionUnit_Move_ReturnTrue()
         {
-            Directory.CreateDirectory(_pathToSaveDirectory + "MoveTestFrom");
-            Directory.CreateDirectory(_pathToSaveDirectory + "MoveTestWhere");
+            Directory.CreateDirectory(this.pathToSaveDirectory + "MoveTestFrom");
+            Directory.CreateDirectory(this.pathToSaveDirectory + "MoveTestWhere");
 
-            using (File.Create(_pathToSaveDirectory + "\\MoveTestFrom\\" + "FileMoveTest.txt")){}
+            using (File.Create(this.pathToSaveDirectory + "\\MoveTestFrom\\" + "FileMoveTest.txt"))
+            {
+            }
 
             var filetransaction = new FileTransactionUnit();
-            filetransaction.Move(_pathToSaveDirectory + "MoveTestFrom\\FileMoveTest.txt", _pathToSaveDirectory + "MoveTestWhere\\FileMoveTest.txt");
+            filetransaction.Move(this.pathToSaveDirectory + "MoveTestFrom\\FileMoveTest.txt", this.pathToSaveDirectory + "MoveTestWhere\\FileMoveTest.txt");
 
-            using (var bussinesTransaction = _unit.BeginTransaction())
+            using (var bussinesTransaction = this.unit.BeginTransaction())
             {
                 bussinesTransaction.RegisterOperation(filetransaction);
                 bussinesTransaction.Commit();
             }
            
-            Assert.IsTrue(File.Exists(_pathToSaveDirectory + "MoveTestWhere\\FileMoveTest.txt"));
+            Assert.IsTrue(File.Exists(this.pathToSaveDirectory + "MoveTestWhere\\FileMoveTest.txt"));
         }
 
         [Test]
         public void FileTransactionUnit_Delete_ReturnFalse()
         {
-            using (File.Create(_pathToSaveDirectory + "TestFileDelete.txt")){}
+            using (File.Create(this.pathToSaveDirectory + "TestFileDelete.txt"))
+            {
+            }
 
             var filetransaction = new FileTransactionUnit();
-            filetransaction.Delete(_pathToSaveDirectory + "TestFileDelete.txt");
+            filetransaction.Delete(this.pathToSaveDirectory + "TestFileDelete.txt");
 
-            using (var bussinesTransaction = _unit.BeginTransaction())
+            using (var bussinesTransaction = this.unit.BeginTransaction())
             {
                 bussinesTransaction.RegisterOperation(filetransaction);
                 bussinesTransaction.Commit();
             }
           
-            Assert.IsFalse(File.Exists(_pathToSaveDirectory + "TestFileDelete.txt"));
+            Assert.IsFalse(File.Exists(this.pathToSaveDirectory + "TestFileDelete.txt"));
         }
 
         [Test]
         public void FileTransactionUnit_Copy_ReturnTrue()
         {
-            Directory.CreateDirectory(_pathToSaveDirectory + "CopyTestFrom");
-            Directory.CreateDirectory(_pathToSaveDirectory + "CopyTestWhere");
+            Directory.CreateDirectory(this.pathToSaveDirectory + "CopyTestFrom");
+            Directory.CreateDirectory(this.pathToSaveDirectory + "CopyTestWhere");
 
-            using (File.Create(_pathToSaveDirectory + "CopyTestFrom" + "\\FileCopyTestFrom.txt")){}
+            using (File.Create(this.pathToSaveDirectory + "CopyTestFrom" + "\\FileCopyTestFrom.txt"))
+            {
+            }
             
             var filetransaction = new FileTransactionUnit();
-            filetransaction.Copy(_pathToSaveDirectory + "\\CopyTestFrom\\FileCopyTestFrom.txt", _pathToSaveDirectory + "\\CopyTestWhere\\FileCopyTestWhere.txt", true);
+            filetransaction.Copy(this.pathToSaveDirectory + "\\CopyTestFrom\\FileCopyTestFrom.txt", this.pathToSaveDirectory + "\\CopyTestWhere\\FileCopyTestWhere.txt", true);
 
-            using (var bussinesTransaction = _unit.BeginTransaction())
+            using (var bussinesTransaction = this.unit.BeginTransaction())
             {
                 bussinesTransaction.RegisterOperation(filetransaction);
                 bussinesTransaction.Commit();
             }
           
-            Assert.IsTrue(File.Exists(_pathToSaveDirectory + "CopyTestWhere\\FileCopyTestWhere.txt"));
+            Assert.IsTrue(File.Exists(this.pathToSaveDirectory + "CopyTestWhere\\FileCopyTestWhere.txt"));
         }
 
         [Test]
@@ -103,20 +109,22 @@ namespace FileTransaction.IntegrationTest
         {
             var filetransaction = new FileTransactionUnit();
 
-            using (File.Create(_pathToSaveDirectory + "\\FileAppendAllTextFrom.txt")) { }
+            using (File.Create(this.pathToSaveDirectory + "\\FileAppendAllTextFrom.txt"))
+            {
+            }
 
-            filetransaction.AppendAllText(_pathToSaveDirectory + "\\FileAppendAllTextFrom.txt", "Test Append Text");
+            filetransaction.AppendAllText(this.pathToSaveDirectory + "\\FileAppendAllTextFrom.txt", "Test Append Text");
 
-            using (var bussinesTransaction = _unit.BeginTransaction())
+            using (var bussinesTransaction = this.unit.BeginTransaction())
             {
                 bussinesTransaction.RegisterOperation(filetransaction);
                 bussinesTransaction.Commit();
             }
 
-            string readedstring = "";
-            using (StreamReader sr = new StreamReader(_pathToSaveDirectory + "\\FileAppendAllTextFrom.txt", System.Text.Encoding.Default))
+            string readedstring = string.Empty;
+            using (StreamReader streamReader = new StreamReader(this.pathToSaveDirectory + "\\FileAppendAllTextFrom.txt", System.Text.Encoding.Default))
             {
-                while ((readedstring = sr.ReadLine()) != null)
+                while ((readedstring = streamReader.ReadLine()) != null)
                 {
                     if (readedstring == "Test Append Text")
                     {
@@ -132,16 +140,16 @@ namespace FileTransaction.IntegrationTest
         public void FileTransactionUnit_WriteAllText_ReturnTrue()
         {
             var filetransaction = new FileTransactionUnit();
-            filetransaction.WriteAllText(_pathToSaveDirectory + "\\FileWriteAllTextFrom.txt", "Test Write Text");
+            filetransaction.WriteAllText(this.pathToSaveDirectory + "\\FileWriteAllTextFrom.txt", "Test Write Text");
            
-            using (var bussinesTransaction = _unit.BeginTransaction())
+            using (var bussinesTransaction = this.unit.BeginTransaction())
             {
                 bussinesTransaction.RegisterOperation(filetransaction);
                 bussinesTransaction.Commit();
             }
 
-            string readedstring = "";
-            using (StreamReader sr = new StreamReader(_pathToSaveDirectory + "\\FileWriteAllTextFrom.txt", System.Text.Encoding.Default))
+            string readedstring = string.Empty;
+            using (StreamReader sr = new StreamReader(this.pathToSaveDirectory + "\\FileWriteAllTextFrom.txt", System.Text.Encoding.Default))
             {
                 while ((readedstring = sr.ReadLine()) != null)
                 {

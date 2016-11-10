@@ -1,62 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SQLite;
-using System.IO;
-using System.Runtime.InteropServices;
-using Core.Interfaces;
-
-namespace Units
+﻿namespace Units
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data.SQLite;
+    using System.IO;
+    using Core.Interfaces;
+
     public class SqLiteTransaction : ITransactionUnit
     {
         public SQLiteConnection DbConnection = null;
-        private SQLiteTransaction _dbTransaction;
         public SQLiteCommand DbCommand = null;
-        private readonly SqLiteJournal _sqLiteJournal = new SqLiteJournal();
-        private readonly List<string> _rollbackCommands = new List<string>();
-        private readonly List<string> _commitCommands = new List<string>();
-        private string _operationId;
-        private string _databasePath;
+        private SQLiteTransaction dbTransaction;
+        private readonly SqLiteJournal sqLiteJournal = new SqLiteJournal();
+        private readonly List<string> rollbackCommands = new List<string>();
+        private readonly List<string> commitCommands = new List<string>();
+        private string operationId;
+        private string databasePath;
 
         public SqLiteTransaction()
         {
-            _operationId = GetOperationId();
+            this.operationId = this.GetOperationId();
         }
 
-        public SqLiteTransaction(string databasePath)
+        public SqLiteTransaction(string pathdatabase)
         {
-            _databasePath = databasePath;
-            _operationId = GetOperationId();
+            this.databasePath = pathdatabase;
+            this.operationId = this.GetOperationId();
         }
 
         public void Dispose()
         {
-            if (DbConnection != null)
+            if (this.DbConnection != null)
             {
-                DbConnection.Close();
-                DbCommand.Dispose();
-                DbConnection.Dispose();
-                DbConnection = null;
+                this.DbConnection.Close();
+                this.DbCommand.Dispose();
+                this.DbConnection.Dispose();
+                this.DbConnection = null;
             }
 
             GC.Collect();
             GC.SuppressFinalize(this);
         }
 
-        public bool ConnectDatabase(string databasePath)
+        public bool ConnectDatabase(string pathdatabase)
         {
             try
             {
-                if (File.Exists(databasePath))
+                if (File.Exists(pathdatabase))
                 {
                     this.Dispose();
-                    DbConnection = new SQLiteConnection(string.Format("Data Source={0}; Version=3;", databasePath));
-                    DbCommand = DbConnection.CreateCommand();
-                    DbConnection.Open();
-                    _dbTransaction = DbConnection.BeginTransaction();
-                    DbCommand.Transaction = _dbTransaction;
-                    _databasePath = databasePath;
+                    this.DbConnection = new SQLiteConnection(string.Format("Data Source={0}; Version=3;", pathdatabase));
+                    this.DbCommand = this.DbConnection.CreateCommand();
+                    this.DbConnection.Open();
+                    this.dbTransaction = this.DbConnection.BeginTransaction();
+                    this.DbCommand.Transaction = this.dbTransaction;
+                    this.databasePath = pathdatabase;
                     return true;
                 }
                 else
@@ -72,95 +70,44 @@ namespace Units
 
         public bool AddSqliteCommand(string sqlCommand, string rollbackCommand)
         {
-            this._rollbackCommands.Add(rollbackCommand);
-            this._commitCommands.Add(sqlCommand);
+            this.rollbackCommands.Add(rollbackCommand);
+            this.commitCommands.Add(sqlCommand);
             return true;
-        }
-
-        private void SqLiteCommit()
-        {
-            try
-            {
-                if (DbConnection != null)
-                {
-                    _dbTransaction.Commit();
-                }
-            }
-            catch (SQLiteException exception)
-            {
-                if (_dbTransaction != null)
-                {
-                    try
-                    {
-                        _dbTransaction.Rollback();
-                        throw exception;
-                    }
-                    catch (SQLiteException secondException)
-                    {
-                        throw secondException;
-                    }
-                    finally
-                    {
-                        _dbTransaction.Dispose();
-                    }
-                }
-            }
-            finally
-            {
-                DbCommand.Dispose();
-
-                _dbTransaction.Dispose();
-
-                if (DbConnection != null)
-                {
-                    try
-                    {
-                        DbConnection.Close();
-                    }
-                    catch (SQLiteException exception)
-                    {
-                        throw exception;
-                    }
-                    finally
-                    {
-                        DbConnection.Dispose();
-                        DbConnection = null;
-                    }
-                }
-            }
         }
 
         public string GetOperationId()
         {
-            if (_operationId == null)
+            if (this.operationId == null)
             {
-                _operationId = Guid.NewGuid().ToString();
+                this.operationId = Guid.NewGuid().ToString();
             }
-            return _operationId;
+
+            return this.operationId;
         }
 
-        public void SetOperationId(string operationId)
+        public void SetOperationId(string setoperationId)
         {
-            _operationId = operationId;
+            this.operationId = setoperationId;
         }
 
         public void Rollback(string operationId)
         {
             SqLiteJournal journal = new SqLiteJournal();
             journal.GetParameters(operationId);
-            using (DbConnection = new SQLiteConnection(string.Format("Data Source={0}", journal.PathToDataBase)))
+            using (this.DbConnection = new SQLiteConnection(string.Format("Data Source={0}", journal.PathToDataBase)))
             {
-                DbConnection.Open();
-                using (_dbTransaction = DbConnection.BeginTransaction())
+                this.DbConnection.Open();
+                using (this.dbTransaction = this.DbConnection.BeginTransaction())
                 {
-                    using (var cmd = new SQLiteCommand(DbConnection) { Transaction = _dbTransaction })
+                    using (var cmd = new SQLiteCommand(this.DbConnection) { Transaction = this.dbTransaction })
                     {
                         foreach (string line in journal.RollBackCommands)
                         {
                             cmd.CommandText = line;
                             cmd.ExecuteNonQueryAsync();
                         }
-                        _dbTransaction.Commit();
+
+                        this.dbTransaction.Commit();
                         File.Delete(journal.PathToDataJournal);
                     }
                 }
@@ -169,26 +116,81 @@ namespace Units
 
         public void Rollback()
         {
-            Rollback(GetOperationId());
+            Rollback(this.GetOperationId());
         }
 
         public void Commit()
         {
-            ConnectDatabase(_databasePath);
-            foreach (var command in _commitCommands)
+            ConnectDatabase(this.databasePath);
+            foreach (var command in this.commitCommands)
             {
-                DbCommand.CommandText = command;
+                this.DbCommand.CommandText = command;
                 try
                 {
-                    DbCommand.ExecuteNonQuery();
+                    this.DbCommand.ExecuteNonQuery();
                 }
-                catch (Exception exception) {
-                    Dispose();
+                catch (Exception exception)
+                {
+                    this.Dispose();
                     throw exception;
                 }
             }
-            SqLiteCommit();
-            _sqLiteJournal.Write(_databasePath, _rollbackCommands, _operationId);
+
+            this.SqLiteCommit();
+            this.sqLiteJournal.Write(this.databasePath, this.rollbackCommands, this.operationId);
+        }
+
+        private void SqLiteCommit()
+        {
+            try
+            {
+                if (this.DbConnection != null)
+                {
+                    this.dbTransaction.Commit();
+                }
+            }
+            catch (SQLiteException exception)
+            {
+                if (this.dbTransaction != null)
+                {
+                    try
+                    {
+                        this.dbTransaction.Rollback();
+                        throw exception;
+                    }
+                    catch (SQLiteException secondException)
+                    {
+                        throw secondException;
+                    }
+                    finally
+                    {
+                        this.dbTransaction.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                this.DbCommand.Dispose();
+
+                this.dbTransaction.Dispose();
+
+                if (this.DbConnection != null)
+                {
+                    try
+                    {
+                        this.DbConnection.Close();
+                    }
+                    catch (SQLiteException exception)
+                    {
+                        throw exception;
+                    }
+                    finally
+                    {
+                        this.DbConnection.Dispose();
+                        this.DbConnection = null;
+                    }
+                }
+            }
         }
     }
 }

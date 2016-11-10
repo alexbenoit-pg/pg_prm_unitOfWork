@@ -50,7 +50,9 @@
     <Compile Include="FileTransactionUnit\FileTransactionUnit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQLiteTransactionUnit\SQLiteJournal.cs" />
-    <Compile Include="SQLiteTransactionUnit\SQLiteTransaction.cs" />
+    <Compile Include="SQLiteTransactionUnit\SQLiteTransaction.cs">
+      <ExcludeFromStyleCop>False</ExcludeFromStyleCop>
+    </Compile>
     <Compile Include="EmitationTransactionUnits\TransactionBadCommitUnit.cs" />
     <Compile Include="EmitationTransactionUnits\TransactionSimulationUnit.cs" />
   </ItemGroup>
