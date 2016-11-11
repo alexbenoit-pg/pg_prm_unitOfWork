@@ -2,19 +2,23 @@
 {
     using System;
     using System.IO;
+    using System.Runtime.Serialization;
     using ChinhDo.Transactions.Interfaces;
 
     /// <summary>
     /// Class that contains common code for those rollbackable file operations which need
     /// to backup a single file and restore it when Rollback() is called.
     /// </summary>
-    [Serializable]
+    [DataContract]
     abstract class SingleFileOperation : IRollbackableOperation, IDisposable
     {
+        [DataMember]
         public readonly string path;
+        [DataMember]
         public string backupPath;
 
         // tracks whether Dispose has been called
+        [DataMember]
         private bool disposed;
 
         public SingleFileOperation(string path)

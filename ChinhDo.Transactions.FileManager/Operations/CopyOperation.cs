@@ -2,15 +2,17 @@
 {
     using System;
     using System.IO;
-    using ChinhDo.Transactions.Heplers;
+    using System.Runtime.Serialization;
 
     /// <summary>
     /// Rollbackable operation which copies a file.
     /// </summary>
-    [Serializable]
+    [DataContract]
     sealed class CopyOperation : SingleFileOperation
     {
+        [DataMember]
         private readonly string sourceFileName;
+        [DataMember]
         private readonly bool overwrite;
 
         /// <summary>

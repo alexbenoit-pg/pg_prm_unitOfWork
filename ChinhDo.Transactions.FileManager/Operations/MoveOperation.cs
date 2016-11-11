@@ -2,15 +2,18 @@
 {
     using System;
     using System.IO;
+    using System.Runtime.Serialization;
     using ChinhDo.Transactions.Interfaces;
 
     /// <summary>
     /// Rollbackable operation which moves a file to a new location.
     /// </summary>
-    [Serializable]
+    [DataContract]
     sealed class MoveOperation : IRollbackableOperation
     {
+        [DataMember]
         private readonly string sourceFileName;
+        [DataMember]
         private readonly string destFileName;
 
         /// <summary>

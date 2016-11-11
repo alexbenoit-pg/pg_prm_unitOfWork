@@ -44,5 +44,11 @@ namespace Core.Helpers
         public static string GetJournalName(string fullPath) {
             return Path.GetFileNameWithoutExtension(fullPath);
         }
+
+
+        public static string GetJournalPath(string name)
+        {
+            return Path.Combine(JournalsFolder, $"{name}.txt");
+        }
     }
 }

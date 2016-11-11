@@ -28,37 +28,38 @@ namespace Core
     using System.Runtime.Serialization;
 
     using Core.Interfaces;
-    using Core.Journals;
+    using Core.Helpers;
     using Newtonsoft.Json;
     using System.IO;
     public sealed class BussinesTransaction : IDisposable
     {
-        internal IJournal Journal { get; private set; }
-        public List<ITransactionUnit> Operations { get; private set; }
-        public List<ITransactionUnit> CommitedOperations { get; private set; }
+        private List<ITransactionUnit> operations;
+        private List<ITransactionUnit> commitedOperations;
+        private string journalPath;
+        JsonSerializerSettings settings;
 
-        internal BussinesTransaction(IJournal journal)               
+        internal BussinesTransaction()               
         {
-            Journal = journal;
-            Operations = new List<ITransactionUnit>();
-            CommitedOperations = new List<ITransactionUnit>();
+            this.operations = new List<ITransactionUnit>();
+            this.commitedOperations = new List<ITransactionUnit>();
+            this.journalPath = FolderHelper.GetJournalPath(Guid.NewGuid().ToString());
+            this.settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            };
         }
 
         public void RegisterOperation(ITransactionUnit operation)
         {
-            Operations.Add(operation);
+            this.operations.Add(operation);
         }
 
         public void Commit()
         {
             try
             {
+                File.Create(journalPath).Close();
                 CommitEachOperation();
-            }
-            catch (SerializationException e)
-            {
-                Rollback();
-                throw e;
             }
             catch (Exception e)
             {
@@ -68,35 +69,35 @@ namespace Core
 
         public void Rollback()
         {
-            var json = File.ReadAllText(@"C:\TestWoU\test.txt");
-            Operations = Journal.GetOperationsFromJournal();
+            var json = File.ReadAllText(journalPath);
+            this.operations = JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, settings);
+            this.commitedOperations = JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, settings);
 
-            foreach (var operation in Operations)
+            foreach (var operation in this.operations)
             {
                 operation.Rollback();
-                Journal.Remove(operation);
+                this.commitedOperations.Remove(operation);
+                string json2 = JsonConvert.SerializeObject(this.commitedOperations, Formatting.Indented, settings);
+                File.WriteAllText(journalPath, json2);
             }
         }
 
         private void CommitEachOperation()
         {
-            foreach (var operation in Operations)
+            foreach (var operation in this.operations)
             {
-                Journal.Write(operation);
                 try
                 {
                     operation.Commit();
-                    CommitedOperations.Add(operation);
-                    string json = JsonConvert.SerializeObject(CommitedOperations, Formatting.Indented);
-                    File.Create(@"C:\TestWoU\test.txt").Close();
-                    File.WriteAllText(@"C:\TestWoU\test.txt", json);
+                    this.commitedOperations.Add(operation);
+                    string json = JsonConvert.SerializeObject(this.commitedOperations, Formatting.Indented, settings);
+                    File.WriteAllText(journalPath, json);
                 }
                 catch (Exception e)
                 {
-                    string json = JsonConvert.SerializeObject(CommitedOperations, Formatting.Indented);
-                    File.Create(@"C:\TestWoU\test.txt").Close();
-                    File.WriteAllText(@"C:\TestWoU\test.txt", json);
-                    CommitedOperations.Remove(operation);
+                    this.commitedOperations.Remove(operation);
+                    string json = JsonConvert.SerializeObject(this.commitedOperations, Formatting.Indented, settings);
+                    File.WriteAllText(journalPath, json);
                     throw e;
                 }
             }
@@ -104,9 +105,11 @@ namespace Core
 
         public void Dispose()
         {
-            Operations.Clear();
-            Operations = null;
-            Journal.Dispose();
+            File.Delete(journalPath);
+            this.operations.Clear();
+            this.operations = null;
+            this.commitedOperations.Clear();
+            this.commitedOperations = null;
         }
     }
 }

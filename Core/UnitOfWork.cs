@@ -21,8 +21,6 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using Core.Journals;
-
 namespace Core
 {
     using System.IO;
@@ -30,27 +28,24 @@ namespace Core
 
     public sealed class UnitOfWork
     {
-        private JournalTypes journalType;
 
-        public UnitOfWork():this(true, JournalTypes.JSON)
+        public UnitOfWork():this(true)
         {
         }
-
-        public BussinesTransaction BeginTransaction()
+        
+        public UnitOfWork(bool checkAfterCrush)
         {
-            return new BussinesTransaction(JournalsFactory.GetJournal(this.journalType));
-        }
-
-
-        public UnitOfWork(bool checkAfterCrush, JournalTypes journalType)
-        {
-            this.journalType = journalType;
             FolderHelper.CreateJournalsFolder();
             if (checkAfterCrush)
                 CheckBadTransaction();
         }
 
-        public void CheckBadTransaction()
+        public BussinesTransaction BeginTransaction()
+        {
+            return new BussinesTransaction();
+        }
+
+        private void CheckBadTransaction()
         {
             var journals = Directory.GetFiles(FolderHelper.JournalsFolder);
             if (journals.Length > 0)
@@ -61,11 +56,7 @@ namespace Core
         {
             foreach (var journalPath in journals)
             {
-                var journal = JournalsFactory.GetJournal(
-                                    this.journalType,
-                                    FolderHelper.GetJournalName(journalPath));
-
-                using (new BadBussinesTransaction(journal));
+                using (new BadBussinesTransaction(journalPath));
             }
         }
     }

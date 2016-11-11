@@ -1,15 +1,18 @@
-﻿using System;
-using System.IO;
-namespace ChinhDo.Transactions.Operations
+﻿namespace ChinhDo.Transactions.Operations
 {
+    using System;
+    using System.IO;
+    using System.Runtime.Serialization;
+
     using ChinhDo.Transactions.Interfaces;
 
     /// <summary>
     /// Rollbackable operation which copies a file.
     /// </summary>
-    [Serializable]
+    [DataContract]
     sealed class CreateFileOperation : IRollbackableOperation
     {
+        [DataMember]
         public readonly string path;
 
         public CreateFileOperation(string pathToFile)

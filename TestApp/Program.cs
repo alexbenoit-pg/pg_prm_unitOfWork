@@ -114,28 +114,28 @@
             //#endregion
 
 
-            #region SQL_unit_write
-            var su10 = new SqLiteTransaction(Root + "\\testdb.db");
-            su10.AddSqliteCommand(
-                "INSERT INTO test(name) VALUES ('Fedor');",
-                "DELETE FROM test WHERE ID = 1;");
-            var su11 = new SqLiteTransaction(Root + "\\testdb.db");
-            su11.AddSqliteCommand(
-                "INSERT INTO test(name) VALUES ('Dima');",
-                "DELETE FROM test WHERE ID = 2;");
-            var su12 = new SqLiteTransaction(Root + "\\testdb.db");
-            su12.AddSqliteCommand(
-                "INSERT INTO test(name) VALUES ('Igor');",
-                "DELETE FROM test WHERE ID = 3;");
+            //#region SQL_unit_write
+            //var su10 = new SqLiteTransaction(Root + "\\testdb.db");
+            //su10.AddSqliteCommand(
+            //    "INSERT INTO test(name) VALUES ('Fedor');",
+            //    "DELETE FROM test WHERE ID = 1;");
+            //var su11 = new SqLiteTransaction(Root + "\\testdb.db");
+            //su11.AddSqliteCommand(
+            //    "INSERT INTO test(name) VALUES ('Dima');",
+            //    "DELETE FROM test WHERE ID = 2;");
+            //var su12 = new SqLiteTransaction(Root + "\\testdb.db");
+            //su12.AddSqliteCommand(
+            //    "INSERT INTO test(name) VALUES ('Igor');",
+            //    "DELETE FROM test WHERE ID = 3;");
 
-            using (var bo = unit.BeginTransaction())
-            {
-                bo.RegisterOperation(su10);
-                bo.RegisterOperation(su11);
-                bo.RegisterOperation(su12);
-                bo.Commit();
-            }
-            #endregion
+            //using (var bo = unit.BeginTransaction())
+            //{
+            //    bo.RegisterOperation(su10);
+            //    bo.RegisterOperation(su11);
+            //    bo.RegisterOperation(su12);
+            //    bo.Commit();
+            //}
+            //#endregion
 
 
             //#region SQL_unit_set
@@ -231,6 +231,28 @@
             //    bo.Commit();
             //}
             //#endregion
+
+            #region File_unit_Full
+            var fu110 = new FileTransactionUnit();
+            fu110.WriteAllText(Root + "12\\1.txt", "azaaza");
+            var fu111 = new FileTransactionUnit();
+            fu111.AppendAllText(Root + "12\\2.txt", "azaaza");
+            var fu112 = new FileTransactionUnit();
+            fu112.Copy(Root + "12\\2.txt", Root + "12\\2_myCopy.txt", false);
+            var fu113 = new FileTransactionUnit();
+            fu113.Delete(Root + "12\\3.txt");
+            fu113.Move(Root + "12\\4.txt", Root + "12\\target\\4_move.txt");
+            fu113.CreateFile(Root + "12\\CREATED.txt");
+
+            using (var bo = unit.BeginTransaction())
+            {
+                bo.RegisterOperation(fu110);
+                bo.RegisterOperation(fu111);
+                bo.RegisterOperation(fu112);
+                bo.RegisterOperation(fu113);
+                bo.Commit();
+            }
+            #endregion
         }
     }
 }

@@ -27,8 +27,12 @@ namespace Units
     using System.Collections.Generic;
     using System.Transactions;
 
+
     using ChinhDo.Transactions;
     using Core.Interfaces;
+    using Core.Helpers;
+
+    using Newtonsoft.Json;
     using System.Runtime.Serialization;
 
     [DataContract]

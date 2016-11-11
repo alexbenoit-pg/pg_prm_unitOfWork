@@ -2,10 +2,7 @@ namespace ChinhDo.Transactions
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Runtime.Serialization.Formatters.Binary;
     using System.Transactions;
-    using ChinhDo.Transactions.Heplers;
     using ChinhDo.Transactions.Interfaces;
     using Newtonsoft.Json;
 
@@ -15,16 +12,25 @@ namespace ChinhDo.Transactions
     {
         private List<IRollbackableOperation> _journal = new List<IRollbackableOperation>();
         private string jsonJournal;
+        JsonSerializerSettings settings;
 
         /// <summary>Initializes a new instance of the <see cref="TxEnlistment"/> class.</summary>
         /// <param name="tx">The Transaction.</param>
         public TxEnlistment(Transaction tx)
         {
             tx.EnlistVolatile(this, EnlistmentOptions.None);
+            this.settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            };
         }
 
         public TxEnlistment()
         {
+            this.settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            };
         }
 
         /// <summary>
@@ -36,7 +42,7 @@ namespace ChinhDo.Transactions
         {
             operation.Execute();
             _journal.Add(operation);
-            jsonJournal = JsonConvert.SerializeObject(_journal, Formatting.Indented);
+            jsonJournal = JsonConvert.SerializeObject(_journal, Formatting.Indented, settings);
         }
 
         public string GetJsonJournal() {
@@ -84,7 +90,7 @@ namespace ChinhDo.Transactions
 
         public void RollbackAfterCrash(string jsonJournal)
         {
-            _journal = (List<IRollbackableOperation>) JsonConvert.DeserializeObject(jsonJournal);
+            _journal = (List<IRollbackableOperation>) JsonConvert.DeserializeObject(jsonJournal, settings);
 
             try
             {

@@ -25,36 +25,54 @@ namespace Core
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
 
     using Core.Interfaces;
-    using Core.Journals;
 
-    public sealed class BadBussinesTransaction : IDisposable
+    using Newtonsoft.Json;
+
+    internal sealed class BadBussinesTransaction : IDisposable
     {
-        internal IJournal Journal { get; private set; }
-        public List<ITransactionUnit> Operations { get; private set; }
-        
-        internal BadBussinesTransaction(IJournal journal)
+        private List<ITransactionUnit> operations;
+        private List<ITransactionUnit> commitedOperations;
+        private string journalPath;
+        JsonSerializerSettings settings;
+
+        internal BadBussinesTransaction(string journalPath)
         {
-            Journal = journal;
-            Operations = Journal.GetOperationsFromJournal();
+            this.journalPath = journalPath;
+
+            this.settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            };
+
+            string json = File.ReadAllText(journalPath);
+            this.operations = JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, settings);
+            this.commitedOperations = JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, settings);
+
             RollbackAfterCrush();
         }
         
         private void RollbackAfterCrush()
         {
-            foreach (var operation in Operations)
+            foreach (var operation in this.operations)
             {
-                operation.Rollback(operation.GetOperationId());
-                Journal.Remove(operation);
+                operation.Rollback();
+
+                this.commitedOperations.Remove(operation);
+                string json = JsonConvert.SerializeObject(this.commitedOperations, Formatting.Indented, settings);
+                File.WriteAllText(journalPath, json);
             }
         }
 
         public void Dispose()
         {
-            Operations.Clear();
-            Operations = null;
-            Journal.Dispose();
+            File.Delete(journalPath);
+            operations.Clear();
+            operations = null;
+            this.commitedOperations.Clear();
+            this.commitedOperations = null;
         }
     }
 }

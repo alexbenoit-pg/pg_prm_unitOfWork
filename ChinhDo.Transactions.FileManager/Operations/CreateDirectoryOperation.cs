@@ -2,15 +2,18 @@
 {
     using System;
     using System.IO;
+    using System.Runtime.Serialization;
     using ChinhDo.Transactions.Interfaces;
 
     /// <summary>
     /// Creates all directories in the specified path.
     /// </summary>
-    [Serializable]
+    [DataContract]
     sealed class CreateDirectoryOperation : IRollbackableOperation
     {
+        [DataMember]
         private readonly string path;
+        [DataMember]
         private string backupPath;
 
         /// <summary>

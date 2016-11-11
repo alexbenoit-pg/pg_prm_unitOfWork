@@ -2,12 +2,13 @@
 {
     using System;
     using System.IO;
+    using System.Runtime.Serialization;
     using ChinhDo.Transactions.Heplers;
 
     /// <summary>
     /// Rollbackable operation which deletes a file. An exception is not thrown if the file does not exist.
     /// </summary>
-    [Serializable]
+    [DataContract]
     sealed class DeleteFileOperation : SingleFileOperation
     {
         /// <summary>

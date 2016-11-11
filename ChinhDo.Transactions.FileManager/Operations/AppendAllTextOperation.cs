@@ -2,14 +2,15 @@
 {
     using System;
     using System.IO;
-    using ChinhDo.Transactions.Heplers;
+    using System.Runtime.Serialization;
 
     /// <summary>
     /// Rollbackable operation which appends a string to an existing file, or creates the file if it doesn't exist.
     /// </summary>
-    [Serializable]
+    [DataContract]
     sealed class AppendAllTextOperation : SingleFileOperation
     {
+        [DataMember]
         private readonly string contents;
 
         /// <summary>

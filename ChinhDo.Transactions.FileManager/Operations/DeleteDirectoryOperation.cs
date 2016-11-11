@@ -2,18 +2,21 @@
 {
     using System;
     using System.IO;
-    using ChinhDo.Transactions.Heplers;
+    using System.Runtime.Serialization;
     using ChinhDo.Transactions.Interfaces;
 
     /// <summary>
     /// Deletes the specified directory and all its contents.
     /// </summary>
-    [Serializable]
+    [DataContract]
     sealed class DeleteDirectoryOperation : IRollbackableOperation, IDisposable
     {
+        [DataMember]
         private readonly string path;
+        [DataMember]
         private string backupPath;
         // tracks whether Dispose has been called
+        [DataMember]
         private bool disposed;
 
         /// <summary>

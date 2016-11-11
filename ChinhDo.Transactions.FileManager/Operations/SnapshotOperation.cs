@@ -1,11 +1,13 @@
 ﻿namespace ChinhDo.Transactions.Operations
 {
     using System.IO;
+    using System.Runtime.Serialization;
     using ChinhDo.Transactions.Heplers;
 
     /// <summary>
     /// Rollbackable operation which takes a snapshot of a file. The snapshot is used to rollback the file later if needed.
     /// </summary>
+    [DataContract]
     sealed class SnapshotOperation: SingleFileOperation
     {
         /// <summary>

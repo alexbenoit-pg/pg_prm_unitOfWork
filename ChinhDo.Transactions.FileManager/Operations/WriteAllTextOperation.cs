@@ -2,14 +2,16 @@
 {
     using System;
     using System.IO;
+    using System.Runtime.Serialization;
     using ChinhDo.Transactions.Heplers;
 
     /// <summary>
     /// Creates a file, and writes the specified contents to it.
     /// </summary>
-    [Serializable]
+    [DataContract]
     sealed class WriteAllTextOperation : SingleFileOperation
     {
+        [DataMember]
         private readonly string contents;
 
         /// <summary>

@@ -58,7 +58,7 @@ namespace Core.Tests
             var bussinesTransaction = unitOfWork.BeginTransaction();
 
             // Assert
-            Assert.IsNotNull(bussinesTransaction.Operations);
+            Assert.IsNotNull(bussinesTransaction.operations);
         }
         
         /// <summary>
@@ -76,7 +76,7 @@ namespace Core.Tests
             bussinesTransaction.RegisterOperation(operation);
 
             // Assert
-            Assert.IsTrue(bussinesTransaction.Operations.Count > 0);
+            Assert.IsTrue(bussinesTransaction.operations.Count > 0);
         }
 
         /// <summary>
@@ -92,13 +92,13 @@ namespace Core.Tests
             using (bussinesTransaction = unitOfWork.BeginTransaction())
             {
                 // Act
-                bussinesTransaction.Operations.Add(new MockTransactionUnit());
-                bussinesTransaction.Operations.Add(new MockTransactionUnit());
+                bussinesTransaction.operations.Add(new MockTransactionUnit());
+                bussinesTransaction.operations.Add(new MockTransactionUnit());
 
                 bussinesTransaction.Commit();
 
                 // Assert
-                Assert.IsTrue(bussinesTransaction.Operations.All(op =>
+                Assert.IsTrue(bussinesTransaction.operations.All(op =>
                 {
                     var fakeUnit = (MockTransactionUnit)op;
                     return fakeUnit.IsCommit;
@@ -119,14 +119,14 @@ namespace Core.Tests
             using (bussinesTransaction = unitOfWork.BeginTransaction())
             {
                 // Act
-                bussinesTransaction.Operations.Add(new MockTransactionUnit());
-                bussinesTransaction.Operations.Add(new MockBadTransactionUnit());
-                bussinesTransaction.Operations.Add(new MockTransactionUnit());
+                bussinesTransaction.operations.Add(new MockTransactionUnit());
+                bussinesTransaction.operations.Add(new MockBadTransactionUnit());
+                bussinesTransaction.operations.Add(new MockTransactionUnit());
 
                 bussinesTransaction.Commit();
                 
                 // Assert
-                Assert.IsTrue(bussinesTransaction.Operations.All(op =>
+                Assert.IsTrue(bussinesTransaction.operations.All(op =>
                 {
                     var fakeUnit = (IFakeTransactionUnit)op;
                     return !fakeUnit.IsCommit &&
@@ -148,13 +148,13 @@ namespace Core.Tests
             using (bussinesTransaction = unitOfWork.BeginTransaction())
             {
                 // Act
-                bussinesTransaction.Operations.Add(new MockTransactionUnit());
-                bussinesTransaction.Operations.Add(new MockTransactionUnit());
+                bussinesTransaction.operations.Add(new MockTransactionUnit());
+                bussinesTransaction.operations.Add(new MockTransactionUnit());
 
                 bussinesTransaction.Rollback();
 
                 // Assert
-                Assert.IsTrue(bussinesTransaction.Operations.All(op =>
+                Assert.IsTrue(bussinesTransaction.operations.All(op =>
                 {
                     var fakeUnit = (IFakeTransactionUnit)op;
                     return fakeUnit.IsRollback;
