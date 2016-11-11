@@ -29,26 +29,20 @@ namespace Units
 
     using ChinhDo.Transactions;
     using Core.Interfaces;
-    using System.Runtime.Serialization;
 
-    [DataContract]
+    [Serializable]
     public class FileTransactionUnit : ITransactionUnit
     {
-        private TxFileManager target;
-        private List<FileOperations> operations;
-        private Dictionary<int, object[]> parametersForOperations;
-
-        [DataMember]
-        private string jsonJournal;
-
         public FileTransactionUnit()
         {
             this.target = new TxFileManager();
+            ID = target.GetOperationID();
             this.operations = new List<FileOperations>();
             this.parametersForOperations = new Dictionary<int, object[]>();
-            this.jsonJournal = "";
         }
-        
+
+        #region ITransactionUnit implimentation
+
         public void Commit()
         {
             using (TransactionScope scope = new TransactionScope())
@@ -57,7 +51,6 @@ namespace Units
                 {
                     ExecuteEachOperation();
                     scope.Complete();
-                    this.jsonJournal = this.target.GetJsonJournal();
                 }
                 catch (Exception e)
                 {
@@ -71,21 +64,30 @@ namespace Units
         {
 
         }
-        
+
+        public string GetOperationId()
+        {
+            return this.target.GetOperationID();
+        }
+
         public void Rollback()
         {
-            target.RollbackAfterCrash(this.jsonJournal);
+            target.OperationId = ID;
+            this.target.RollbackAfterCrash(target.GetOperationID());
         }
-        
-        private void ExecuteEachOperation()
+
+        public void Rollback(string operationId)
         {
-            for (int i = 0; i < operations.Count; i++)
-            {
-                this.target.UniverseRun(
-                    this.operations[i],
-                    this.parametersForOperations[i]);
-            }
+            this.target.RollbackAfterCrash(operationId);
         }
+
+        public void SetOperationId(string operationId)
+        {
+            ID = operationId;
+            target.OperationId = operationId;
+        }
+
+        #endregion ITransactionUnit implimentation
 
         #region File operations
 
@@ -144,5 +146,21 @@ namespace Units
         }
 
         #endregion
+
+        public string ID { get; set; }
+
+        private void ExecuteEachOperation()
+        {
+            for (int i = 0; i < operations.Count; i++)
+            {
+                this.target.UniverseRun(
+                    this.operations[i],
+                    this.parametersForOperations[i]);
+            }
+        }
+
+        private TxFileManager target;
+        private List<FileOperations> operations;
+        private Dictionary<int, object[]> parametersForOperations;
     }
 }
