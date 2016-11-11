@@ -1,89 +1,94 @@
-﻿using System;
-using System.Data.SQLite;
-using System.IO;
-using Core;
-using NUnit.Framework;
-using Units;
-using SQLiteTransaction = System.Data.SQLite.SQLiteTransaction;
-
-
-namespace SQLiteTransaction.IntegrationTest
+﻿namespace SQLiteTransaction.IntegrationTest
 {
+    using System;
+    using System.Data.SQLite;
+    using System.IO;
+    using Core;
+    using NUnit.Framework;
+    using Units;
+    using SQLiteTransaction = System.Data.SQLite.SQLiteTransaction;
+
     [TestFixture]
     public class SqLiteTransactionIntegrationTest
     {
-        private readonly SqLiteTransaction _sqLiteTransaction = new SqLiteTransaction();
+        private readonly SqLiteTransaction sqLiteTransaction = new SqLiteTransaction();
         private string pathToDataBase = Path.GetTempPath() + "test.db";
-        private string toDataBase = Path.GetTempPath() + "Work_a_few_SqLiteTransactions.db";
+        private string toDataBase = Path.GetTempPath() + "Work_a_fewsqLiteTransactions.db";
 
         [OneTimeSetUp]
         public void TestFixtureSetup()
         {
-            if (File.Exists(pathToDataBase))
-                File.Delete(pathToDataBase);
+            if (File.Exists(this.pathToDataBase))
+            {
+                File.Delete(this.pathToDataBase);
+            }
 
-            if (File.Exists(toDataBase))
-                File.Delete(toDataBase);
+            if (File.Exists(this.toDataBase))
+            {
+                File.Delete(this.toDataBase);
+            }
 
-            CreatDataBase(pathToDataBase);
-            CreatDataBase(toDataBase);
+            this.CreatDataBase(this.pathToDataBase);
+            this.CreatDataBase(this.toDataBase);
         }
 
         [OneTimeTearDown]
         public void TestFixtureTearDown()
         {
-            if (File.Exists(pathToDataBase))
+            if (File.Exists(this.pathToDataBase))
             {
-                _sqLiteTransaction.Dispose();
-                File.Delete(pathToDataBase);
+                this.sqLiteTransaction.Dispose();
+                File.Delete(this.pathToDataBase);
             }
 
-            if (File.Exists(toDataBase))
-                File.Delete(toDataBase);
+            if (File.Exists(this.toDataBase))
+            {
+                File.Delete(this.toDataBase);
+            }
         }
 
         [Test]
-        public void ConnectDatabase_ConnectToTheWrongName_RetrunFalse()
+        public void ConnectDatabase_ConnectToTheWrongName_Throw()
         {
-            var exception = Assert.Catch<Exception>(() => _sqLiteTransaction.ConnectDatabase(""));
+            var exception = Assert.Catch<Exception>(() => this.sqLiteTransaction.ConnectDatabase(string.Empty));
             StringAssert.Contains("No such database file.", exception.Message);
         }
 
         [Test]
         public void ConnectDatabase_ConnectToTheDataBase_RetrunTrue()
         {
-            bool result = _sqLiteTransaction.ConnectDatabase(pathToDataBase);
+            bool result = this.sqLiteTransaction.ConnectDatabase(this.pathToDataBase);
             Assert.IsTrue(result);
-            Assert.AreNotEqual(null, _sqLiteTransaction.DbConnection);
-            Assert.AreNotEqual(null, _sqLiteTransaction.DbCommand);
-            _sqLiteTransaction.Dispose();
+            Assert.AreNotEqual(null, this.sqLiteTransaction.DbConnection);
+            Assert.AreNotEqual(null, this.sqLiteTransaction.DbCommand);
+            this.sqLiteTransaction.Dispose();
         }
 
         [Test]
         public void AddSqliteCommand_AddComandToDataBase_ReturnTrue()
         {
-            _sqLiteTransaction.ConnectDatabase(pathToDataBase);
-            bool result = _sqLiteTransaction.AddSqliteCommand(
-                 "INSERT INTO person(first_name, last_name, sex, birth_date) VALUES ('AddCommand', 'TrueDataBase', 0, strftime('%s', '1993-10-10'));","");
+            this.sqLiteTransaction.ConnectDatabase(this.pathToDataBase);
+            bool result = this.sqLiteTransaction.AddSqliteCommand(
+                 "INSERT INTO person(first_name, last_name, sex, birth_date) VALUES ('AddCommand', 'TrueDataBase', 0, strftime('%s', '1993-10-10'));", string.Empty);
 
             Assert.IsTrue(result);
-            _sqLiteTransaction.Dispose();
+            this.sqLiteTransaction.Dispose();
         }
 
         [Test]
         public void Commit_CheckWriteData_ReturnTrue()
         {
-            string firstname = "";
-            string lastname = "";
+            string firstname = string.Empty;
+            string lastname = string.Empty;
 
-            _sqLiteTransaction.ConnectDatabase(pathToDataBase);
-            bool rezult = _sqLiteTransaction.AddSqliteCommand(
+            this.sqLiteTransaction.ConnectDatabase(this.pathToDataBase);
+            bool rezult = this.sqLiteTransaction.AddSqliteCommand(
                  "INSERT INTO person(first_name, last_name) VALUES ('Commit', 'Check');",
                  "DELETE FROM person WHERE first_name = 'Commit'");
-            _sqLiteTransaction.Commit();
+            this.sqLiteTransaction.Commit();
             Assert.IsTrue(rezult);
 
-            using (SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0}", pathToDataBase)))
+            using (SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0}", this.pathToDataBase)))
             {
                 connection.Open();
                 using (SQLiteCommand command = new SQLiteCommand("SELECT * FROM person  WHERE first_name = 'Commit'", connection))
@@ -97,6 +102,7 @@ namespace SQLiteTransaction.IntegrationTest
                         }
                     }
                 }
+
                 connection.Close();
             }
 
@@ -106,17 +112,16 @@ namespace SQLiteTransaction.IntegrationTest
         }
 
         [Test]
-        public void Commit_Work_a_few_SqLiteTransactions_ReturnTrue()
+        public void Commit_Work_a_fewsqLiteTransactions_ReturnTrue()
         {
-            string firstname = "";
-            string lastname = "";
+            string firstname = string.Empty;
+            string lastname = string.Empty;
+            SqLiteTransaction sqLiteTransactionGood = new SqLiteTransaction(this.toDataBase);
+            sqLiteTransactionGood.AddSqliteCommand("INSERT INTO person(id, first_name, last_name) VALUES (1, 'Commit1', 'Check1');", "DELETE FROM person WHERE first_name = 'Commit1'");
+            sqLiteTransactionGood.AddSqliteCommand("INSERT INTO person(first_name, last_name) VALUES ('Commit2', 'Check2');", string.Empty);
 
-            SqLiteTransaction sqLiteTransactionGood = new SqLiteTransaction(toDataBase);
-            sqLiteTransactionGood.AddSqliteCommand("INSERT INTO person(id, first_name, last_name) VALUES (1, 'Commit1', 'Check1');","DELETE FROM person WHERE first_name = 'Commit1'");
-            sqLiteTransactionGood.AddSqliteCommand("INSERT INTO person(first_name, last_name) VALUES ('Commit2', 'Check2');","");
-
-            SqLiteTransaction sqLiteTransactiondWithError = new SqLiteTransaction(toDataBase);
-            sqLiteTransactiondWithError.AddSqliteCommand("INSERT INTO person(id, first_name, last_name) VALUES (1, 'Commit3', 'Check3');","");
+            SqLiteTransaction sqLiteTransactiondWithError = new SqLiteTransaction(this.toDataBase);
+            sqLiteTransactiondWithError.AddSqliteCommand("INSERT INTO person(id, first_name, last_name) VALUES (1, 'Commit3', 'Check3');", string.Empty);
 
             UnitOfWork unit = new UnitOfWork();
             using (var bussinesTransaction = unit.BeginTransaction())
@@ -126,7 +131,7 @@ namespace SQLiteTransaction.IntegrationTest
                 bussinesTransaction.Commit();
             }
 
-            using (SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0}", toDataBase)))
+            using (SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0}", this.toDataBase)))
             {
                 connection.Open();
                 using (SQLiteCommand command = new SQLiteCommand("SELECT * FROM person  WHERE first_name = 'Commit2'", connection))
