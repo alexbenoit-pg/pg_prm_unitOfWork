@@ -30,15 +30,20 @@ namespace Core
     using Core.Interfaces;
     using Core.Journals;
 
+    using Newtonsoft.Json;
+    using System.IO;
+
     public sealed class BussinesTransaction : IDisposable
     {
         internal IJournal Journal { get; private set; }
         public List<ITransactionUnit> Operations { get; private set; }
+        public List<ITransactionUnit> CommitedOperations { get; private set; }
 
         internal BussinesTransaction(IJournal journal)               
         {
             Journal = journal;
             Operations = new List<ITransactionUnit>();
+            CommitedOperations = new List<ITransactionUnit>();
         }
 
         public void RegisterOperation(ITransactionUnit operation)
@@ -82,6 +87,9 @@ namespace Core
                 try
                 {
                     operation.Commit();
+                    CommitedOperations.Add(operation);
+                    string json = JsonConvert.SerializeObject(CommitedOperations, Formatting.Indented);
+                    File.WriteAllText(@"C:\TestUoW\test.txt", json);
                 }
                 catch (Exception e)
                 {

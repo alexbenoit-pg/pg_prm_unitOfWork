@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SQLite;
 using System.IO;
-using System.Runtime.InteropServices;
 using Core.Interfaces;
+using System.Runtime.Serialization;
 
 namespace Units
 {
     public class SqLiteTransaction : ITransactionUnit
     {
+        private readonly List<string> _rollbackCommands = new List<string>();
+
+
+        private readonly List<string> _commitCommands = new List<string>();
         public SQLiteConnection DbConnection = null;
         private SQLiteTransaction _dbTransaction;
         public SQLiteCommand DbCommand = null;
         private readonly SqLiteJournal _sqLiteJournal = new SqLiteJournal();
-        private readonly List<string> _rollbackCommands = new List<string>();
-        private readonly List<string> _commitCommands = new List<string>();
         private string _operationId;
         private string _databasePath;
 

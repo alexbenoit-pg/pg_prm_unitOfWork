@@ -6,6 +6,7 @@ namespace TestApp
     using Units;
     using Core.Tests.Fakes;
     using System.IO;
+    using System;
 
     class Program
     {
@@ -85,25 +86,25 @@ namespace TestApp
             //#endregion
 
 
-            #region File_unit_Full
-            var fu8 = new FileTransactionUnit();
-            fu8.WriteAllText(Root + "8\\1.txt", "azaaza");
-            fu8.AppendAllText(Root + "8\\2.txt", "azaaza");
-            fu8.Copy(Root + "8\\2.txt", Root + "8\\2_myCopy.txt", false);
-            fu8.Delete(Root + "8\\3.txt");
-            fu8.Move(Root + "8\\4.txt", Root + "8\\target\\4_move.txt");
-            fu8.CreateFile(Root + "8\\CREATED.txt");
+            //#region File_unit_Full
+            //var fu8 = new FileTransactionUnit();
+            //fu8.WriteAllText(Root + "8\\1.txt", "azaaza");
+            //fu8.AppendAllText(Root + "8\\2.txt", "azaaza");
+            //fu8.Copy(Root + "8\\2.txt", Root + "8\\2_myCopy.txt", false);
+            //fu8.Delete(Root + "8\\3.txt");
+            //fu8.Move(Root + "8\\4.txt", Root + "8\\target\\4_move.txt");
+            //fu8.CreateFile(Root + "8\\CREATED.txt");
 
-            var fu8_1 = new FileTransactionUnit();
-            fu8_1.Copy(Root + "\\8\\nine.txt", Root + "\\8\\12312312312_myCopy.txt", true);
+            //var fu8_1 = new FileTransactionUnit();
+            //fu8_1.Copy(Root + "\\8\\nine.txt", Root + "\\8\\12312312312_myCopy.txt", true);
 
-            using (var bo = unit.BeginTransaction())
-            {
-                bo.RegisterOperation(fu8);
-                bo.RegisterOperation(fu8_1);
-                bo.Commit();
-            }
-            #endregion
+            //using (var bo = unit.BeginTransaction())
+            //{
+            //    bo.RegisterOperation(fu8);
+            //    bo.RegisterOperation(fu8_1);
+            //    bo.Commit();
+            //}
+            //#endregion
 
 
             //#region File_unit_negative
@@ -241,6 +242,30 @@ namespace TestApp
             //    bo.Commit();
             //}
             //#endregion
+
+            #region SQL_unit_write
+            var su10 = new SqLiteTransaction(Root + "\\testdb.db");
+            su10.AddSqliteCommand(
+                "INSERT INTO test(name) VALUES ('Fedor');",
+                "DELETE FROM test WHERE ID = 1;");
+            var su11 = new SqLiteTransaction(Root + "\\testdb.db");
+            su11.AddSqliteCommand(
+                "INSERT INTO test(name) VALUES ('Dima');",
+                "DELETE FROM test WHERE ID = 2;");
+            var su12 = new SqLiteTransaction(Root + "\\testdb.db");
+            su12.AddSqliteCommand(
+                "INSERT INTO test(name) VALUES ('Igor');",
+                "DELETE FROM test WHERE ID = 3;");
+
+            using (var bo = unit.BeginTransaction())
+            {
+                bo.RegisterOperation(su10);
+                bo.RegisterOperation(su11);
+                bo.RegisterOperation(su12);
+                bo.Commit();
+            }
+            #endregion
+
         }
     }
 }
