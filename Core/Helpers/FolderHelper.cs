@@ -23,6 +23,8 @@
 
 namespace Core.Helpers
 {
+    using System;
+    using System.Configuration;
     using System.IO;
 
     internal static class FolderHelper
@@ -32,7 +34,12 @@ namespace Core.Helpers
 
         internal static string JournalsFolder
         {
-            get { return $"{UserTempFolder}\\{FolderName}"; }
+            get
+            {
+                return Convert.ToBoolean(ConfigurationSettings.AppSettings["UseDefaultJournalFolder"]) 
+                    ? $"{UserTempFolder}\\{FolderName}"
+                    : ConfigurationSettings.AppSettings["CustomJournalFolderPath"];
+            }
         }
 
         internal static void CreateJournalsFolder()
