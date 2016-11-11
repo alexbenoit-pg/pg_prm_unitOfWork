@@ -35,14 +35,15 @@ namespace Core
         private List<ITransactionUnit> operations;
         private List<ITransactionUnit> commitedOperations;
         private string journalPath;
-        private JsonSerializerSettings settings;
+        private JsonSerializerSettings jsonSettings;
 
         internal BussinesTransaction()               
         {
             this.operations = new List<ITransactionUnit>();
             this.commitedOperations = new List<ITransactionUnit>();
-            this.journalPath = FolderHelper.GetJournalPath(Guid.NewGuid().ToString());
-            this.settings = new JsonSerializerSettings
+            var journalName = Guid.NewGuid().ToString();
+            this.journalPath = FolderHelper.CreatePathToJournal(journalName);
+            this.jsonSettings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All
             };
@@ -77,16 +78,14 @@ namespace Core
         
         private void Rollback()
         {
-            var json = File.ReadAllText(this.journalPath);
-            this.operations = JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, this.settings);
-            this.commitedOperations = JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, this.settings);
+            this.operations = JournalHelper.GetOperationsFromJournal<List<ITransactionUnit>>(this.journalPath, jsonSettings);
+            this.operations.ForEach((op) => { this.commitedOperations.Add(op); });
 
             foreach (var operation in this.operations)
             {
                 operation.Rollback();
                 this.commitedOperations.Remove(operation);
-                string json2 = JsonConvert.SerializeObject(this.commitedOperations, Formatting.Indented, this.settings);
-                File.WriteAllText(this.journalPath, json2);
+                JournalHelper.WriteOperationsToJournal(this.commitedOperations, this.jsonSettings, this.journalPath);
             }
         }
 
@@ -98,14 +97,12 @@ namespace Core
                 {
                     operation.Commit();
                     this.commitedOperations.Add(operation);
-                    string json = JsonConvert.SerializeObject(this.commitedOperations, Formatting.Indented, this.settings);
-                    File.WriteAllText(this.journalPath, json);
+                    JournalHelper.WriteOperationsToJournal(this.commitedOperations, this.jsonSettings, this.journalPath);
                 }
                 catch (Exception e)
                 {
                     this.commitedOperations.Remove(operation);
-                    string json = JsonConvert.SerializeObject(this.commitedOperations, Formatting.Indented, this.settings);
-                    File.WriteAllText(this.journalPath, json);
+                    JournalHelper.WriteOperationsToJournal(this.commitedOperations, this.jsonSettings, this.journalPath);
                     throw e;
                 }
             }

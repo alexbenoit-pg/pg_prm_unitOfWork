@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="JournalTests.cs" company="Paragon Software Group">
+// <copyright file="JournalHelper.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,58 +21,25 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core.Tests
+namespace Core.Helpers
 {
-    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using Core.Interfaces;
+    using Newtonsoft.Json;
 
-    using Core;
-    using Core.Journals;
-    using Core.Tests.Fakes;
-
-    using NUnit.Framework;
-
-    /// <summary>
-    /// Unit tests for Journal Class
-    /// </summary>
-    [TestFixture]
-    public class JournalTests
+    internal static class JournalHelper
     {
-
-        /// <summary>
-        /// Test for a possibility of creation of an instans of a Journal
-        /// </summary>
-        [Test]
-        public void Journal_CreateIstance_IsNotNull()
+        internal static T GetOperationsFromJournal<T>(string journalPath, JsonSerializerSettings settings)
         {
-            // Arrange
-            var journal = new JsonJournal();
-
-            // Assert
-            Assert.IsNotNull(journal);
+            var json = File.ReadAllText(journalPath);
+            return JsonConvert.DeserializeObject<T>(json, settings);
         }
 
-        [Test]
-        public void Journal_AddOperation_WithoutException()
+        internal static void WriteOperationsToJournal(List<ITransactionUnit> commitedOperations, JsonSerializerSettings settings, string pathToFile)
         {
-            // Arrange
-            var journal = new JsonJournal();
-            var operation = new MockTransactionUnit();
-
-            // Assert
-            Assert.That(() => journal.Write(operation),
-                Throws.Nothing);
-        }
-        
-        [Test]
-        public void Journal_DeleteOperation_WithoutException()
-        {
-            // Arrange
-            var journal = new JsonJournal();
-            var operation = new MockTransactionUnit(); 
-
-            // Assert
-            Assert.That(() => journal.Remove(operation),
-                Throws.Nothing);
+            string json = JsonConvert.SerializeObject(commitedOperations, Formatting.Indented, settings);
+            File.WriteAllText(pathToFile, json);
         }
     }
 }

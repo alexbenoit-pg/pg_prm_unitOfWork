@@ -67,6 +67,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BussinesTransactionBase.cs" />
     <Compile Include="FileOperations.cs" />
     <Compile Include="Heplers\ExecuteHelper.cs" />
     <Compile Include="Operations\AppendAllTextOperation.cs" />

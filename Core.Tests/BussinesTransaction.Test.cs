@@ -47,120 +47,120 @@ namespace Core.Tests
             Assert.IsNotNull(bussinesTransaction);
         }
         
-        /// <summary>
-        /// Test for a possibility of creation collection of Operations(transaction units)
-        /// </summary>
-        [Test]
-        public void BussinesTransaction_CreateOperationCollection_IsNotNull()
-        {
-            // Arrange
-            var unitOfWork = new UnitOfWork();
-            var bussinesTransaction = unitOfWork.BeginTransaction();
+        ///// <summary>
+        ///// Test for a possibility of creation collection of Operations(transaction units)
+        ///// </summary>
+        //[Test]
+        //public void BussinesTransaction_CreateOperationCollection_IsNotNull()
+        //{
+        //    // Arrange
+        //    var unitOfWork = new UnitOfWork();
+        //    var bussinesTransaction = unitOfWork.BeginTransaction();
 
-            // Assert
-            Assert.IsNotNull(bussinesTransaction.operations);
-        }
+        //    // Assert
+        //    Assert.IsNotNull(bussinesTransaction.operations);
+        //}
         
-        /// <summary>
-        /// Test for a possibility of added operation to bussines transaction
-        /// </summary>
-        [Test]
-        public void BussinesTransaction_AddOperation_IsTrue()
-        {
-            // Arrange
-            var unitOfWork = new UnitOfWork();
-            var bussinesTransaction = unitOfWork.BeginTransaction();
+        ///// <summary>
+        ///// Test for a possibility of added operation to bussines transaction
+        ///// </summary>
+        //[Test]
+        //public void BussinesTransaction_AddOperation_IsTrue()
+        //{
+        //    // Arrange
+        //    var unitOfWork = new UnitOfWork();
+        //    var bussinesTransaction = unitOfWork.BeginTransaction();
 
-            // Act
-            var operation = new MockTransactionUnit();
-            bussinesTransaction.RegisterOperation(operation);
+        //    // Act
+        //    var operation = new MockTransactionUnit();
+        //    bussinesTransaction.RegisterOperation(operation);
 
-            // Assert
-            Assert.IsTrue(bussinesTransaction.operations.Count > 0);
-        }
+        //    // Assert
+        //    Assert.IsTrue(bussinesTransaction.operations.Count > 0);
+        //}
 
-        /// <summary>
-        /// Test for a possibility of commit bussines transaction
-        /// </summary>
-        [Test]
-        public void BussinesTransaction_CommitSomeOperaions_isTrue()
-        {
-            // Arrange
-            var unitOfWork = new UnitOfWork();
-            BussinesTransaction bussinesTransaction;
+        ///// <summary>
+        ///// Test for a possibility of commit bussines transaction
+        ///// </summary>
+        //[Test]
+        //public void BussinesTransaction_CommitSomeOperaions_isTrue()
+        //{
+        //    // Arrange
+        //    var unitOfWork = new UnitOfWork();
+        //    BussinesTransaction bussinesTransaction;
 
-            using (bussinesTransaction = unitOfWork.BeginTransaction())
-            {
-                // Act
-                bussinesTransaction.operations.Add(new MockTransactionUnit());
-                bussinesTransaction.operations.Add(new MockTransactionUnit());
+        //    using (bussinesTransaction = unitOfWork.BeginTransaction())
+        //    {
+        //        // Act
+        //        bussinesTransaction.operations.Add(new MockTransactionUnit());
+        //        bussinesTransaction.operations.Add(new MockTransactionUnit());
 
-                bussinesTransaction.Commit();
+        //        bussinesTransaction.Commit();
 
-                // Assert
-                Assert.IsTrue(bussinesTransaction.operations.All(op =>
-                {
-                    var fakeUnit = (MockTransactionUnit)op;
-                    return fakeUnit.IsCommit;
-                }));
-            }
-        }
+        //        // Assert
+        //        Assert.IsTrue(bussinesTransaction.operations.All(op =>
+        //        {
+        //            var fakeUnit = (MockTransactionUnit)op;
+        //            return fakeUnit.IsCommit;
+        //        }));
+        //    }
+        //}
 
-        /// <summary>
-        /// Test for a possibility of rollback bad bussines transaction
-        /// </summary>
-        [Test]
-        public void BussinesTransaction_RollbackAfterCrash_isTrue()
-        {
-            // Arrange
-            var unitOfWork = new UnitOfWork();
-            BussinesTransaction bussinesTransaction;
+        ///// <summary>
+        ///// Test for a possibility of rollback bad bussines transaction
+        ///// </summary>
+        //[Test]
+        //public void BussinesTransaction_RollbackAfterCrash_isTrue()
+        //{
+        //    // Arrange
+        //    var unitOfWork = new UnitOfWork();
+        //    BussinesTransaction bussinesTransaction;
 
-            using (bussinesTransaction = unitOfWork.BeginTransaction())
-            {
-                // Act
-                bussinesTransaction.operations.Add(new MockTransactionUnit());
-                bussinesTransaction.operations.Add(new MockBadTransactionUnit());
-                bussinesTransaction.operations.Add(new MockTransactionUnit());
+        //    using (bussinesTransaction = unitOfWork.BeginTransaction())
+        //    {
+        //        // Act
+        //        bussinesTransaction.operations.Add(new MockTransactionUnit());
+        //        bussinesTransaction.operations.Add(new MockBadTransactionUnit());
+        //        bussinesTransaction.operations.Add(new MockTransactionUnit());
 
-                bussinesTransaction.Commit();
+        //        bussinesTransaction.Commit();
                 
-                // Assert
-                Assert.IsTrue(bussinesTransaction.operations.All(op =>
-                {
-                    var fakeUnit = (IFakeTransactionUnit)op;
-                    return !fakeUnit.IsCommit &&
-                             fakeUnit.IsRollback;
-                }));
-            }
-        }
+        //        // Assert
+        //        Assert.IsTrue(bussinesTransaction.operations.All(op =>
+        //        {
+        //            var fakeUnit = (IFakeTransactionUnit)op;
+        //            return !fakeUnit.IsCommit &&
+        //                     fakeUnit.IsRollback;
+        //        }));
+        //    }
+        //}
 
-        /// <summary>
-        /// Test for a possibility of rollback bussines transaction
-        /// </summary>
-        [Test]
-        public void BussinesTransaction_Rollback_isTrue()
-        {
-            // Arrange
-            var unitOfWork = new UnitOfWork();
-            BussinesTransaction bussinesTransaction;
+        ///// <summary>
+        ///// Test for a possibility of rollback bussines transaction
+        ///// </summary>
+        //[Test]
+        //public void BussinesTransaction_Rollback_isTrue()
+        //{
+        //    // Arrange
+        //    var unitOfWork = new UnitOfWork();
+        //    BussinesTransaction bussinesTransaction;
 
-            using (bussinesTransaction = unitOfWork.BeginTransaction())
-            {
-                // Act
-                bussinesTransaction.operations.Add(new MockTransactionUnit());
-                bussinesTransaction.operations.Add(new MockTransactionUnit());
+        //    using (bussinesTransaction = unitOfWork.BeginTransaction())
+        //    {
+        //        // Act
+        //        bussinesTransaction.operations.Add(new MockTransactionUnit());
+        //        bussinesTransaction.operations.Add(new MockTransactionUnit());
 
-                bussinesTransaction.Rollback();
+        //        bussinesTransaction.Rollback();
 
-                // Assert
-                Assert.IsTrue(bussinesTransaction.operations.All(op =>
-                {
-                    var fakeUnit = (IFakeTransactionUnit)op;
-                    return fakeUnit.IsRollback;
-                }));
-            }
+        //        // Assert
+        //        Assert.IsTrue(bussinesTransaction.operations.All(op =>
+        //        {
+        //            var fakeUnit = (IFakeTransactionUnit)op;
+        //            return fakeUnit.IsRollback;
+        //        }));
+        //    }
 
-        }
+        //}
     }
 }

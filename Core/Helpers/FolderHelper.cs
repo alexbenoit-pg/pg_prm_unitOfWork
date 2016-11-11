@@ -25,17 +25,17 @@ namespace Core.Helpers
 {
     using System.IO;
 
-    public static class FolderHelper
+    internal static class FolderHelper
     {
         private static readonly string UserTempFolder = Path.GetTempPath();
         private static readonly string FolderName = "Unit_Of_Work";
 
-        public static string JournalsFolder
+        internal static string JournalsFolder
         {
             get { return $"{UserTempFolder}\\{FolderName}"; }
         }
 
-        public static void CreateJournalsFolder()
+        internal static void CreateJournalsFolder()
         {
             if (!Directory.Exists(JournalsFolder))
             {
@@ -43,12 +43,12 @@ namespace Core.Helpers
             }
         }
 
-        public static string GetJournalName(string fullPath)
+        internal static string GetJournalName(string fullPath)
         {
             return Path.GetFileNameWithoutExtension(fullPath);
         }
-        
-        public static string GetJournalPath(string name)
+
+        internal static string CreatePathToJournal(string name)
         {
             return Path.Combine(JournalsFolder, $"{name}.txt");
         }

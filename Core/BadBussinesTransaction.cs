@@ -28,7 +28,7 @@ namespace Core
     using System.IO;
 
     using Core.Interfaces;
-
+    using Core.Helpers;
     using Newtonsoft.Json;
 
     internal sealed class BadBussinesTransaction : IDisposable
@@ -36,20 +36,17 @@ namespace Core
         private List<ITransactionUnit> operations;
         private List<ITransactionUnit> commitedOperations;
         private string journalPath;
-        private JsonSerializerSettings settings;
+        private JsonSerializerSettings jsonSettings;
 
         internal BadBussinesTransaction(string journalPath)
         {
             this.journalPath = journalPath;
-
-            this.settings = new JsonSerializerSettings
+            this.operations = JournalHelper.GetOperationsFromJournal<List<ITransactionUnit>>(this.journalPath, jsonSettings);
+            this.operations.ForEach((op) => { this.commitedOperations.Add(op); });
+            this.jsonSettings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All
             };
-
-            string json = File.ReadAllText(journalPath);
-            this.operations = JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, this.settings);
-            this.commitedOperations = JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, this.settings);
 
             this.RollbackAfterCrush();
         }
@@ -70,8 +67,7 @@ namespace Core
                 operation.Rollback();
 
                 this.commitedOperations.Remove(operation);
-                string json = JsonConvert.SerializeObject(this.commitedOperations, Formatting.Indented, this.settings);
-                File.WriteAllText(this.journalPath, json);
+                JournalHelper.WriteOperationsToJournal(this.commitedOperations, this.jsonSettings, this.journalPath);
             }
         }
     }

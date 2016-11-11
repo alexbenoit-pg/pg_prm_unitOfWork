@@ -9,15 +9,15 @@ namespace SQLiteTransaction.UnitTest
     [TestFixture]
     public class SQLiteTransactionUnitTest
     {
-        [Test]
-        public void ConnectDatabase_IsValidPathToDataBase_ReturnsTrue()
-        {
-            //Arrage
-            SqLiteTransaction transaction = new SqLiteTransaction();
-            //Act
-            bool result = transaction.ConnectDatabase("");
-            //Assert 
-            Assert.IsFalse(result);
-        }
+        //[Test]
+        //public void ConnectDatabase_IsValidPathToDataBase_ReturnsTrue()
+        //{
+        //    //Arrage
+        //    SqLiteTransaction transaction = new SqLiteTransaction();
+        //    //Act
+        //    bool result = transaction.ConnectDatabase("");
+        //    //Assert 
+        //    Assert.IsFalse(result);
+        //}
     }
 }

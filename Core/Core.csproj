@@ -49,6 +49,7 @@
     <Compile Include="BadBussinesTransaction.cs" />
     <Compile Include="BussinesTransaction.cs" />
     <Compile Include="Helpers\FolderHelper.cs" />
+    <Compile Include="Helpers\JournalHelper.cs" />
     <Compile Include="Interfaces\ITransactionUnit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitOfWork.cs" />
