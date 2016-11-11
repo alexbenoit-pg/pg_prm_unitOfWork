@@ -25,22 +25,18 @@ namespace Units
 {
     using System;
     using System.Collections.Generic;
+    using System.Runtime.Serialization;
     using System.Transactions;
-
-
+    
     using ChinhDo.Transactions;
     using Core.Interfaces;
-    using Core.Helpers;
-
-    using Newtonsoft.Json;
-    using System.Runtime.Serialization;
 
     [DataContract]
     public class FileTransactionUnit : ITransactionUnit
     {
         private TxFileManager target;
         private List<FileOperations> operations;
-        private Dictionary<int, object[]> parametersForOperations;
+        private Dictionary<int, object[]> paramsForOperations;
 
         [DataMember]
         private string jsonJournal;
@@ -49,8 +45,8 @@ namespace Units
         {
             this.target = new TxFileManager();
             this.operations = new List<FileOperations>();
-            this.parametersForOperations = new Dictionary<int, object[]>();
-            this.jsonJournal = "";
+            this.paramsForOperations = new Dictionary<int, object[]>();
+            this.jsonJournal = string.Empty;
         }
         
         public void Commit()
@@ -59,7 +55,7 @@ namespace Units
             {
                 try
                 {
-                    ExecuteEachOperation();
+                    this.ExecuteEachOperation();
                     scope.Complete();
                     this.jsonJournal = this.target.GetJsonJournal();
                 }
@@ -73,80 +69,73 @@ namespace Units
 
         public void Dispose()
         {
-
         }
         
         public void Rollback()
         {
-            target.RollbackAfterCrash(this.jsonJournal);
+            this.target.RollbackAfterCrash(this.jsonJournal);
         }
         
-        private void ExecuteEachOperation()
-        {
-            for (int i = 0; i < operations.Count; i++)
-            {
-                this.target.UniverseRun(
-                    this.operations[i],
-                    this.parametersForOperations[i]);
-            }
-        }
-
         #region File operations
 
         public void AppendAllText(string path, string contents)
         {
             this.operations.Add(FileOperations.AppendAllText);
-            this.parametersForOperations.Add(
+            this.paramsForOperations.Add(
                 this.operations.Count - 1,
-                new object[] { path, contents }
-                );
+                new object[] { path, contents });
         }
 
         public void Copy(string sourceFileName, string destFileName, bool overwrite)
         {
             this.operations.Add(FileOperations.Copy);
-            this.parametersForOperations.Add(
+            this.paramsForOperations.Add(
                 this.operations.Count - 1,
-                new object[] { sourceFileName, destFileName, overwrite }
-                );
+                new object[] { sourceFileName, destFileName, overwrite });
         }
 
         public void CreateFile(string pathToFile)
         {
             this.operations.Add(FileOperations.CreateFile);
-            this.parametersForOperations.Add(
+            this.paramsForOperations.Add(
                 this.operations.Count - 1,
-                new object[] { pathToFile }
-                );
+                new object[] { pathToFile });
         }
 
         public void Delete(string path)
         {
             this.operations.Add(FileOperations.Delete);
-            this.parametersForOperations.Add(
+            this.paramsForOperations.Add(
                 this.operations.Count - 1,
-                new object[] { path }
-                );
+                new object[] { path });
         }
 
         public void Move(string srcFileName, string destFileName)
         {
             this.operations.Add(FileOperations.Move);
-            this.parametersForOperations.Add(
+            this.paramsForOperations.Add(
                 this.operations.Count - 1,
-                new object[] { srcFileName, destFileName }
-                );
+                new object[] { srcFileName, destFileName });
         }
 
         public void WriteAllText(string path, string contents)
         {
             this.operations.Add(FileOperations.WriteAllText);
-            this.parametersForOperations.Add(
+            this.paramsForOperations.Add(
                 this.operations.Count - 1,
-                new object[] { path, contents }
-                );
+                new object[] { path, contents });
         }
 
         #endregion
+        
+        private void ExecuteEachOperation()
+        {
+            for (int i = 0; i < this.operations.Count; i++)
+            {
+                this.target.UniverseRun(
+                    this.operations[i],
+                    this.paramsForOperations[i]);
+            }
+        }
     }
 }

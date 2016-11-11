@@ -28,8 +28,7 @@ namespace Core
 
     public sealed class UnitOfWork
     {
-
-        public UnitOfWork():this(true)
+        public UnitOfWork() : this(true)
         {
         }
         
@@ -37,7 +36,9 @@ namespace Core
         {
             FolderHelper.CreateJournalsFolder();
             if (checkAfterCrush)
-                CheckBadTransaction();
+            {
+                this.CheckBadTransaction();
+            }
         }
 
         public BussinesTransaction BeginTransaction()
@@ -49,14 +50,18 @@ namespace Core
         {
             var journals = Directory.GetFiles(FolderHelper.JournalsFolder);
             if (journals.Length > 0)
-                RollbackBadTransactions(journals);
+            {
+                this.RollbackBadTransactions(journals);
+            }
         }
 
         private void RollbackBadTransactions(string[] journals)
         {
             foreach (var journalPath in journals)
             {
-                using (new BadBussinesTransaction(journalPath));
+                using (new BadBussinesTransaction(journalPath))
+                {
+                }
             }
         }
     }

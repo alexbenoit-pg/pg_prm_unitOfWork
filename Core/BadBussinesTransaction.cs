@@ -36,7 +36,7 @@ namespace Core
         private List<ITransactionUnit> operations;
         private List<ITransactionUnit> commitedOperations;
         private string journalPath;
-        JsonSerializerSettings settings;
+        private JsonSerializerSettings settings;
 
         internal BadBussinesTransaction(string journalPath)
         {
@@ -48,12 +48,21 @@ namespace Core
             };
 
             string json = File.ReadAllText(journalPath);
-            this.operations = JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, settings);
-            this.commitedOperations = JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, settings);
+            this.operations = JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, this.settings);
+            this.commitedOperations = JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, this.settings);
 
-            RollbackAfterCrush();
+            this.RollbackAfterCrush();
         }
-        
+
+        public void Dispose()
+        {
+            File.Delete(this.journalPath);
+            this.operations.Clear();
+            this.operations = null;
+            this.commitedOperations.Clear();
+            this.commitedOperations = null;
+        }
+
         private void RollbackAfterCrush()
         {
             foreach (var operation in this.operations)
@@ -61,18 +70,9 @@ namespace Core
                 operation.Rollback();
 
                 this.commitedOperations.Remove(operation);
-                string json = JsonConvert.SerializeObject(this.commitedOperations, Formatting.Indented, settings);
-                File.WriteAllText(journalPath, json);
+                string json = JsonConvert.SerializeObject(this.commitedOperations, Formatting.Indented, this.settings);
+                File.WriteAllText(this.journalPath, json);
             }
-        }
-
-        public void Dispose()
-        {
-            File.Delete(journalPath);
-            operations.Clear();
-            operations = null;
-            this.commitedOperations.Clear();
-            this.commitedOperations = null;
         }
     }
 }

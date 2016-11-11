@@ -59,8 +59,8 @@
         {
             bool result = this.sqLiteTransaction.ConnectDatabase(this.pathToDataBase);
             Assert.IsTrue(result);
-            Assert.AreNotEqual(null, this.sqLiteTransaction.DbConnection);
-            Assert.AreNotEqual(null, this.sqLiteTransaction.DbCommand);
+            Assert.AreNotEqual(null, this.sqLiteTransaction.dbConnection);
+            Assert.AreNotEqual(null, this.sqLiteTransaction.dbCommand);
             this.sqLiteTransaction.Dispose();
         }
 

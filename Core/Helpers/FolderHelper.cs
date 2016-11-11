@@ -24,28 +24,30 @@
 namespace Core.Helpers
 {
     using System.IO;
-    using System.Linq;
 
     public static class FolderHelper
     {
-        private static readonly string TEMP_FOLDER = Path.GetTempPath();
-        private static readonly string FOLDER_NAME = "Unit_Of_Work";
+        private static readonly string UserTempFolder = Path.GetTempPath();
+        private static readonly string FolderName = "Unit_Of_Work";
 
         public static string JournalsFolder
         {
-            get { return $"{TEMP_FOLDER}\\{FOLDER_NAME}"; }
+            get { return $"{UserTempFolder}\\{FolderName}"; }
         }
 
-        public static void CreateJournalsFolder() {
-            if(!Directory.Exists(JournalsFolder))
+        public static void CreateJournalsFolder()
+        {
+            if (!Directory.Exists(JournalsFolder))
+            {
                 Directory.CreateDirectory(JournalsFolder);
+            }
         }
 
-        public static string GetJournalName(string fullPath) {
+        public static string GetJournalName(string fullPath)
+        {
             return Path.GetFileNameWithoutExtension(fullPath);
         }
-
-
+        
         public static string GetJournalPath(string name)
         {
             return Path.Combine(JournalsFolder, $"{name}.txt");

@@ -25,18 +25,17 @@ namespace Core
 {
     using System;
     using System.Collections.Generic;
-    using System.Runtime.Serialization;
-
-    using Core.Interfaces;
-    using Core.Helpers;
-    using Newtonsoft.Json;
     using System.IO;
+    using Core.Helpers;
+    using Core.Interfaces;
+    using Newtonsoft.Json;
+
     public sealed class BussinesTransaction : IDisposable
     {
         private List<ITransactionUnit> operations;
         private List<ITransactionUnit> commitedOperations;
         private string journalPath;
-        JsonSerializerSettings settings;
+        private JsonSerializerSettings settings;
 
         internal BussinesTransaction()               
         {
@@ -58,27 +57,36 @@ namespace Core
         {
             try
             {
-                File.Create(journalPath).Close();
-                CommitEachOperation();
+                File.Create(this.journalPath).Close();
+                this.CommitEachOperation();
             }
             catch (Exception e)
             {
-                Rollback();
+                this.Rollback();
             }
         }
 
-        public void Rollback()
+        public void Dispose()
         {
-            var json = File.ReadAllText(journalPath);
-            this.operations = JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, settings);
-            this.commitedOperations = JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, settings);
+            File.Delete(this.journalPath);
+            this.operations.Clear();
+            this.operations = null;
+            this.commitedOperations.Clear();
+            this.commitedOperations = null;
+        }
+        
+        private void Rollback()
+        {
+            var json = File.ReadAllText(this.journalPath);
+            this.operations = JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, this.settings);
+            this.commitedOperations = JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, this.settings);
 
             foreach (var operation in this.operations)
             {
                 operation.Rollback();
                 this.commitedOperations.Remove(operation);
-                string json2 = JsonConvert.SerializeObject(this.commitedOperations, Formatting.Indented, settings);
-                File.WriteAllText(journalPath, json2);
+                string json2 = JsonConvert.SerializeObject(this.commitedOperations, Formatting.Indented, this.settings);
+                File.WriteAllText(this.journalPath, json2);
             }
         }
 
@@ -90,26 +98,17 @@ namespace Core
                 {
                     operation.Commit();
                     this.commitedOperations.Add(operation);
-                    string json = JsonConvert.SerializeObject(this.commitedOperations, Formatting.Indented, settings);
-                    File.WriteAllText(journalPath, json);
+                    string json = JsonConvert.SerializeObject(this.commitedOperations, Formatting.Indented, this.settings);
+                    File.WriteAllText(this.journalPath, json);
                 }
                 catch (Exception e)
                 {
                     this.commitedOperations.Remove(operation);
-                    string json = JsonConvert.SerializeObject(this.commitedOperations, Formatting.Indented, settings);
-                    File.WriteAllText(journalPath, json);
+                    string json = JsonConvert.SerializeObject(this.commitedOperations, Formatting.Indented, this.settings);
+                    File.WriteAllText(this.journalPath, json);
                     throw e;
                 }
             }
-        }
-
-        public void Dispose()
-        {
-            File.Delete(journalPath);
-            this.operations.Clear();
-            this.operations = null;
-            this.commitedOperations.Clear();
-            this.commitedOperations = null;
         }
     }
 }
