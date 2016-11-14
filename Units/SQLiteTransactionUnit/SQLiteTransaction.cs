@@ -29,6 +29,8 @@ namespace Units
     using System.IO;
     using System.Runtime.Serialization;
     using Core.Interfaces;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
 
     [DataContract]
     public class SqLiteTransaction : ITransactionUnit
@@ -46,6 +48,18 @@ namespace Units
         {
             this.databasePath = pathdatabase;
         }
+
+
+        [DataMember]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TransactionUnitType Type
+        {
+            get
+            {
+                return TransactionUnitType.SQLiteUnit;
+            }
+        }
+
 
         public void Dispose()
         {

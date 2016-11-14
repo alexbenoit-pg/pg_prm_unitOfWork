@@ -25,6 +25,7 @@ namespace Core
 {
     using System.IO;
     using Core.Helpers;
+    using System.Linq;
 
     public sealed class UnitOfWork
     {
@@ -49,7 +50,7 @@ namespace Core
         private void CheckBadTransaction()
         {
             var journals = Directory.GetFiles(FolderHelper.JournalsFolder);
-            if (journals.Length > 0)
+            if (journals.Any())
             {
                 this.RollbackBadTransactions(journals);
             }

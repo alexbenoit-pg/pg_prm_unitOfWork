@@ -21,7 +21,7 @@ namespace ChinhDo.Transactions
             tx.EnlistVolatile(this, EnlistmentOptions.None);
             this.settings = new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.All
+                TypeNameHandling = TypeNameHandling.Objects
             };
         }
 
@@ -29,7 +29,7 @@ namespace ChinhDo.Transactions
         {
             this.settings = new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.All
+                TypeNameHandling = TypeNameHandling.Objects
             };
         }
 

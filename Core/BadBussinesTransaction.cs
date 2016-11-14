@@ -43,9 +43,10 @@ namespace Core
             this.journalPath = journalPath;
             this.operations = JournalHelper.GetOperationsFromJournal<List<ITransactionUnit>>(this.journalPath, jsonSettings);
             this.operations.ForEach((op) => { this.commitedOperations.Add(op); });
+
             this.jsonSettings = new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.All
+                TypeNameHandling = TypeNameHandling.Objects
             };
 
             this.RollbackAfterCrush();

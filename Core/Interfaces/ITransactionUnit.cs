@@ -25,8 +25,15 @@ namespace Core.Interfaces
 {
     using System;
 
+    public enum TransactionUnitType{
+        FileUnit,
+        SQLiteUnit
+    }
+
     public interface ITransactionUnit : IDisposable
     {
+        TransactionUnitType Type { get; }
+
         /// <summary>
         /// Rollback this operation
         /// </summary>

@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Units", "Units\Units.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Units.Tests", "Units.Tests\Units.Tests.csproj", "{36E9B103-D6C1-44DF-A363-0C9FB9B9F923}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "TestApp\TestApp.csproj", "{B12CC820-E47D-4D56-A14D-9B8106078BBE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitOfWork.IntegrationTest", "TestApp\UnitOfWork.IntegrationTest.csproj", "{B12CC820-E47D-4D56-A14D-9B8106078BBE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChinhDo.Transactions.FileManager", "ChinhDo.Transactions.FileManager\ChinhDo.Transactions.FileManager.csproj", "{E824ACBB-90C8-4C60-9D52-9C8020E98E3E}"
 EndProject

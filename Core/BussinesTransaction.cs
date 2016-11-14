@@ -29,10 +29,13 @@ namespace Core
     using Core.Helpers;
     using Core.Interfaces;
     using Newtonsoft.Json;
+    using System.Runtime.Serialization;
 
+    [DataContract]
     public sealed class BussinesTransaction : IDisposable
     {
         private List<ITransactionUnit> operations;
+        [DataMember]
         private List<ITransactionUnit> commitedOperations;
         private string journalPath;
         private JsonSerializerSettings jsonSettings;
@@ -45,7 +48,7 @@ namespace Core
             this.journalPath = FolderHelper.CreatePathToJournal(journalName);
             this.jsonSettings = new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.All
+                TypeNameHandling = TypeNameHandling.Objects
             };
         }
 

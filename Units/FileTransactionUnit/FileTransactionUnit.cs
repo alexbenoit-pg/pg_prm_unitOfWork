@@ -27,9 +27,11 @@ namespace Units
     using System.Collections.Generic;
     using System.Runtime.Serialization;
     using System.Transactions;
-    
+
     using ChinhDo.Transactions;
     using Core.Interfaces;
+    using Newtonsoft.Json.Converters;
+    using Newtonsoft.Json;
 
     [DataContract]
     public class FileTransactionUnit : ITransactionUnit
@@ -40,6 +42,16 @@ namespace Units
 
         [DataMember]
         private string jsonJournal;
+
+        [DataMember]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TransactionUnitType Type
+        {
+            get
+            {
+                return TransactionUnitType.FileUnit;
+            }
+        }
 
         public FileTransactionUnit()
         {
