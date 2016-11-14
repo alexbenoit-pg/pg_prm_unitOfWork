@@ -10,8 +10,7 @@
     public class FileTransactionIntagrationTest
     {
         private string pathToSaveDirectory = Path.GetTempPath() + @"TestFileTransaction\";
-        private UnitOfWork unit = new UnitOfWork();
-
+       
         [OneTimeSetUp]
         public void TestFixtureSetup()
         {
@@ -31,13 +30,9 @@
         {
             var filetransaction = new FileTransactionUnit();
             filetransaction.CreateFile(this.pathToSaveDirectory + "CreateFileTest.txt");
-
-            using (var bussinesTransaction = this.unit.BeginTransaction())
-            {
-                bussinesTransaction.RegisterOperation(filetransaction);
-                bussinesTransaction.Commit();
-            }
-
+            filetransaction.Commit();
+            filetransaction.Dispose();
+           
             Assert.IsTrue(File.Exists(this.pathToSaveDirectory + "CreateFileTest.txt"));
         }
 
@@ -53,13 +48,9 @@
 
             var filetransaction = new FileTransactionUnit();
             filetransaction.Move(this.pathToSaveDirectory + "MoveTestFrom\\FileMoveTest.txt", this.pathToSaveDirectory + "MoveTestWhere\\FileMoveTest.txt");
+            filetransaction.Commit();
+            filetransaction.Dispose();
 
-            using (var bussinesTransaction = this.unit.BeginTransaction())
-            {
-                bussinesTransaction.RegisterOperation(filetransaction);
-                bussinesTransaction.Commit();
-            }
-           
             Assert.IsTrue(File.Exists(this.pathToSaveDirectory + "MoveTestWhere\\FileMoveTest.txt"));
         }
 
@@ -73,12 +64,9 @@
             var filetransaction = new FileTransactionUnit();
             filetransaction.Delete(this.pathToSaveDirectory + "TestFileDelete.txt");
 
-            using (var bussinesTransaction = this.unit.BeginTransaction())
-            {
-                bussinesTransaction.RegisterOperation(filetransaction);
-                bussinesTransaction.Commit();
-            }
-          
+            filetransaction.Commit();
+            filetransaction.Dispose();
+
             Assert.IsFalse(File.Exists(this.pathToSaveDirectory + "TestFileDelete.txt"));
         }
 
@@ -95,12 +83,9 @@
             var filetransaction = new FileTransactionUnit();
             filetransaction.Copy(this.pathToSaveDirectory + "\\CopyTestFrom\\FileCopyTestFrom.txt", this.pathToSaveDirectory + "\\CopyTestWhere\\FileCopyTestWhere.txt", true);
 
-            using (var bussinesTransaction = this.unit.BeginTransaction())
-            {
-                bussinesTransaction.RegisterOperation(filetransaction);
-                bussinesTransaction.Commit();
-            }
-          
+            filetransaction.Commit();
+            filetransaction.Dispose();
+
             Assert.IsTrue(File.Exists(this.pathToSaveDirectory + "CopyTestWhere\\FileCopyTestWhere.txt"));
         }
 
@@ -115,11 +100,8 @@
 
             filetransaction.AppendAllText(this.pathToSaveDirectory + "\\FileAppendAllTextFrom.txt", "Test Append Text");
 
-            using (var bussinesTransaction = this.unit.BeginTransaction())
-            {
-                bussinesTransaction.RegisterOperation(filetransaction);
-                bussinesTransaction.Commit();
-            }
+            filetransaction.Commit();
+            filetransaction.Dispose();
 
             string readedstring = string.Empty;
             using (StreamReader streamReader = new StreamReader(this.pathToSaveDirectory + "\\FileAppendAllTextFrom.txt", System.Text.Encoding.Default))
@@ -141,12 +123,9 @@
         {
             var filetransaction = new FileTransactionUnit();
             filetransaction.WriteAllText(this.pathToSaveDirectory + "\\FileWriteAllTextFrom.txt", "Test Write Text");
-           
-            using (var bussinesTransaction = this.unit.BeginTransaction())
-            {
-                bussinesTransaction.RegisterOperation(filetransaction);
-                bussinesTransaction.Commit();
-            }
+
+            filetransaction.Commit();
+            filetransaction.Dispose();
 
             string readedstring = string.Empty;
             using (StreamReader sr = new StreamReader(this.pathToSaveDirectory + "\\FileWriteAllTextFrom.txt", System.Text.Encoding.Default))
