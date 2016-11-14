@@ -21,6 +21,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Resources;
+using System.Security.Cryptography.X509Certificates;
+
 namespace Units
 {
     using System;
@@ -38,15 +41,24 @@ namespace Units
         [DataMember]
         private readonly List<string> rollbackCommands = new List<string>();
         private readonly List<string> commitCommands = new List<string>();
+        
         [DataMember]
-        private string databasePath;
+        private string dataBasePath;
         private SQLiteConnection dataBaseConnection = null;
         private SQLiteCommand dataBaseCommand = null;
         private SQLiteTransaction dataBaseTransaction;
-        
+
+        //private ResourceReader resourceReader = new ResourceReader("D:\\transaction\\pg_prm_unitOfWork\\Units\\Properties\\SQLiteResource.resx");
+        //private const string resx = "D:\\transaction\\pg_prm_unitOfWork\\Units\\Properties\\SQLiteResource.resx";
+
         public SqLiteTransaction(string pathdatabase)
         {
-            this.databasePath = pathdatabase;
+            this.dataBasePath = pathdatabase;
+        }
+
+        public static string GetConnectionString(string pathDataBase)
+        {
+            return string.Format("Data Source={0};", pathDataBase);
         }
 
 
@@ -75,19 +87,20 @@ namespace Units
             GC.SuppressFinalize(this);
         }
 
-        private bool ConnectDatabase(string pathdatabase)
+        private bool ConnectDatabase(string pathDataBase)
         {
             try
             {
-                if (File.Exists(pathdatabase))
+                if (File.Exists(pathDataBase))
                 {
                     this.Dispose();
-                    this.dataBaseConnection = new SQLiteConnection(string.Format("Data Source={0}; Version=3;", pathdatabase));
+                    string sqliteConnectionString = SqLiteTransaction.GetConnectionString(pathDataBase);
+                    this.dataBaseConnection = new SQLiteConnection(sqliteConnectionString);
                     this.dataBaseCommand = this.dataBaseConnection.CreateCommand();
                     this.dataBaseConnection.Open();
                     this.dataBaseTransaction = this.dataBaseConnection.BeginTransaction();
                     this.dataBaseCommand.Transaction = this.dataBaseTransaction;
-                    this.databasePath = pathdatabase;
+                    this.dataBasePath = pathDataBase;
                     return true;
                 }
                 else
@@ -107,10 +120,11 @@ namespace Units
             this.commitCommands.Add(sqlCommand);
             return true;
         }
-        
+
         public void Rollback()
         {
-            using (this.dataBaseConnection = new SQLiteConnection(string.Format("Data Source={0}", this.databasePath)))
+            string sqliteConnectionString = SqLiteTransaction.GetConnectionString(this.dataBasePath);
+            using (this.dataBaseConnection = new SQLiteConnection(sqliteConnectionString))
             {
                 this.dataBaseConnection.Open();
                 using (this.dataBaseTransaction = this.dataBaseConnection.BeginTransaction())
@@ -128,10 +142,10 @@ namespace Units
                 }
             }
         }
-        
+
         public void Commit()
         {
-            this.ConnectDatabase(this.databasePath);
+            this.ConnectDatabase(this.dataBasePath);
             foreach (var command in this.commitCommands)
             {
                 this.dataBaseCommand.CommandText = command;

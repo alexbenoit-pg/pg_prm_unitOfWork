@@ -78,8 +78,8 @@
                  "DELETE FROM person WHERE first_name = 'Commit'");
             sqLiteTransaction.Commit();
             Assert.IsTrue(rezult);
-
-            using (SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0}", this.pathToDataBase)))
+            string sqliteConnectionString = SqLiteTransaction.GetConnectionString(this.pathToDataBase);
+            using (SQLiteConnection connection = new SQLiteConnection(sqliteConnectionString))
             {
                 connection.Open();
                 using (SQLiteCommand command = new SQLiteCommand("SELECT * FROM person  WHERE first_name = 'Commit'", connection))
@@ -122,7 +122,8 @@
                 bussinesTransaction.Commit();
             }
 
-            using (SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0}", this.toDataBase)))
+            string sqliteConnectionString = SqLiteTransaction.GetConnectionString(this.toDataBase);
+            using (SQLiteConnection connection = new SQLiteConnection(sqliteConnectionString))
             {
                 connection.Open();
                 using (SQLiteCommand command = new SQLiteCommand("SELECT * FROM person  WHERE first_name = 'Commit2'", connection))
@@ -144,7 +145,8 @@
 
         private void CreatDataBase(string pathToDataBase)
         {
-            SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0}; Version=3;", pathToDataBase));
+            string sqliteConnectionString = SqLiteTransaction.GetConnectionString(pathToDataBase);
+            SQLiteConnection connection = new SQLiteConnection(sqliteConnectionString);
             SQLiteCommand command = new SQLiteCommand("CREATE TABLE person("
                                                         + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                                                         + "first_name TEXT, "

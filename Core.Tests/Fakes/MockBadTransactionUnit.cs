@@ -22,6 +22,7 @@
 // -----------------------------------------------------------------------
 
 using System;
+using Core.Interfaces;
 
 namespace Core.Tests.Fakes
 {
@@ -47,6 +48,8 @@ namespace Core.Tests.Fakes
             IsRollback = true;
             IsCommit = false;
         }
+
+        public TransactionUnitType Type { get; }
 
         public void Rollback()
         {

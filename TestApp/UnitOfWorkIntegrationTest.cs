@@ -1,4 +1,6 @@
-﻿namespace TestApp
+﻿using System.Collections.Generic;
+
+namespace TestApp
 {
     using System;
     using System.Data.SQLite;
@@ -56,23 +58,7 @@
 
             string firstname = string.Empty;
             string lastname = string.Empty;
-            using (SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0}", this.pathToDataBase)))
-            {
-                connection.Open();
-                using (SQLiteCommand command = new SQLiteCommand("SELECT * FROM person  WHERE first_name = 'pit'", connection))
-                {
-                    using (SQLiteDataReader rdr = command.ExecuteReader())
-                    {
-                        while (rdr.Read())
-                        {
-                            firstname = rdr["first_name"].ToString();
-                            lastname = rdr["last_name"].ToString();
-                        }
-                    }
-                }
-
-                connection.Close();
-            }
+            GetInfoofDataBase(out firstname, out lastname);
 
             Assert.IsTrue(File.Exists(this.pathToSaveDirectory + "CreateFileTest.txt"));
             Assert.AreEqual("pit", firstname);
@@ -103,7 +89,36 @@
 
             string firstname = string.Empty;
             string lastname = string.Empty;
-            using (SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0}", this.pathToDataBase)))
+            GetInfoofDataBase(out firstname, out lastname);
+            
+            Assert.IsFalse(File.Exists(this.pathToSaveDirectory + "CreateFileTest.txt"));
+            Assert.AreNotEqual("pit", firstname);
+            Assert.AreNotEqual("Check1", lastname);
+        }
+
+        private void CreatDataBase(string pathDataBase)
+        {
+            string sqliteConnectionString = SqLiteTransaction.GetConnectionString(pathDataBase);
+            SQLiteConnection connection = new SQLiteConnection(sqliteConnectionString);
+
+            SQLiteCommand command = new SQLiteCommand("CREATE TABLE person("
+                                                        + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                                                        + "first_name TEXT, "
+                                                        + "last_name TEXT);",
+                                                        connection);
+            connection.Open();
+            command.ExecuteNonQuery();
+            connection.Close();
+            connection.Dispose();
+        }
+
+        private void GetInfoofDataBase(out string firstname , out string lastname)
+        {
+            firstname = string.Empty;
+            lastname = string.Empty;
+
+            string sqliteConnectionString = SqLiteTransaction.GetConnectionString(this.pathToDataBase);
+            using (SQLiteConnection connection = new SQLiteConnection(sqliteConnectionString))
             {
                 connection.Open();
                 using (SQLiteCommand command = new SQLiteCommand("SELECT * FROM person  WHERE first_name = 'pit'", connection))
@@ -120,30 +135,6 @@
 
                 connection.Close();
             }
-
-            Assert.IsFalse(File.Exists(this.pathToSaveDirectory + "CreateFileTest.txt"));
-            Assert.AreNotEqual("pit", firstname);
-            Assert.AreNotEqual("Check1", lastname);
-        }
-
-        private void CreatDataBase(string pathDataBase)
-        {
-            SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0}; Version=3;", pathDataBase));
-
-            SQLiteCommand command = new SQLiteCommand("CREATE TABLE person("
-                                                        + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                                                        + "first_name TEXT, "
-                                                        + "last_name TEXT);",
-                                                        connection);
-            connection.Open();
-            command.ExecuteNonQuery();
-            connection.Close();
-            connection.Dispose();
-        }
-
-        private void GetInfoofDataBase()
-        {
-            
         }
 
         private static void Main()
