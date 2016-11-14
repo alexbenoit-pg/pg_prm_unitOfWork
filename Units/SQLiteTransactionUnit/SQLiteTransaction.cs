@@ -75,7 +75,7 @@ namespace Units
             GC.SuppressFinalize(this);
         }
 
-        public bool ConnectDatabase(string pathdatabase)
+        private bool ConnectDatabase(string pathdatabase)
         {
             try
             {

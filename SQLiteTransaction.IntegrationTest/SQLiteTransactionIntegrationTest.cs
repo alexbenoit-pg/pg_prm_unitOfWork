@@ -11,7 +11,7 @@
     [TestFixture]
     public class SqLiteTransactionIntegrationTest
     {
-        private readonly SqLiteTransaction sqLiteTransaction = new SqLiteTransaction();
+        //private readonly SqLiteTransaction sqLiteTransaction;
         private string pathToDataBase = Path.GetTempPath() + "test.db";
         private string toDataBase = Path.GetTempPath() + "Work_a_fewsqLiteTransactions.db";
 
@@ -37,7 +37,6 @@
         {
             if (File.Exists(this.pathToDataBase))
             {
-                this.sqLiteTransaction.Dispose();
                 File.Delete(this.pathToDataBase);
             }
 
@@ -48,31 +47,23 @@
         }
 
         [Test]
-        public void ConnectDatabase_ConnectToTheWrongName_Throw()
+        public void Constructor_ConnectToTheWrongName_Throw()
         {
-            var exception = Assert.Catch<Exception>(() => this.sqLiteTransaction.ConnectDatabase(string.Empty));
+            SqLiteTransaction sqLiteTransaction = new SqLiteTransaction(string.Empty);
+            var exception = Assert.Catch<Exception>(() => sqLiteTransaction.Commit());
             StringAssert.Contains("No such database file.", exception.Message);
+            sqLiteTransaction.Dispose();
         }
-
-        //[Test]
-        //public void ConnectDatabase_ConnectToTheDataBase_RetrunTrue()
-        //{
-        //    bool result = this.sqLiteTransaction.ConnectDatabase(this.pathToDataBase);
-        //    Assert.IsTrue(result);
-        //    Assert.AreNotEqual(null, this.sqLiteTransaction.dbConnection);
-        //    Assert.AreNotEqual(null, this.sqLiteTransaction.dbCommand);
-        //    this.sqLiteTransaction.Dispose();
-        //}
-
+        
         [Test]
         public void AddSqliteCommand_AddComandToDataBase_ReturnTrue()
         {
-            this.sqLiteTransaction.ConnectDatabase(this.pathToDataBase);
-            bool result = this.sqLiteTransaction.AddSqliteCommand(
+            SqLiteTransaction sqLiteTransaction = new SqLiteTransaction(this.pathToDataBase);
+            bool result = sqLiteTransaction.AddSqliteCommand(
                  "INSERT INTO person(first_name, last_name, sex, birth_date) VALUES ('AddCommand', 'TrueDataBase', 0, strftime('%s', '1993-10-10'));", string.Empty);
 
             Assert.IsTrue(result);
-            this.sqLiteTransaction.Dispose();
+            sqLiteTransaction.Dispose();
         }
 
         [Test]
@@ -81,11 +72,11 @@
             string firstname = string.Empty;
             string lastname = string.Empty;
 
-            this.sqLiteTransaction.ConnectDatabase(this.pathToDataBase);
-            bool rezult = this.sqLiteTransaction.AddSqliteCommand(
+            SqLiteTransaction sqLiteTransaction = new SqLiteTransaction(this.pathToDataBase);
+            bool rezult = sqLiteTransaction.AddSqliteCommand(
                  "INSERT INTO person(first_name, last_name) VALUES ('Commit', 'Check');",
                  "DELETE FROM person WHERE first_name = 'Commit'");
-            this.sqLiteTransaction.Commit();
+            sqLiteTransaction.Commit();
             Assert.IsTrue(rezult);
 
             using (SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0}", this.pathToDataBase)))
