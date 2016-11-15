@@ -39,9 +39,6 @@
       <HintPath>..\packages\NUnit.3.0.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="Units">
-      <HintPath>..\bin\Debug\Units.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileTransactionIntagrationTest.cs" />
@@ -54,6 +51,10 @@
     <ProjectReference Include="..\ChinhDo.Transactions.FileManager\ChinhDo.Transactions.FileManager.csproj">
       <Project>{e824acbb-90c8-4c60-9d52-9c8020e98e3e}</Project>
       <Name>ChinhDo.Transactions.FileManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Units\Units.csproj">
+      <Project>{62b353bf-4c99-44fe-b01d-19edbe8e6f3d}</Project>
+      <Name>Units</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

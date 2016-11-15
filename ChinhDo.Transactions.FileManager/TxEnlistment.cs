@@ -5,13 +5,14 @@ namespace ChinhDo.Transactions
     using System.Transactions;
     using ChinhDo.Transactions.Interfaces;
     using Newtonsoft.Json;
+    using System.Runtime.Serialization;
 
     /// <summary>Provides two-phase commits/rollbacks/etc for a single <see cref="Transaction"/>.</summary>
-    [Serializable]
+    [DataContract]
     sealed class TxEnlistment : IEnlistmentNotification
     {
+        [DataMember]
         private List<IRollbackableOperation> _journal = new List<IRollbackableOperation>();
-        private string jsonJournal;
         JsonSerializerSettings settings;
 
         /// <summary>Initializes a new instance of the <see cref="TxEnlistment"/> class.</summary>
@@ -42,13 +43,8 @@ namespace ChinhDo.Transactions
         {
             operation.Execute();
             _journal.Add(operation);
-            jsonJournal = JsonConvert.SerializeObject(_journal, Formatting.Indented, settings);
         }
-
-        public string GetJsonJournal() {
-            return jsonJournal;
-        }
-
+        
         public void Commit(Enlistment enlistment)
         {
             DisposeJournal();
@@ -88,10 +84,8 @@ namespace ChinhDo.Transactions
             enlistment.Done();
         }
 
-        public void RollbackAfterCrash(string jsonJournal)
+        public void RollbackAfterCrash()
         {
-            _journal = (List<IRollbackableOperation>) JsonConvert.DeserializeObject(jsonJournal, settings);
-
             try
             {
                 // Roll back journal items in reverse order

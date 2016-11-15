@@ -25,50 +25,37 @@ namespace Core
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
-
     using Core.Interfaces;
-    using Core.Helpers;
-    using Newtonsoft.Json;
 
     internal sealed class BadBussinesTransaction : IDisposable
     {
-        private List<ITransactionUnit> operations;
-        private List<ITransactionUnit> commitedOperations;
-        private string journalPath;
-        private JsonSerializerSettings jsonSettings;
-
-        internal BadBussinesTransaction(string journalPath)
+        private List<ITransactionUnit> executedUnits;
+        private ISaver saver;
+        
+        public BadBussinesTransaction(ISaver saver, string journalPath)
         {
-            this.journalPath = journalPath;
-            this.operations = JournalHelper.GetOperationsFromJournal<List<ITransactionUnit>>(this.journalPath, jsonSettings);
-            this.operations.ForEach((op) => { this.commitedOperations.Add(op); });
-
-            this.jsonSettings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Objects
-            };
-
-            this.RollbackAfterCrush();
+            this.saver = saver;
+            this.saver.JournalPath = journalPath;
+            this.executedUnits = this.saver.Get();
         }
 
         public void Dispose()
         {
-            File.Delete(this.journalPath);
-            this.operations.Clear();
-            this.operations = null;
-            this.commitedOperations.Clear();
-            this.commitedOperations = null;
+            this.saver.Dispose();
+            this.executedUnits.Clear();
+            this.executedUnits = null;
         }
 
-        private void RollbackAfterCrush()
+        private void Rollback()
         {
-            foreach (var operation in this.operations)
+            var notRollbacked = new List<ITransactionUnit>();
+            notRollbacked.AddRange(this.executedUnits);
+
+            foreach (var operation in this.executedUnits)
             {
                 operation.Rollback();
-
-                this.commitedOperations.Remove(operation);
-                JournalHelper.WriteOperationsToJournal(this.commitedOperations, this.jsonSettings, this.journalPath);
+                notRollbacked.Remove(operation);
+                this.saver.Save(notRollbacked);
             }
         }
     }

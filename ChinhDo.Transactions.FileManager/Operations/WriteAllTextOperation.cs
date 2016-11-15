@@ -4,6 +4,8 @@
     using System.IO;
     using System.Runtime.Serialization;
     using ChinhDo.Transactions.Heplers;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
 
     /// <summary>
     /// Creates a file, and writes the specified contents to it.
@@ -23,6 +25,16 @@
             : base(path)
         {
             this.contents = contents;
+        }
+
+        [DataMember]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public FileOperations Type
+        {
+            get
+            {
+                return FileOperations.WriteAllText;
+            }
         }
 
         public override void Execute()

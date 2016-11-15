@@ -4,6 +4,8 @@
     using System.IO;
     using System.Runtime.Serialization;
     using ChinhDo.Transactions.Heplers;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
 
     /// <summary>
     /// Rollbackable operation which deletes a file. An exception is not thrown if the file does not exist.
@@ -18,6 +20,16 @@
         public DeleteFileOperation(string path)
             : base(path)
         {
+        }
+
+        [DataMember]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public FileOperations Type
+        {
+            get
+            {
+                return FileOperations.Delete;
+            }
         }
 
         public override void Execute()

@@ -33,19 +33,19 @@ namespace Core.Tests
     /// </summary>
     public class BussinesTransactionTests
     {
-        /// <summary>
-        /// Test for a possibility of creation of an instans of a BussinesTransaction
-        /// </summary>
-        [Test]
-        public void BussinesTransaction_Creation_IsNotNull()
-        {
-            // Arrange
-            var unitOfWork = new UnitOfWork();
-            var bussinesTransaction = unitOfWork.BeginTransaction();
+        ///// <summary>
+        ///// Test for a possibility of creation of an instans of a BussinesTransaction
+        ///// </summary>
+        //[Test]
+        //public void BussinesTransaction_Creation_IsNotNull()
+        //{
+        //    // Arrange
+        //    var unitOfWork = new UnitOfWork();
+        //    var bussinesTransaction = unitOfWork.BeginTransaction();
 
-            // Assert
-            Assert.IsNotNull(bussinesTransaction);
-        }
+        //    // Assert
+        //    Assert.IsNotNull(bussinesTransaction);
+        //}
         
         ///// <summary>
         ///// Test for a possibility of creation collection of Operations(transaction units)

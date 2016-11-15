@@ -3,6 +3,8 @@
     using System;
     using System.IO;
     using System.Runtime.Serialization;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
 
     /// <summary>
     /// Rollbackable operation which copies a file.
@@ -26,6 +28,16 @@
         {
             this.sourceFileName = sourceFileName;
             this.overwrite = overwrite;
+        }
+
+        [DataMember]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public FileOperations Type
+        {
+            get
+            {
+                return FileOperations.Copy;
+            }
         }
 
         public override void Execute()

@@ -1,8 +1,9 @@
 ﻿namespace ChinhDo.Transactions.Operations
 {
-    using System;
     using System.IO;
     using System.Runtime.Serialization;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
 
     /// <summary>
     /// Rollbackable operation which appends a string to an existing file, or creates the file if it doesn't exist.
@@ -22,6 +23,16 @@
             : base(path)
         {
             this.contents = contents;
+        }
+
+        [DataMember]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public FileOperations Type
+        {
+            get
+            {
+                return FileOperations.AppendAllText;
+            }
         }
 
         public override void Execute()

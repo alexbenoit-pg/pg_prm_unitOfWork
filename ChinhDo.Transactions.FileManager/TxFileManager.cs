@@ -4,22 +4,25 @@ namespace ChinhDo.Transactions
     using System.Collections.Generic;
     using System.IO;
     using System.Transactions;
+    using System.Runtime.Serialization;
     using ChinhDo.Transactions.Heplers;
     using ChinhDo.Transactions.Interfaces;
     using ChinhDo.Transactions.Operations;
 
-    [Serializable]
+    [DataContract]
     public class TxFileManager : IFileManager
     {
-        private string jsonJournal;
-
         /// <summary>
         /// Initializes the <see cref="TxFileManager"/> class.
         /// </summary>
+        /// 
+
+        [DataMember]
+        private TxEnlistment enlistment;
+
         public TxFileManager()
         {
             FileUtils.EnsureTempFolderExists();
-            jsonJournal = "";
         }
 
         #region IFileOperations
@@ -269,7 +272,6 @@ namespace ChinhDo.Transactions
         private void EnlistOperation(IRollbackableOperation operation)
         {
             Transaction tx = Transaction.Current;
-            TxEnlistment enlistment;
 
             lock (_enlistmentsLock)
             {
@@ -284,17 +286,12 @@ namespace ChinhDo.Transactions
                     _enlistments.Add(tx.TransactionInformation.LocalIdentifier, enlistment);
                 }
                 enlistment.EnlistOperation(operation);
-                this.jsonJournal = enlistment.GetJsonJournal();
             }
         }
-
-        public string GetJsonJournal() {
-            return this.jsonJournal;
-        }
-
-        public void RollbackAfterCrash(string jsonJournal)
+        
+        public void RollbackAfterCrash()
         {
-            new TxEnlistment().RollbackAfterCrash(jsonJournal);
+            enlistment.RollbackAfterCrash();
         }
 
         ~TxFileManager()

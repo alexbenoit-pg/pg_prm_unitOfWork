@@ -35,6 +35,6 @@ namespace ChinhDo.Transactions.Interfaces
         /// Rollback operation after crash file unit
         /// </summary>
         /// <param name="jsonJournal"></param>
-        void RollbackAfterCrash(string jsonJournal);
+        void RollbackAfterCrash();
     }
 }

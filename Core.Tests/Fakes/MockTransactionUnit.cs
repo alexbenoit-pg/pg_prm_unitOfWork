@@ -49,8 +49,7 @@ namespace Core.Tests.Fakes
             // Читает журнал по ID, где ID - имя журнала
             // id.txt
         }
-
-        public TransactionUnitType Type { get; }
+        
 
         public void Rollback()
         {

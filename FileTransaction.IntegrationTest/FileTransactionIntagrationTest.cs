@@ -28,7 +28,7 @@
         [Test]
         public void FileTransactionUnit_CreateFile_ReturnTrue()
         {
-            var filetransaction = new FileTransactionUnit();
+            var filetransaction = new FileUnit();
             filetransaction.CreateFile(this.pathToSaveDirectory + "CreateFileTest.txt");
             filetransaction.Commit();
             filetransaction.Dispose();
@@ -46,7 +46,7 @@
             {
             }
 
-            var filetransaction = new FileTransactionUnit();
+            var filetransaction = new FileUnit();
             filetransaction.Move(this.pathToSaveDirectory + "MoveTestFrom\\FileMoveTest.txt", this.pathToSaveDirectory + "MoveTestWhere\\FileMoveTest.txt");
             filetransaction.Commit();
             filetransaction.Dispose();
@@ -61,7 +61,7 @@
             {
             }
 
-            var filetransaction = new FileTransactionUnit();
+            var filetransaction = new FileUnit();
             filetransaction.Delete(this.pathToSaveDirectory + "TestFileDelete.txt");
 
             filetransaction.Commit();
@@ -80,7 +80,7 @@
             {
             }
             
-            var filetransaction = new FileTransactionUnit();
+            var filetransaction = new FileUnit();
             filetransaction.Copy(this.pathToSaveDirectory + "\\CopyTestFrom\\FileCopyTestFrom.txt", this.pathToSaveDirectory + "\\CopyTestWhere\\FileCopyTestWhere.txt", true);
 
             filetransaction.Commit();
@@ -92,7 +92,7 @@
         [Test]
         public void FileTransactionUnit_AppendAllText_ReturnTrue()
         {
-            var filetransaction = new FileTransactionUnit();
+            var filetransaction = new FileUnit();
 
             using (File.Create(this.pathToSaveDirectory + "\\FileAppendAllTextFrom.txt"))
             {
@@ -121,7 +121,7 @@
         [Test]
         public void FileTransactionUnit_WriteAllText_ReturnTrue()
         {
-            var filetransaction = new FileTransactionUnit();
+            var filetransaction = new FileUnit();
             filetransaction.WriteAllText(this.pathToSaveDirectory + "\\FileWriteAllTextFrom.txt", "Test Write Text");
 
             filetransaction.Commit();

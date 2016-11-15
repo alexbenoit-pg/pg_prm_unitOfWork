@@ -34,26 +34,26 @@ namespace Units
     using Newtonsoft.Json;
 
     [DataContract]
-    public class FileTransactionUnit : ITransactionUnit
+    public class FileUnit : ITransactionUnit
     {
+        [DataMember]
         private TxFileManager target;
         private List<FileOperations> operations;
         private Dictionary<int, object[]> paramsForOperations;
-
+        private TransactionScope scope;
         [DataMember]
         private string jsonJournal;
-
         [DataMember]
         [JsonConverter(typeof(StringEnumConverter))]
-        public TransactionUnitType Type
+        public UnitType Type
         {
             get
             {
-                return TransactionUnitType.FileUnit;
+                return UnitType.FileUnit;
             }
         }
 
-        public FileTransactionUnit()
+        public FileUnit()
         {
             this.target = new TxFileManager();
             this.operations = new List<FileOperations>();
@@ -63,29 +63,27 @@ namespace Units
         
         public void Commit()
         {
-            using (TransactionScope scope = new TransactionScope())
+            this.scope = new TransactionScope();
+            try
             {
-                try
-                {
-                    this.ExecuteEachOperation();
-                    scope.Complete();
-                    this.jsonJournal = this.target.GetJsonJournal();
-                }
-                catch (Exception e)
-                {
-                    scope.Dispose();
-                    throw e;
-                }
+                this.ExecuteEachOperation();
+                scope.Complete();
+            }
+            catch (Exception e)
+            {
+                scope.Dispose();
+                throw e;
             }
         }
 
         public void Dispose()
         {
+            this.scope.Dispose();
         }
         
         public void Rollback()
         {
-            this.target.RollbackAfterCrash(this.jsonJournal);
+            this.target.RollbackAfterCrash();
         }
         
         #region File operations

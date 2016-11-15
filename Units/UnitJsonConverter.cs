@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="UnitOfWorkTests.cs" company="Paragon Software Group">
+// <copyright file="UnitConverter.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,45 +21,44 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core.Tests
+namespace Units
 {
-    using NUnit.Framework;
+    using System;
+    using Core.Interfaces;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
-    using Core;
-    using Core.Tests.Fakes;
-
-    /// <summary>
-    /// Unit tests for UnitOfWork Class
-    /// </summary>
-    public class UnitOfWorkTests
+    public class UnitJsonConverter : JsonConverter
     {
-        /// <summary>
-        /// Test for a possibility of creation of an instans of a UnitOfWork
-        /// </summary>
-        //[Test]
-        //public void UnitOfWork_CreateIstance_IsNotNull()
-        //{
-        //    // Arrange
-        //    var unitOfWork = new UnitOfWork();
+        public override bool CanWrite => false;
+        public override bool CanRead => true;
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(ITransactionUnit);
+        }
+        public override void WriteJson(JsonWriter writer,
+            object value, JsonSerializer serializer)
+        {
+            throw new InvalidOperationException("Use default serialization.");
+        }
 
-        //    // Assert
-        //    Assert.IsNotNull(unitOfWork);
-        //}
-
-        ///// <summary>
-        /////  Test for a possibility of get a Bussines Transaction from UnitOfWork
-        ///// </summary>
-        //[Test]
-        //public void UnitOfWork_GetBussinesTransaction_IsNotNull()
-        //{
-        //    // Arrange
-        //    var unitOfWork = new UnitOfWork();
-
-        //    // Act 
-        //    var bussinesTransaction = unitOfWork.BeginTransaction();
-
-        //    // Assert
-        //    Assert.IsNotNull(bussinesTransaction);
-        //}
+        public override object ReadJson(JsonReader reader,
+            Type objectType, object existingValue,
+            JsonSerializer serializer)
+        {
+            var jsonObject = JObject.Load(reader);
+            var unit = default(ITransactionUnit);
+            switch (jsonObject["Type"].Value<string>())
+            {
+                case "FileUnit":
+                    unit = new FileUnit();
+                    break;
+                case "SQLiteUnit":
+                    unit = new SQLiteUnit();
+                    break;
+            }
+            serializer.Populate(jsonObject.CreateReader(), unit);
+            return unit;
+        }
     }
 }

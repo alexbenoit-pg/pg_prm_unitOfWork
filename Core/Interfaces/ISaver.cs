@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="JournalHelper.cs" company="Paragon Software Group">
+// <copyright file="ISaver.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,25 +21,15 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core.Helpers
+namespace Core.Interfaces
 {
+    using System;
     using System.Collections.Generic;
-    using System.IO;
-    using Core.Interfaces;
-    using Newtonsoft.Json;
 
-    internal static class JournalHelper
+    public interface ISaver : IDisposable
     {
-        internal static T GetOperationsFromJournal<T>(string journalPath, JsonSerializerSettings settings)
-        {
-            var json = File.ReadAllText(journalPath);
-            return JsonConvert.DeserializeObject<T>(json, settings);
-        }
-
-        internal static void WriteOperationsToJournal(List<ITransactionUnit> commitedOperations, JsonSerializerSettings settings, string pathToFile)
-        {
-            string json = JsonConvert.SerializeObject(commitedOperations, Formatting.Indented, settings);
-            File.WriteAllText(pathToFile, json);
-        }
+        string JournalPath { get; set; }
+        void Save(List<ITransactionUnit> lst);
+        List<ITransactionUnit> Get();
     }
 }

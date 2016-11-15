@@ -25,89 +25,62 @@ namespace Core
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
-    using Core.Helpers;
     using Core.Interfaces;
-    using Newtonsoft.Json;
-    using System.Runtime.Serialization;
-
-    [DataContract]
+    
     public sealed class BussinesTransaction : IDisposable
     {
-        private List<ITransactionUnit> operations;
-        [DataMember]
-        private List<ITransactionUnit> commitedOperations;
-        private string journalPath;
-        private JsonSerializerSettings jsonSettings;
-
-        internal BussinesTransaction()               
+        private List<ITransactionUnit> executedUnits;
+        private ISaver saver;
+        private bool isException;
+        
+        internal BussinesTransaction(ISaver saver)
         {
-            this.operations = new List<ITransactionUnit>();
-            this.commitedOperations = new List<ITransactionUnit>();
-            var journalName = Guid.NewGuid().ToString();
-            this.journalPath = FolderHelper.CreatePathToJournal(journalName);
-            this.jsonSettings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Objects
-            };
+            this.executedUnits = new List<ITransactionUnit>();
+            this.saver = saver;
+            this.isException = true;
         }
 
-        public void RegisterOperation(ITransactionUnit operation)
+        public void ExecuteUnit(ITransactionUnit unit)
         {
-            this.operations.Add(operation);
+            try
+            {
+                unit.Commit();
+                this.executedUnits.Add(unit);
+                this.saver.Save(this.executedUnits);
+            }
+            catch (Exception)
+            {
+                this.Dispose();
+            }
         }
 
         public void Commit()
         {
-            try
-            {
-                File.Create(this.journalPath).Close();
-                this.CommitEachOperation();
-            }
-            catch (Exception e)
-            {
-                this.Rollback();
-            }
+            this.isException = false;
         }
 
         public void Dispose()
         {
-            File.Delete(this.journalPath);
-            this.operations.Clear();
-            this.operations = null;
-            this.commitedOperations.Clear();
-            this.commitedOperations = null;
+            if (this.isException)
+            {
+                this.Rollback();
+            }
+
+            this.saver.Dispose();
+            this.executedUnits.Clear();
+            this.executedUnits = null;
         }
         
         private void Rollback()
         {
-            this.operations = JournalHelper.GetOperationsFromJournal<List<ITransactionUnit>>(this.journalPath, jsonSettings);
-            this.operations.ForEach((op) => { this.commitedOperations.Add(op); });
+            var notRollbacked = new List<ITransactionUnit>();
+            notRollbacked.AddRange(this.executedUnits);
 
-            foreach (var operation in this.operations)
+            foreach (var unit in this.executedUnits)
             {
-                operation.Rollback();
-                this.commitedOperations.Remove(operation);
-                JournalHelper.WriteOperationsToJournal(this.commitedOperations, this.jsonSettings, this.journalPath);
-            }
-        }
-
-        private void CommitEachOperation()
-        {
-            foreach (var operation in this.operations)
-            {
-                try
-                {
-                    operation.Commit();
-                    this.commitedOperations.Add(operation);
-                    JournalHelper.WriteOperationsToJournal(this.commitedOperations, this.jsonSettings, this.journalPath);
-                }
-                catch (Exception e)
-                {
-                    this.commitedOperations.Remove(operation);
-                    JournalHelper.WriteOperationsToJournal(this.commitedOperations, this.jsonSettings, this.journalPath);
-                    throw e;
-                }
+                unit.Rollback();
+                notRollbacked.Remove(unit);
+                this.saver.Save(notRollbacked);
             }
         }
     }

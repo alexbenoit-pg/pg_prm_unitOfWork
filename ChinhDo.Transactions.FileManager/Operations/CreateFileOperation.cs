@@ -5,6 +5,8 @@
     using System.Runtime.Serialization;
 
     using ChinhDo.Transactions.Interfaces;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
 
     /// <summary>
     /// Rollbackable operation which copies a file.
@@ -18,6 +20,16 @@
         public CreateFileOperation(string pathToFile)
         {
             this.path = pathToFile;
+        }
+
+        [DataMember]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public FileOperations Type
+        {
+            get
+            {
+                return FileOperations.CreateFile;
+            }
         }
 
         public void Execute()

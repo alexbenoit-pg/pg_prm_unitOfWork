@@ -21,9 +21,6 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Resources;
-using System.Security.Cryptography.X509Certificates;
-
 namespace Units
 {
     using System;
@@ -36,7 +33,7 @@ namespace Units
     using Newtonsoft.Json.Converters;
 
     [DataContract]
-    public class SqLiteTransaction : ITransactionUnit
+    public class SQLiteUnit : ITransactionUnit
     {
         [DataMember]
         private readonly List<string> rollbackCommands = new List<string>();
@@ -51,7 +48,12 @@ namespace Units
         //private ResourceReader resourceReader = new ResourceReader("D:\\transaction\\pg_prm_unitOfWork\\Units\\Properties\\SQLiteResource.resx");
         //private const string resx = "D:\\transaction\\pg_prm_unitOfWork\\Units\\Properties\\SQLiteResource.resx";
 
-        public SqLiteTransaction(string pathdatabase)
+
+        public SQLiteUnit()
+        {
+        }
+
+        public SQLiteUnit(string pathdatabase)
         {
             this.dataBasePath = pathdatabase;
         }
@@ -61,18 +63,16 @@ namespace Units
             return string.Format("Data Source={0};", pathDataBase);
         }
 
-
         [DataMember]
         [JsonConverter(typeof(StringEnumConverter))]
-        public TransactionUnitType Type
+        public UnitType Type
         {
             get
             {
-                return TransactionUnitType.SQLiteUnit;
+                return UnitType.SQLiteUnit;
             }
         }
-
-
+        
         public void Dispose()
         {
             if (this.dataBaseConnection != null)
@@ -94,7 +94,7 @@ namespace Units
                 if (File.Exists(pathDataBase))
                 {
                     this.Dispose();
-                    string sqliteConnectionString = SqLiteTransaction.GetConnectionString(pathDataBase);
+                    string sqliteConnectionString = SQLiteUnit.GetConnectionString(pathDataBase);
                     this.dataBaseConnection = new SQLiteConnection(sqliteConnectionString);
                     this.dataBaseCommand = this.dataBaseConnection.CreateCommand();
                     this.dataBaseConnection.Open();
@@ -123,7 +123,7 @@ namespace Units
 
         public void Rollback()
         {
-            string sqliteConnectionString = SqLiteTransaction.GetConnectionString(this.dataBasePath);
+            string sqliteConnectionString = SQLiteUnit.GetConnectionString(this.dataBasePath);
             using (this.dataBaseConnection = new SQLiteConnection(sqliteConnectionString))
             {
                 this.dataBaseConnection.Open();

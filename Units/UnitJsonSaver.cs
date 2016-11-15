@@ -1,5 +1,5 @@
-// -----------------------------------------------------------------------
-// <copyright file="ITransactionUnit.cs" company="Paragon Software Group">
+﻿// -----------------------------------------------------------------------
+// <copyright file="UnitJsonSaver.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,20 +21,40 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core.Interfaces
+namespace Units
 {
     using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using Core;
+    using Core.Interfaces;
+    using Newtonsoft.Json;
 
-    public interface ITransactionUnit : IDisposable
+    public class UnitJsonSaver : ISaver
     {
-        /// <summary>
-        /// Rollback this operation
-        /// </summary>
-        void Rollback();
+        public UnitJsonSaver()
+        {
+            var name = Guid.NewGuid().ToString();
+            JournalPath = Path.Combine(UnitOfWork.GetJournalsFolder, name);
+        }
 
-        /// <summary>
-        /// Execute this operation
-        /// </summary>
-        void Commit();
+        public string JournalPath { get; set; }
+
+        public void Dispose()
+        {
+            File.Delete(JournalPath);
+        }
+
+        public List<ITransactionUnit> Get()
+        {
+            var json = File.ReadAllText(JournalPath);
+            return JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, new UnitJsonConverter());
+        }
+        
+        public void Save(List<ITransactionUnit> lst)
+        {
+            string json = JsonConvert.SerializeObject(lst, Formatting.Indented);
+            File.WriteAllText(JournalPath, json);
+        }
     }
 }

@@ -89,6 +89,7 @@
     <Compile Include="Heplers\FileUtils.cs" />
     <Compile Include="Operations\WriteAllBytesOperation.cs" />
     <Compile Include="Operations\WriteAllTextOperation.cs" />
+    <Compile Include="OperationJsonConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

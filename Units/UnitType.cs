@@ -1,5 +1,5 @@
-// -----------------------------------------------------------------------
-// <copyright file="ITransactionUnit.cs" company="Paragon Software Group">
+﻿// -----------------------------------------------------------------------
+// <copyright file="UnitType.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,20 +21,11 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core.Interfaces
+namespace Units
 {
-    using System;
-
-    public interface ITransactionUnit : IDisposable
+    public enum UnitType
     {
-        /// <summary>
-        /// Rollback this operation
-        /// </summary>
-        void Rollback();
-
-        /// <summary>
-        /// Execute this operation
-        /// </summary>
-        void Commit();
+        FileUnit,
+        SQLiteUnit
     }
 }
