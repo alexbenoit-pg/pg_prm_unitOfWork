@@ -21,24 +21,25 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace ChinhDo.Transactions
+namespace FileTransactionManager
 {
     using System;
-    using ChinhDo.Transactions.Interfaces;
-    using ChinhDo.Transactions.Operations;
+    using FileTransactionManager.Interfaces;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
+    using FileTransactionManager.Operations;
 
     public class OperationJsonConverter : JsonConverter
     {
         public override bool CanWrite => false;
         public override bool CanRead => true;
+
         public override bool CanConvert(Type objectType)
         {
             return objectType == typeof(IRollbackableOperation);
         }
-        public override void WriteJson(JsonWriter writer,
-            object value, JsonSerializer serializer)
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             throw new InvalidOperationException("Use default serialization.");
         }

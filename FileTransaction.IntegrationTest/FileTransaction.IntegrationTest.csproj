@@ -48,9 +48,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ChinhDo.Transactions.FileManager\ChinhDo.Transactions.FileManager.csproj">
+    <ProjectReference Include="..\ChinhDo.Transactions.FileManager\FileTransactionManager.csproj">
       <Project>{e824acbb-90c8-4c60-9d52-9c8020e98e3e}</Project>
-      <Name>ChinhDo.Transactions.FileManager</Name>
+      <Name>FileTransactionManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\Units\Units.csproj">
       <Project>{62b353bf-4c99-44fe-b01d-19edbe8e6f3d}</Project>

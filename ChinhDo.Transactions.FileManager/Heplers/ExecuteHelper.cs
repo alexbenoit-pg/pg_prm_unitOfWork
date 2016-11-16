@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="FileUnitExecuteHelper.cs" company="Paragon Software Group">
+// <copyright file="ExecuteHelper.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,10 +21,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using ChinhDo.Transactions.Interfaces;
-
-namespace ChinhDo.Transactions.Heplers
+namespace FileTransactionManager.Heplers
 {
+    using FileTransactionManager.Interfaces;
+
     public static class ExecuteHelper
     {
         public static void ExecuteOperation(IFileManager fileManager, FileOperations operation, object[] param)

@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Units.Tests", "Units.Tests\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitOfWork.IntegrationTest", "TestApp\UnitOfWork.IntegrationTest.csproj", "{B12CC820-E47D-4D56-A14D-9B8106078BBE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChinhDo.Transactions.FileManager", "ChinhDo.Transactions.FileManager\ChinhDo.Transactions.FileManager.csproj", "{E824ACBB-90C8-4C60-9D52-9C8020E98E3E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileTransactionManager", "ChinhDo.Transactions.FileManager\FileTransactionManager.csproj", "{E824ACBB-90C8-4C60-9D52-9C8020E98E3E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLiteTransaction.IntegrationTest", "SQLiteTransaction.IntegrationTest\SQLiteTransaction.IntegrationTest.csproj", "{8EDF4429-251A-416D-BB68-93F227191BCF}"
 EndProject

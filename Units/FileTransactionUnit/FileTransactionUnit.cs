@@ -21,14 +21,14 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using FileTransactionManager;
+
 namespace Units
 {
     using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
     using System.Transactions;
-
-    using ChinhDo.Transactions;
     using Core.Interfaces;
     using Newtonsoft.Json.Converters;
     using Newtonsoft.Json;
