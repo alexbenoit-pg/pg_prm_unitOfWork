@@ -14,7 +14,7 @@
     [DataContract]
     sealed class CreateFileOperation : IRollbackableOperation
     {
-        [DataMember]
+        [DataMember(Order = 1)]
         public readonly string path;
 
         public CreateFileOperation(string pathToFile)
@@ -22,7 +22,7 @@
             this.path = pathToFile;
         }
 
-        [DataMember]
+        [DataMember(Order = 0)]
         [JsonConverter(typeof(StringEnumConverter))]
         public FileOperations Type
         {

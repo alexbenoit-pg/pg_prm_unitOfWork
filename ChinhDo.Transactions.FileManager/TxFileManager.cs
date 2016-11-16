@@ -8,6 +8,7 @@ namespace ChinhDo.Transactions
     using ChinhDo.Transactions.Heplers;
     using ChinhDo.Transactions.Interfaces;
     using ChinhDo.Transactions.Operations;
+    using Newtonsoft.Json;
 
     [DataContract]
     public class TxFileManager : IFileManager
@@ -16,9 +17,9 @@ namespace ChinhDo.Transactions
         /// Initializes the <see cref="TxFileManager"/> class.
         /// </summary>
         /// 
-
         [DataMember]
-        private TxEnlistment enlistment;
+        [JsonConverter(typeof(OperationJsonConverter))]
+        private List<IRollbackableOperation> journal;
 
         public TxFileManager()
         {
@@ -272,6 +273,7 @@ namespace ChinhDo.Transactions
         private void EnlistOperation(IRollbackableOperation operation)
         {
             Transaction tx = Transaction.Current;
+            TxEnlistment enlistment;
 
             lock (_enlistmentsLock)
             {
@@ -286,12 +288,14 @@ namespace ChinhDo.Transactions
                     _enlistments.Add(tx.TransactionInformation.LocalIdentifier, enlistment);
                 }
                 enlistment.EnlistOperation(operation);
+                this.journal = new List<IRollbackableOperation>();
+                this.journal.AddRange(enlistment.GetJournal());
             }
         }
         
         public void RollbackAfterCrash()
         {
-            enlistment.RollbackAfterCrash();
+            new TxEnlistment().RollbackAfterCrash(this.journal);
         }
 
         ~TxFileManager()

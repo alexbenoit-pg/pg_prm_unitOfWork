@@ -13,9 +13,9 @@
     [DataContract]
     sealed class MoveOperation : IRollbackableOperation
     {
-        [DataMember]
+        [DataMember(Order = 1)]
         private readonly string sourceFileName;
-        [DataMember]
+        [DataMember(Order = 2)]
         private readonly string destFileName;
 
         /// <summary>
@@ -29,7 +29,7 @@
             this.destFileName = destFileName;
         }
 
-        [DataMember]
+        [DataMember(Order = 0)]
         [JsonConverter(typeof(StringEnumConverter))]
         public FileOperations Type
         {

@@ -35,20 +35,16 @@ namespace Units
     [DataContract]
     public class SQLiteUnit : ITransactionUnit
     {
-        [DataMember]
+        [DataMember (Order = 2)]
         private readonly List<string> rollbackCommands = new List<string>();
         private readonly List<string> commitCommands = new List<string>();
         
-        [DataMember]
+        [DataMember (Order = 1)]
         private string dataBasePath;
         private SQLiteConnection dataBaseConnection = null;
         private SQLiteCommand dataBaseCommand = null;
         private SQLiteTransaction dataBaseTransaction;
-
-        //private ResourceReader resourceReader = new ResourceReader("D:\\transaction\\pg_prm_unitOfWork\\Units\\Properties\\SQLiteResource.resx");
-        //private const string resx = "D:\\transaction\\pg_prm_unitOfWork\\Units\\Properties\\SQLiteResource.resx";
-
-
+        
         public SQLiteUnit()
         {
         }
@@ -63,7 +59,7 @@ namespace Units
             return string.Format("Data Source={0};", pathDataBase);
         }
 
-        [DataMember]
+        [DataMember (Order = 0)]
         [JsonConverter(typeof(StringEnumConverter))]
         public UnitType Type
         {

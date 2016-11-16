@@ -26,7 +26,7 @@ namespace Core.Interfaces
     using System;
     using System.Collections.Generic;
 
-    public interface ISaver : IDisposable
+    public interface IJournal : IDisposable
     {
         string JournalPath { get; set; }
         void Save(List<ITransactionUnit> lst);

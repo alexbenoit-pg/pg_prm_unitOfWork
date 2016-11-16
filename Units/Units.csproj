@@ -59,7 +59,7 @@
       <ExcludeFromStyleCop>False</ExcludeFromStyleCop>
     </Compile>
     <Compile Include="UnitJsonConverter.cs" />
-    <Compile Include="UnitJsonSaver.cs" />
+    <Compile Include="UnitJsonJournal.cs" />
     <Compile Include="UnitType.cs" />
   </ItemGroup>
   <ItemGroup>

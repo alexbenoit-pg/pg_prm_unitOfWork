@@ -30,9 +30,9 @@ namespace Units
     using Core.Interfaces;
     using Newtonsoft.Json;
 
-    public class UnitJsonSaver : ISaver
+    public class UnitJsonJournal : IJournal
     {
-        public UnitJsonSaver()
+        public UnitJsonJournal()
         {
             var name = Guid.NewGuid().ToString();
             JournalPath = Path.Combine(UnitOfWork.GetJournalsFolder, name);
@@ -51,9 +51,9 @@ namespace Units
             return JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, new UnitJsonConverter());
         }
         
-        public void Save(List<ITransactionUnit> lst)
+        public void Save(List<ITransactionUnit> unitCollection)
         {
-            string json = JsonConvert.SerializeObject(lst, Formatting.Indented);
+            string json = JsonConvert.SerializeObject(unitCollection, Formatting.Indented);
             File.WriteAllText(JournalPath, json);
         }
     }

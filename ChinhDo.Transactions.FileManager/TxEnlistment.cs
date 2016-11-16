@@ -84,8 +84,10 @@ namespace ChinhDo.Transactions
             enlistment.Done();
         }
 
-        public void RollbackAfterCrash()
+        public void RollbackAfterCrash(List<IRollbackableOperation> journal)
         {
+            this._journal = journal;
+
             try
             {
                 // Roll back journal items in reverse order
@@ -100,6 +102,11 @@ namespace ChinhDo.Transactions
             {
                 throw new TransactionException("Failed to roll back.", e);
             }
+        }
+
+        internal List<IRollbackableOperation> GetJournal()
+        {
+            return this._journal;
         }
 
         private void DisposeJournal()

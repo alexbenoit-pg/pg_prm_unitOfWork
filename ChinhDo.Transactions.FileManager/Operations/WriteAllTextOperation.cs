@@ -13,7 +13,7 @@
     [DataContract]
     sealed class WriteAllTextOperation : SingleFileOperation
     {
-        [DataMember]
+        [DataMember(Order = 1)]
         private readonly string contents;
 
         /// <summary>
@@ -27,7 +27,7 @@
             this.contents = contents;
         }
 
-        [DataMember]
+        [DataMember(Order = 0)]
         [JsonConverter(typeof(StringEnumConverter))]
         public FileOperations Type
         {

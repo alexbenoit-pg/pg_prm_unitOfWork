@@ -12,9 +12,9 @@
     [DataContract]
     sealed class CopyOperation : SingleFileOperation
     {
-        [DataMember]
+        [DataMember(Order = 1)]
         private readonly string sourceFileName;
-        [DataMember]
+        [DataMember(Order = 2)]
         private readonly bool overwrite;
 
         /// <summary>
@@ -30,7 +30,7 @@
             this.overwrite = overwrite;
         }
 
-        [DataMember]
+        [DataMember(Order = 0)]
         [JsonConverter(typeof(StringEnumConverter))]
         public FileOperations Type
         {

@@ -30,13 +30,13 @@ namespace Core
 
     public sealed class UnitOfWork
     {
-        private ISaver saver;
+        private IJournal saver;
 
-        public UnitOfWork(ISaver saver) : this(saver, true)
+        public UnitOfWork(IJournal saver) : this(saver, true)
         {
         }
         
-        public UnitOfWork(ISaver saver, bool checkAfterCrush)
+        public UnitOfWork(IJournal saver, bool checkAfterCrush)
         {
             this.saver = saver;
             FolderHelper.CreateJournalsFolder();
