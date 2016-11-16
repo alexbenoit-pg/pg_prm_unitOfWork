@@ -30,9 +30,9 @@ namespace Units
     using Core.Interfaces;
     using Newtonsoft.Json;
 
-    public class UnitJsonSaver : ISaver
+    public class UnitJsonJournal : ISaver
     {
-        public UnitJsonSaver()
+        public UnitJsonJournal()
         {
             var name = Guid.NewGuid().ToString();
             JournalPath = Path.Combine(UnitOfWork.GetJournalsFolder, name);
