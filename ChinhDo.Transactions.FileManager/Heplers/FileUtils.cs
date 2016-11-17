@@ -28,17 +28,17 @@ namespace FileTransactionManager.Heplers
 
     public static class FileUtils
     {
-        private static readonly string tempFolder = Path.Combine(Path.GetTempPath(), "UnitOfWorkFileTransaction");
-        private static readonly string journalFolder = Path.Combine(tempFolder, "Journals");
+        private static readonly string TempFolder = Path.Combine(Path.GetTempPath(), "UnitOfWorkFileTransaction");
+        private static readonly string JournalFolder = Path.Combine(TempFolder, "Journals");
 
         /// <summary>
         /// Ensures that the folder that contains the temporary files exists.
         /// </summary>
         public static void EnsureTempFolderExists()
         {
-            if (!Directory.Exists(tempFolder))
+            if (!Directory.Exists(TempFolder))
             {
-                Directory.CreateDirectory(tempFolder);
+                Directory.CreateDirectory(TempFolder);
             }
         }
 
@@ -47,9 +47,9 @@ namespace FileTransactionManager.Heplers
         /// </summary>
         public static void EnsureJournalFolder()
         {
-            if (!Directory.Exists(journalFolder))
+            if (!Directory.Exists(JournalFolder))
             {
-                Directory.CreateDirectory(journalFolder);
+                Directory.CreateDirectory(JournalFolder);
             }
         }
 
@@ -61,7 +61,7 @@ namespace FileTransactionManager.Heplers
         public static string GetTempFileName(string extension)
         {
             Guid g = Guid.NewGuid();
-            string retVal = Path.Combine(tempFolder, g.ToString().Substring(0, 8)) + extension;
+            string retVal = Path.Combine(TempFolder, g.ToString().Substring(0, 8)) + extension;
 
             return retVal;
         }

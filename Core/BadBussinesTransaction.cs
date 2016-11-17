@@ -30,18 +30,20 @@ namespace Core
     internal sealed class BadBussinesTransaction : IDisposable
     {
         private List<ITransactionUnit> executedUnits;
-        private ISaver saver;
+        private IJournal journal;
         
-        public BadBussinesTransaction(ISaver saver, string journalPath)
+        public BadBussinesTransaction(IJournal saver, string journalPath)
         {
-            this.saver = saver;
-            this.saver.JournalPath = journalPath;
-            this.executedUnits = this.saver.Get();
+            this.journal = saver;
+            this.journal.JournalPath = journalPath;
+            this.executedUnits = this.journal.Get();
+
+            this.Rollback();
         }
 
         public void Dispose()
         {
-            this.saver.Dispose();
+            this.journal.Dispose();
             this.executedUnits.Clear();
             this.executedUnits = null;
         }
@@ -55,7 +57,7 @@ namespace Core
             {
                 operation.Rollback();
                 notRollbacked.Remove(operation);
-                this.saver.Save(notRollbacked);
+                this.journal.Save(notRollbacked);
             }
         }
     }

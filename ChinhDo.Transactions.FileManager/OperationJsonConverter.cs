@@ -24,14 +24,16 @@
 namespace FileTransactionManager
 {
     using System;
+    using System.Collections.Generic;
     using FileTransactionManager.Interfaces;
+    using FileTransactionManager.Operations;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
-    using FileTransactionManager.Operations;
 
     public class OperationJsonConverter : JsonConverter
     {
         public override bool CanWrite => false;
+
         public override bool CanRead => true;
 
         public override bool CanConvert(Type objectType)
@@ -39,51 +41,64 @@ namespace FileTransactionManager
             return objectType == typeof(IRollbackableOperation);
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(
+            JsonWriter writer, 
+            object value, 
+            JsonSerializer serializer)
         {
             throw new InvalidOperationException("Use default serialization.");
         }
 
-        public override object ReadJson(JsonReader reader,
-            Type objectType, object existingValue,
+        public override object ReadJson(
+            JsonReader reader,
+            Type objectType, 
+            object existingValue,
             JsonSerializer serializer)
         {
-            var jsonObject = JObject.Load(reader);
-            var unit = default(IRollbackableOperation);
-            switch (jsonObject["Type"].Value<string>())
+            JArray ja = JArray.Load(reader);
+            var result = new List<IRollbackableOperation>();
+
+            foreach (var jsonObject in ja)
             {
-                case "AppendAllText":
-                    unit = new AppendAllTextOperation(
-                        jsonObject["path"].Value<string>(), 
-                        jsonObject["contents"].Value<string>());
-                    break;
-                case "Copy":
-                    unit = new CopyOperation(
-                        jsonObject["sourceFileName"].Value<string>(),
-                        jsonObject["destFileName"].Value<string>(),
-                        jsonObject["overwrite"].Value<bool>());
-                    break;
-                case "CreateFile":
-                    unit = new CreateFileOperation(
-                        jsonObject["pathToFile"].Value<string>());
-                    break;
-                case "Delete":
-                    unit = new DeleteFileOperation(
-                        jsonObject["path"].Value<string>());
-                    break;
-                case "Move":
-                    unit = new MoveOperation(
-                        jsonObject["sourceFileName"].Value<string>(),
-                        jsonObject["destFileName"].Value<string>());
-                    break;
-                case "WriteAllText":
-                    unit = new WriteAllTextOperation(
-                        jsonObject["path"].Value<string>(),
-                        jsonObject["contents"].Value<string>());
-                    break;
+                var unit = default(IRollbackableOperation);
+                switch (jsonObject["Type"].Value<string>())
+                {
+                    case "AppendAllText":
+                        unit = new AppendAllTextOperation(
+                            jsonObject["path"].Value<string>(),
+                            jsonObject["contents"].Value<string>());
+                        break;
+                    case "Copy":
+                        unit = new CopyOperation(
+                            jsonObject["sourceFileName"].Value<string>(),
+                            jsonObject["path"].Value<string>(),
+                            jsonObject["overwrite"].Value<bool>());
+                        break;
+                    case "CreateFile":
+                        unit = new CreateFileOperation(
+                            jsonObject["path"].Value<string>());
+                        break;
+                    case "Delete":
+                        unit = new DeleteFileOperation(
+                            jsonObject["path"].Value<string>());
+                        break;
+                    case "Move":
+                        unit = new MoveOperation(
+                            jsonObject["sourceFileName"].Value<string>(),
+                            jsonObject["destFileName"].Value<string>());
+                        break;
+                    case "WriteAllText":
+                        unit = new WriteAllTextOperation(
+                            jsonObject["path"].Value<string>(),
+                            jsonObject["contents"].Value<string>());
+                        break;
+                }
+
+                serializer.Populate(jsonObject.CreateReader(), unit);
+                result.Add(unit);
             }
-            serializer.Populate(jsonObject.CreateReader(), unit);
-            return unit;
+           
+            return result;
         }
     }
 }

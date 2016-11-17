@@ -31,7 +31,7 @@ namespace FileTransactionManager.Operations
     /// Creates all directories in the specified path.
     /// </summary>
     [DataContract]
-    sealed class CreateDirectoryOperation : IRollbackableOperation
+    internal sealed class CreateDirectoryOperation : IRollbackableOperation
     {
         [DataMember]
         private readonly string path;
@@ -49,7 +49,7 @@ namespace FileTransactionManager.Operations
 
         public void Execute()
         {
-            string children = Path.GetFullPath(path).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            string children = Path.GetFullPath(this.path).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
             string parent = Path.GetDirectoryName(children);
             while (parent != null && !Directory.Exists(parent))
             {
@@ -63,16 +63,16 @@ namespace FileTransactionManager.Operations
             }
             else
             {
-                Directory.CreateDirectory(path);
-                backupPath = children;
+                Directory.CreateDirectory(this.path);
+                this.backupPath = children;
             }
         }
 
         public void Rollback()
         {
-            if (backupPath != null)
+            if (this.backupPath != null)
             {
-                Directory.Delete(backupPath, true);
+                Directory.Delete(this.backupPath, true);
             }
         }
     }

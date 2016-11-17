@@ -33,11 +33,11 @@ namespace FileTransactionManager.Operations
     /// Rollbackable operation which moves a file to a new location.
     /// </summary>
     [DataContract]
-    sealed class MoveOperation : IRollbackableOperation
+    internal sealed class MoveOperation : IRollbackableOperation
     {
-        [DataMember]
+        [DataMember(Order = 1)]
         private readonly string sourceFileName;
-        [DataMember]
+        [DataMember(Order = 2)]
         private readonly string destFileName;
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace FileTransactionManager.Operations
             this.destFileName = destFileName;
         }
 
-        [DataMember]
+        [DataMember(Order = 0)]
         [JsonConverter(typeof(StringEnumConverter))]
         public FileOperations Type
         {
@@ -63,12 +63,12 @@ namespace FileTransactionManager.Operations
 
         public void Execute()
         {
-            File.Move(sourceFileName, destFileName);
+            File.Move(this.sourceFileName, this.destFileName);
         }
 
         public void Rollback()
         {
-            File.Move(destFileName, sourceFileName);
+            File.Move(this.destFileName, this.sourceFileName);
         }
     }
 }

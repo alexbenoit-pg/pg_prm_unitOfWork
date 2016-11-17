@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="FileTransactionUnit.cs" company="Paragon Software Group">
+// <copyright file="FileUnit.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,8 +21,6 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using FileTransactionManager;
-
 namespace Units
 {
     using System;
@@ -30,20 +28,26 @@ namespace Units
     using System.Runtime.Serialization;
     using System.Transactions;
     using Core.Interfaces;
-    using Newtonsoft.Json.Converters;
+    using FileTransactionManager;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
 
     [DataContract]
     public class FileUnit : ITransactionUnit
     {
-        [DataMember]
+        [DataMember(Order = 1)]
         private TxFileManager target;
         private List<FileOperations> operations;
         private Dictionary<int, object[]> paramsForOperations;
-        private TransactionScope scope;
-        [DataMember]
-        private string jsonJournal;
-        [DataMember]
+
+        public FileUnit()
+        {
+            this.target = new TxFileManager();
+            this.operations = new List<FileOperations>();
+            this.paramsForOperations = new Dictionary<int, object[]>();
+        }
+
+        [DataMember(Order = 0)]
         [JsonConverter(typeof(StringEnumConverter))]
         public UnitType Type
         {
@@ -53,32 +57,25 @@ namespace Units
             }
         }
 
-        public FileUnit()
-        {
-            this.target = new TxFileManager();
-            this.operations = new List<FileOperations>();
-            this.paramsForOperations = new Dictionary<int, object[]>();
-            this.jsonJournal = string.Empty;
-        }
-        
         public void Commit()
         {
-            this.scope = new TransactionScope();
-            try
+            using (var scope = new TransactionScope())
             {
-                this.ExecuteEachOperation();
-                scope.Complete();
-            }
-            catch (Exception e)
-            {
-                scope.Dispose();
-                throw e;
+                try
+                {
+                    this.ExecuteEachOperation();
+                    scope.Complete();
+                }
+                catch (Exception e)
+                {
+                    scope.Dispose();
+                    throw e;
+                }
             }
         }
 
         public void Dispose()
         {
-            this.scope.Dispose();
         }
         
         public void Rollback()

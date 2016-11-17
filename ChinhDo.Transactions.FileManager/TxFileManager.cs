@@ -31,18 +31,21 @@ namespace FileTransactionManager
     using FileTransactionManager.Heplers;
     using FileTransactionManager.Interfaces;
     using FileTransactionManager.Operations;
+    using Newtonsoft.Json;
 
     [DataContract]
     public class TxFileManager : IFileManager
     {
+        /// <summary>Dictionary of transaction enlistment objects for the current thread.</summary>
+        private readonly object enlistmentsLock = new object();
+        [DataMember]
+        [JsonConverter(typeof(OperationJsonConverter))]
+        private List<IRollbackableOperation> journal; private Dictionary<string, TxEnlistment> enlistments;
+
         /// <summary>
         /// Initializes the <see cref="TxFileManager"/> class.
         /// </summary>
         /// 
-
-        [DataMember]
-        private TxEnlistment enlistment;
-
         public TxFileManager()
         {
             FileUtils.EnsureTempFolderExists();
@@ -55,9 +58,9 @@ namespace FileTransactionManager
         /// <param name="contents">The string to append to the file.</param>
         public void AppendAllText(string path, string contents)
         {
-            if (IsInTransaction())
+            if (this.IsInTransaction())
             {
-                EnlistOperation(new AppendAllTextOperation(path, contents));
+                this.EnlistOperation(new AppendAllTextOperation(path, contents));
             }
             else
             {
@@ -71,9 +74,9 @@ namespace FileTransactionManager
         /// <param name="overwrite">true if the destination file can be overwritten, otherwise false.</param>
         public void Copy(string sourceFileName, string destFileName, bool overwrite)
         {
-            if (IsInTransaction())
+            if (this.IsInTransaction())
             {
-                EnlistOperation(new CopyOperation(sourceFileName, destFileName, overwrite));
+                this.EnlistOperation(new CopyOperation(sourceFileName, destFileName, overwrite));
             }
             else
             {
@@ -85,9 +88,9 @@ namespace FileTransactionManager
         /// <param name="path">The directory path to create.</param>
         public void CreateDirectory(string path)
         {
-            if (IsInTransaction())
+            if (this.IsInTransaction())
             {
-                EnlistOperation(new CreateDirectoryOperation(path));
+                this.EnlistOperation(new CreateDirectoryOperation(path));
             }
             else
             {
@@ -99,9 +102,9 @@ namespace FileTransactionManager
         /// <param name="pathToFile">The directory path to create.</param>
         public void CreateFile(string pathToFile)
         {
-            if (IsInTransaction())
+            if (this.IsInTransaction())
             {
-                EnlistOperation(new CreateFileOperation(pathToFile));
+                this.EnlistOperation(new CreateFileOperation(pathToFile));
             }
             else
             {
@@ -113,9 +116,9 @@ namespace FileTransactionManager
         /// <param name="path">The file to be deleted.</param>
         public void Delete(string path)
         {
-            if (IsInTransaction())
+            if (this.IsInTransaction())
             {
-                EnlistOperation(new DeleteFileOperation(path));
+                this.EnlistOperation(new DeleteFileOperation(path));
             }
             else
             {
@@ -127,9 +130,9 @@ namespace FileTransactionManager
         /// <param name="path">The directory to be deleted.</param>
         public void DeleteDirectory(string path)
         {
-            if (IsInTransaction())
+            if (this.IsInTransaction())
             {
-                EnlistOperation(new DeleteDirectoryOperation(path));
+                this.EnlistOperation(new DeleteDirectoryOperation(path));
             }
             else
             {
@@ -142,9 +145,9 @@ namespace FileTransactionManager
         /// <param name="destFileName">The new path for the file.</param>
         public void Move(string srcFileName, string destFileName)
         {
-            if (IsInTransaction())
+            if (this.IsInTransaction())
             {
-                EnlistOperation(new MoveOperation(srcFileName, destFileName));
+                this.EnlistOperation(new MoveOperation(srcFileName, destFileName));
             }
             else
             {
@@ -156,9 +159,9 @@ namespace FileTransactionManager
         /// <param name="fileName">The file to take a snapshot for.</param>
         public void Snapshot(string fileName)
         {
-            if (IsInTransaction())
+            if (this.IsInTransaction())
             {
-                EnlistOperation(new SnapshotOperation(fileName));
+                this.EnlistOperation(new SnapshotOperation(fileName));
             }
         }
 
@@ -167,9 +170,9 @@ namespace FileTransactionManager
         /// <param name="contents">The string to write to the file.</param>
         public void WriteAllText(string path, string contents)
         {
-            if (IsInTransaction())
+            if (this.IsInTransaction())
             {
-                EnlistOperation(new WriteAllTextOperation(path, contents));
+                this.EnlistOperation(new WriteAllTextOperation(path, contents));
             }
             else
             {
@@ -182,9 +185,9 @@ namespace FileTransactionManager
         /// <param name="contents">The bytes to write to the file.</param>
         public void WriteAllBytes(string path, byte[] contents)
         {
-            if (IsInTransaction())
+            if (this.IsInTransaction())
             {
-                EnlistOperation(new WriteAllBytesOperation(path, contents));
+                this.EnlistOperation(new WriteAllBytesOperation(path, contents));
             }
             else
             {
@@ -231,7 +234,7 @@ namespace FileTransactionManager
             {
                 foreach (string folderName in Directory.GetDirectories(path))
                 {
-                    GetFiles(folderName, handler, recursive);
+                    this.GetFiles(folderName, handler, recursive);
                 }
             }
         }
@@ -242,7 +245,7 @@ namespace FileTransactionManager
         {
             string retVal = FileUtils.GetTempFileName(extension);
 
-            Snapshot(retVal);
+            this.Snapshot(retVal);
 
             return retVal;
         }
@@ -250,14 +253,14 @@ namespace FileTransactionManager
         /// <summary>Creates a temporary file name. File is not automatically created.</summary>
         public string GetTempFileName()
         {
-            return GetTempFileName(".tmp");
+            return this.GetTempFileName(".tmp");
         }
 
         /// <summary>Gets a temporary directory.</summary>
         /// <returns>The path to the newly created temporary directory.</returns>
         public string GetTempDirectory()
         {
-            return GetTempDirectory(Path.GetTempPath(), string.Empty);
+            return this.GetTempDirectory(Path.GetTempPath(), string.Empty);
         }
 
         /// <summary>Gets a temporary directory.</summary>
@@ -269,7 +272,7 @@ namespace FileTransactionManager
             Guid g = Guid.NewGuid();
             string dirName = Path.Combine(parentDirectory, prefix + g.ToString().Substring(0, 16));
 
-            CreateDirectory(dirName);
+            this.CreateDirectory(dirName);
 
             return dirName;
         }
@@ -279,43 +282,40 @@ namespace FileTransactionManager
             ExecuteHelper.ExecuteOperation(this, operationType, operationParams);
         }
 
+        public void RollbackAfterCrash()
+        {
+            new TxEnlistment().RollbackAfterCrash(this.journal);
+        }
+
         #region Private
-
-        /// <summary>Dictionary of transaction enlistment objects for the current thread.</summary>
-
-        private Dictionary<string, TxEnlistment> _enlistments;
-
-        private readonly object _enlistmentsLock = new object();
 
         private bool IsInTransaction()
         {
             return Transaction.Current != null;
         }
-        //tod
+
         private void EnlistOperation(IRollbackableOperation operation)
         {
             Transaction tx = Transaction.Current;
+            TxEnlistment enlistment;
 
-            lock (_enlistmentsLock)
+            lock (this.enlistmentsLock)
             {
-                if (_enlistments == null)
+                if (this.enlistments == null)
                 {
-                    _enlistments = new Dictionary<string, TxEnlistment>();
+                    this.enlistments = new Dictionary<string, TxEnlistment>();
                 }
 
-                if (!_enlistments.TryGetValue(tx.TransactionInformation.LocalIdentifier, out enlistment))
+                if (!this.enlistments.TryGetValue(tx.TransactionInformation.LocalIdentifier, out enlistment))
                 {
                     enlistment = new TxEnlistment(tx);
-                    _enlistments.Add(tx.TransactionInformation.LocalIdentifier, enlistment);
+                    this.enlistments.Add(tx.TransactionInformation.LocalIdentifier, enlistment);
                 }
 
                 enlistment.EnlistOperation(operation);
+                this.journal = new List<IRollbackableOperation>();
+                this.journal.AddRange(enlistment.GetJournal());
             }
-        }
-
-        public void RollbackAfterCrash()
-        {
-            enlistment.RollbackAfterCrash();
         }
 
         #endregion

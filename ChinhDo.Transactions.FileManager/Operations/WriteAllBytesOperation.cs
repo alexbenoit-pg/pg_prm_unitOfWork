@@ -31,7 +31,7 @@ namespace FileTransactionManager.Operations
     /// Creates a file, and writes the specified contents to it.
     /// </summary>
     [DataContract]
-    sealed class WriteAllBytesOperation : SingleFileOperation
+    internal sealed class WriteAllBytesOperation : SingleFileOperation
     {
         [DataMember]
         private readonly byte[] contents;
@@ -49,14 +49,14 @@ namespace FileTransactionManager.Operations
 
         public override void Execute()
         {
-            if (File.Exists(path))
+            if (File.Exists(this.Path))
             {
-                string temp = FileUtils.GetTempFileName(Path.GetExtension(path));
-                File.Copy(path, temp);
-                backupPath = temp;
+                string temp = FileUtils.GetTempFileName(System.IO.Path.GetExtension(this.Path));
+                File.Copy(this.Path, temp);
+                this.BackupPath = temp;
             }
 
-            File.WriteAllBytes(path, contents);
+            File.WriteAllBytes(this.Path, this.contents);
         }
     }
 }

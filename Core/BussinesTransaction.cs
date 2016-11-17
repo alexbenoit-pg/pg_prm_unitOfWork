@@ -30,10 +30,10 @@ namespace Core
     public sealed class BussinesTransaction : IDisposable
     {
         private List<ITransactionUnit> executedUnits;
-        private ISaver saver;
+        private IJournal saver;
         private bool isException;
         
-        internal BussinesTransaction(ISaver saver)
+        internal BussinesTransaction(IJournal saver)
         {
             this.executedUnits = new List<ITransactionUnit>();
             this.saver = saver;
@@ -48,7 +48,7 @@ namespace Core
                 this.executedUnits.Add(unit);
                 this.saver.Save(this.executedUnits);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 this.Dispose();
             }

@@ -33,9 +33,9 @@ namespace FileTransactionManager.Operations
     /// Rollbackable operation which appends a string to an existing file, or creates the file if it doesn't exist.
     /// </summary>
     [DataContract]
-    sealed class AppendAllTextOperation : SingleFileOperation
+    internal sealed class AppendAllTextOperation : SingleFileOperation
     {
-        [DataMember]
+        [DataMember(Order = 1)]
         private readonly string contents;
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace FileTransactionManager.Operations
             this.contents = contents;
         }
 
-        [DataMember]
+        [DataMember(Order = 0)]
         [JsonConverter(typeof(StringEnumConverter))]
         public FileOperations Type
         {
@@ -61,14 +61,14 @@ namespace FileTransactionManager.Operations
 
         public override void Execute()
         {
-            if (File.Exists(path))
+            if (File.Exists(this.Path))
             {
-                string temp = FileUtils.GetTempFileName(Path.GetExtension(path));
-                File.Copy(path, temp);
-                backupPath = temp;
+                string temp = FileUtils.GetTempFileName(System.IO.Path.GetExtension(this.Path));
+                File.Copy(this.Path, temp);
+                this.BackupPath = temp;
             }
 
-            File.AppendAllText(path, contents);
+            File.AppendAllText(this.Path, this.contents);
         }
     }
 }

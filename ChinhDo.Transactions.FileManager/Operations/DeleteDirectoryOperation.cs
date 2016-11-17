@@ -33,7 +33,7 @@ namespace FileTransactionManager.Operations
     /// Deletes the specified directory and all its contents.
     /// </summary>
     [DataContract]
-    sealed class DeleteDirectoryOperation : IRollbackableOperation, IDisposable
+    internal sealed class DeleteDirectoryOperation : IRollbackableOperation, IDisposable
     {
         [DataMember]
         private readonly string path;
@@ -56,29 +56,30 @@ namespace FileTransactionManager.Operations
         /// </summary>
         ~DeleteDirectoryOperation()
         {
-            InnerDispose();
+            this.InnerDispose();
         }
 
         public void Execute()
         {
-            if (Directory.Exists(path))
+            if (Directory.Exists(this.path))
             {
                 string temp = FileUtils.GetTempFileName(string.Empty);
-                MoveDirectory(path, temp);
-                backupPath = temp;
+                MoveDirectory(this.path, temp);
+                this.backupPath = temp;
             }
         }
 
         public void Rollback()
         {
-            if (Directory.Exists(backupPath))
+            if (Directory.Exists(this.backupPath))
             {
-                string parentDirectory = Path.GetDirectoryName(path);
+                string parentDirectory = Path.GetDirectoryName(this.path);
                 if (!Directory.Exists(parentDirectory))
                 {
                     Directory.CreateDirectory(parentDirectory);
                 }
-                MoveDirectory(backupPath, path);
+
+                MoveDirectory(this.backupPath, this.path);
             }
         }
 
@@ -87,13 +88,13 @@ namespace FileTransactionManager.Operations
         /// </summary>
         public void Dispose()
         {
-            InnerDispose();
+            this.InnerDispose();
             GC.SuppressFinalize(this);
         }
 
         /// <summary>
         /// Moves a directory, recursively, from one path to another.
-		/// This is a version of <see cref="Directory.Move"/> that works across volumes.
+        /// This is a version of <see cref="Directory.Move"/> that works across volumes.
         /// </summary>
         private static void MoveDirectory(string sourcePath, string destinationPath)
         {
@@ -128,20 +129,20 @@ namespace FileTransactionManager.Operations
                 CopyDirectory(sourceSubDirectory, new DirectoryInfo(destinationSubDirectoryPath));
             }
         }
-		
+
         /// <summary>
         /// Disposes the resources of this class.
         /// </summary>
         private void InnerDispose()
         {
-            if (!disposed)
+            if (!this.disposed)
             {
-                if (Directory.Exists(backupPath))
+                if (Directory.Exists(this.backupPath))
                 {
-                    Directory.Delete(backupPath, true);
+                    Directory.Delete(this.backupPath, true);
                 }
 
-                disposed = true;
+                this.disposed = true;
             }
         }
     }

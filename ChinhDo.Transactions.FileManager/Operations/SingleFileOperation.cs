@@ -33,15 +33,15 @@ namespace FileTransactionManager.Operations
     /// to backup a single file and restore it when Rollback() is called.
     /// </summary>
     [DataContract]
-    abstract class SingleFileOperation : IRollbackableOperation, IDisposable
+    internal abstract class SingleFileOperation : IRollbackableOperation, IDisposable
     {
-        [DataMember]
-        public readonly string path;
-        [DataMember]
-        public string backupPath;
+        [DataMember(Order = 10)]
+        private readonly string path;
+        [DataMember(Order = 11)]
+        private string backupPath;
 
         // tracks whether Dispose has been called
-        [DataMember]
+        [DataMember(Order = 12)]
         private bool disposed;
 
         protected SingleFileOperation(string path)
@@ -49,24 +49,46 @@ namespace FileTransactionManager.Operations
             this.path = path;
         }
 
+        public string BackupPath
+        {
+            get
+            {
+                return this.backupPath;
+            }
+
+            set
+            {
+                this.backupPath = value;
+            }
+        }
+
+        public string Path
+        {
+            get
+            {
+                return this.path;
+            }
+        }
+
         public abstract void Execute();
 
         public void Rollback()
         {
-            if (backupPath != null)
+            if (this.BackupPath != null)
             {
-                string directory = Path.GetDirectoryName(path);
+                string directory = System.IO.Path.GetDirectoryName(this.Path);
                 if (!Directory.Exists(directory))
                 {
                     Directory.CreateDirectory(directory);
                 }
-                File.Copy(backupPath, path, true);
+
+                File.Copy(this.BackupPath, this.Path, true);
             }
             else
             {
-                if (File.Exists(path))
+                if (File.Exists(this.Path))
                 {
-                    File.Delete(path);
+                    File.Delete(this.Path);
                 }
             }
         }
@@ -78,7 +100,5 @@ namespace FileTransactionManager.Operations
         {
             GC.SuppressFinalize(this);
         }
-
     }
 }
-

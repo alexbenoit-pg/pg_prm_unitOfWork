@@ -34,17 +34,17 @@ namespace FileTransactionManager.Operations
     /// Rollbackable operation which copies a file.
     /// </summary>
     [DataContract]
-    sealed class CreateFileOperation : IRollbackableOperation
+    internal sealed class CreateFileOperation : IRollbackableOperation
     {
-        [DataMember]
-        public readonly string path;
+        [DataMember(Order = 1)]
+        public readonly string Path;
 
         public CreateFileOperation(string pathToFile)
         {
-            this.path = pathToFile;
+            this.Path = pathToFile;
         }
 
-        [DataMember]
+        [DataMember(Order = 0)]
         [JsonConverter(typeof(StringEnumConverter))]
         public FileOperations Type
         {
@@ -56,27 +56,29 @@ namespace FileTransactionManager.Operations
 
         public void Execute()
         {
-            var parentFolders = path.Split('\\');
-            string tempPath = "";
+            var parentFolders = this.Path.Split('\\');
+            string tempPath = string.Empty;
 
             for (var i = 0; i < parentFolders.Length - 1; i++)
             {
-                tempPath = Path.Combine(tempPath, parentFolders[i] + "\\");
+                tempPath = System.IO.Path.Combine(tempPath, parentFolders[i] + "\\");
                 if (!Directory.Exists(tempPath))
                 {
                     throw new Exception($"Folder {tempPath} is not exist.");
                 }
             }
 
-            if (!File.Exists(path))
-                File.Create(path).Close();
+            if (!File.Exists(this.Path))
+            {
+                File.Create(this.Path).Close();
+            }
         }
 
         public void Rollback()
         {
-            if (File.Exists(path))
+            if (File.Exists(this.Path))
             {
-                File.Delete(path);
+                File.Delete(this.Path);
             }
         }
     }

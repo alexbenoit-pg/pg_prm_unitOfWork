@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="SqLiteTransaction.cs" company="Paragon Software Group">
+// <copyright file="SQLiteUnit.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -35,20 +35,16 @@ namespace Units
     [DataContract]
     public class SQLiteUnit : ITransactionUnit
     {
-        [DataMember]
+        [DataMember(Order = 2)]
         private readonly List<string> rollbackCommands = new List<string>();
         private readonly List<string> commitCommands = new List<string>();
         
-        [DataMember]
+        [DataMember(Order = 1)]
         private string dataBasePath;
         private SQLiteConnection dataBaseConnection = null;
         private SQLiteCommand dataBaseCommand = null;
         private SQLiteTransaction dataBaseTransaction;
-
-        //private ResourceReader resourceReader = new ResourceReader("D:\\transaction\\pg_prm_unitOfWork\\Units\\Properties\\SQLiteResource.resx");
-        //private const string resx = "D:\\transaction\\pg_prm_unitOfWork\\Units\\Properties\\SQLiteResource.resx";
-
-
+        
         public SQLiteUnit()
         {
         }
@@ -58,12 +54,7 @@ namespace Units
             this.dataBasePath = pathdatabase;
         }
 
-        public static string GetConnectionString(string pathDataBase)
-        {
-            return string.Format("Data Source={0};", pathDataBase);
-        }
-
-        [DataMember]
+        [DataMember(Order = 0)]
         [JsonConverter(typeof(StringEnumConverter))]
         public UnitType Type
         {
@@ -72,7 +63,12 @@ namespace Units
                 return UnitType.SQLiteUnit;
             }
         }
-        
+
+        public static string GetConnectionString(string pathDataBase)
+        {
+            return string.Format("Data Source={0};", pathDataBase);
+        }
+
         public void Dispose()
         {
             if (this.dataBaseConnection != null)
@@ -86,34 +82,7 @@ namespace Units
             GC.Collect();
             GC.SuppressFinalize(this);
         }
-
-        private bool ConnectDatabase(string pathDataBase)
-        {
-            try
-            {
-                if (File.Exists(pathDataBase))
-                {
-                    this.Dispose();
-                    string sqliteConnectionString = SQLiteUnit.GetConnectionString(pathDataBase);
-                    this.dataBaseConnection = new SQLiteConnection(sqliteConnectionString);
-                    this.dataBaseCommand = this.dataBaseConnection.CreateCommand();
-                    this.dataBaseConnection.Open();
-                    this.dataBaseTransaction = this.dataBaseConnection.BeginTransaction();
-                    this.dataBaseCommand.Transaction = this.dataBaseTransaction;
-                    this.dataBasePath = pathDataBase;
-                    return true;
-                }
-                else
-                {
-                    throw new Exception("No such database file.");
-                }
-            }
-            catch (SQLiteException exception)
-            {
-                throw exception;
-            }
-        }
-
+        
         public bool AddSqliteCommand(string sqlCommand, string rollbackCommand)
         {
             this.rollbackCommands.Add(rollbackCommand);
@@ -161,6 +130,33 @@ namespace Units
             }
 
             this.SqLiteCommit();
+        }
+
+        private bool ConnectDatabase(string pathDataBase)
+        {
+            try
+            {
+                if (File.Exists(pathDataBase))
+                {
+                    this.Dispose();
+                    string sqliteConnectionString = SQLiteUnit.GetConnectionString(pathDataBase);
+                    this.dataBaseConnection = new SQLiteConnection(sqliteConnectionString);
+                    this.dataBaseCommand = this.dataBaseConnection.CreateCommand();
+                    this.dataBaseConnection.Open();
+                    this.dataBaseTransaction = this.dataBaseConnection.BeginTransaction();
+                    this.dataBaseCommand.Transaction = this.dataBaseTransaction;
+                    this.dataBasePath = pathDataBase;
+                    return true;
+                }
+                else
+                {
+                    throw new Exception("No such database file.");
+                }
+            }
+            catch (SQLiteException exception)
+            {
+                throw exception;
+            }
         }
 
         private void SqLiteCommit()

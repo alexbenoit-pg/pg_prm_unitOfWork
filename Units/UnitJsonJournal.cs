@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="UnitJsonSaver.cs" company="Paragon Software Group">
+// <copyright file="UnitJsonJournal.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -30,31 +30,31 @@ namespace Units
     using Core.Interfaces;
     using Newtonsoft.Json;
 
-    public class UnitJsonJournal : ISaver
+    public class UnitJsonJournal : IJournal
     {
         public UnitJsonJournal()
         {
             var name = Guid.NewGuid().ToString();
-            JournalPath = Path.Combine(UnitOfWork.GetJournalsFolder, name);
+            this.JournalPath = Path.Combine(UnitOfWork.GetJournalsFolder, name);
         }
 
         public string JournalPath { get; set; }
 
         public void Dispose()
         {
-            File.Delete(JournalPath);
+            File.Delete(this.JournalPath);
         }
 
         public List<ITransactionUnit> Get()
         {
-            var json = File.ReadAllText(JournalPath);
+            var json = File.ReadAllText(this.JournalPath);
             return JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, new UnitJsonConverter());
         }
         
-        public void Save(List<ITransactionUnit> lst)
+        public void Save(List<ITransactionUnit> unitsCollection)
         {
-            string json = JsonConvert.SerializeObject(lst, Formatting.Indented);
-            File.WriteAllText(JournalPath, json);
+            string json = JsonConvert.SerializeObject(unitsCollection, Formatting.Indented);
+            File.WriteAllText(this.JournalPath, json);
         }
     }
 }

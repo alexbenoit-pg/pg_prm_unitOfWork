@@ -33,11 +33,11 @@ namespace FileTransactionManager.Operations
     /// Rollbackable operation which copies a file.
     /// </summary>
     [DataContract]
-    sealed class CopyOperation : SingleFileOperation
+    internal sealed class CopyOperation : SingleFileOperation
     {
-        [DataMember]
+        [DataMember(Order = 1)]
         private readonly string sourceFileName;
-        [DataMember]
+        [DataMember(Order = 2)]
         private readonly bool overwrite;
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace FileTransactionManager.Operations
             this.overwrite = overwrite;
         }
 
-        [DataMember]
+        [DataMember(Order = 0)]
         [JsonConverter(typeof(StringEnumConverter))]
         public FileOperations Type
         {
@@ -65,14 +65,14 @@ namespace FileTransactionManager.Operations
 
         public override void Execute()
         {
-            if (File.Exists(path))
+            if (File.Exists(this.Path))
             {
-                string temp = FileUtils.GetTempFileName(Path.GetExtension(path));
-                File.Copy(path, temp);
-                backupPath = temp;
+                string temp = FileUtils.GetTempFileName(System.IO.Path.GetExtension(this.Path));
+                File.Copy(this.Path, temp);
+                this.BackupPath = temp;
             }
             
-            File.Copy(sourceFileName, path, overwrite);
+            File.Copy(this.sourceFileName, this.Path, this.overwrite);
         }
     }
 }

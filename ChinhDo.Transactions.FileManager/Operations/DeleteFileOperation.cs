@@ -33,7 +33,7 @@ namespace FileTransactionManager.Operations
     /// Rollbackable operation which deletes a file. An exception is not thrown if the file does not exist.
     /// </summary>
     [DataContract]
-    sealed class DeleteFileOperation : SingleFileOperation
+    internal sealed class DeleteFileOperation : SingleFileOperation
     {
         /// <summary>
         /// Instantiates the class.
@@ -44,7 +44,7 @@ namespace FileTransactionManager.Operations
         {
         }
 
-        [DataMember]
+        [DataMember(Order = 0)]
         [JsonConverter(typeof(StringEnumConverter))]
         public FileOperations Type
         {
@@ -56,14 +56,14 @@ namespace FileTransactionManager.Operations
 
         public override void Execute()
         {
-            if (File.Exists(path))
+            if (File.Exists(this.Path))
             {
-                string temp = FileUtils.GetTempFileName(Path.GetExtension(path));
-                File.Copy(path, temp);
-                backupPath = temp;
+                string temp = FileUtils.GetTempFileName(System.IO.Path.GetExtension(this.Path));
+                File.Copy(this.Path, temp);
+                this.BackupPath = temp;
             }
 
-            File.Delete(path);
+            File.Delete(this.Path);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="ISaver.cs" company="Paragon Software Group">
+// <copyright file="IJournal.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -26,10 +26,12 @@ namespace Core.Interfaces
     using System;
     using System.Collections.Generic;
 
-    public interface ISaver : IDisposable
+    public interface IJournal : IDisposable
     {
         string JournalPath { get; set; }
+
         void Save(List<ITransactionUnit> lst);
+
         List<ITransactionUnit> Get();
     }
 }

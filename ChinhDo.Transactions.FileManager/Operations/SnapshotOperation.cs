@@ -31,7 +31,7 @@ namespace FileTransactionManager.Operations
     /// Rollbackable operation which takes a snapshot of a file. The snapshot is used to rollback the file later if needed.
     /// </summary>
     [DataContract]
-    sealed class SnapshotOperation: SingleFileOperation
+    internal sealed class SnapshotOperation : SingleFileOperation
     {
         /// <summary>
         /// Instantiates the class.
@@ -43,11 +43,11 @@ namespace FileTransactionManager.Operations
 
         public override void Execute()
         {
-            if (File.Exists(path))
+            if (File.Exists(this.Path))
             {
-                string temp = FileUtils.GetTempFileName(Path.GetExtension(path));
-                File.Copy(path, temp);
-                backupPath = temp;
+                string temp = FileUtils.GetTempFileName(System.IO.Path.GetExtension(this.Path));
+                File.Copy(this.Path, temp);
+                this.BackupPath = temp;
             }
         }
     }

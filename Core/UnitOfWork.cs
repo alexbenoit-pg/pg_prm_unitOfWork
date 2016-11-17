@@ -24,39 +24,38 @@
 namespace Core
 {
     using System.IO;
-    using Core.Interfaces;
-    using Core.Helpers;
     using System.Linq;
+    using Core.Helpers;
+    using Core.Interfaces;
 
     public sealed class UnitOfWork
     {
-        private ISaver saver;
+        private IJournal saver;
 
-        public UnitOfWork(ISaver saver) : this(saver, true)
+        public UnitOfWork(IJournal saver) : this(saver, true)
         {
         }
         
-        public UnitOfWork(ISaver saver, bool checkAfterCrush)
+        public UnitOfWork(IJournal saver, bool checkAfterCrush)
         {
-            this.saver = saver;
             FolderHelper.CreateJournalsFolder();
             if (checkAfterCrush)
             {
                 this.CheckBadTransaction();
             }
         }
-
-        public BussinesTransaction BeginTransaction()
-        {
-            return new BussinesTransaction(saver);
-        }
-
+        
         public static string GetJournalsFolder
         {
             get
             {
                 return FolderHelper.JournalsFolder;
             }
+        }
+
+        public BussinesTransaction BeginTransaction()
+        {
+            return new BussinesTransaction(this.saver);
         }
 
         private void CheckBadTransaction()
@@ -72,7 +71,7 @@ namespace Core
         {
             foreach (var journalPath in journals)
             {
-                using (new BadBussinesTransaction(saver, journalPath))
+                using (new BadBussinesTransaction(this.saver, journalPath))
                 {
                 }
             }

@@ -32,29 +32,20 @@ namespace FileTransactionManager
 
     /// <summary>Provides two-phase commits/rollbacks/etc for a single <see cref="Transaction"/>.</summary>
     [DataContract]
-    sealed class TxEnlistment : IEnlistmentNotification
+    internal sealed class TxEnlistment : IEnlistmentNotification
     {
         [DataMember]
-        private List<IRollbackableOperation> _journal = new List<IRollbackableOperation>();
-        JsonSerializerSettings settings;
+        private List<IRollbackableOperation> journal = new List<IRollbackableOperation>();
 
         /// <summary>Initializes a new instance of the <see cref="TxEnlistment"/> class.</summary>
         /// <param name="tx">The Transaction.</param>
         public TxEnlistment(Transaction tx)
         {
             tx.EnlistVolatile(this, EnlistmentOptions.None);
-            this.settings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Objects
-            };
         }
 
         public TxEnlistment()
         {
-            this.settings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Objects
-            };
         }
 
         /// <summary>
@@ -65,18 +56,18 @@ namespace FileTransactionManager
         public void EnlistOperation(IRollbackableOperation operation)
         {
             operation.Execute();
-            _journal.Add(operation);
+            this.journal.Add(operation);
         }
         
         public void Commit(Enlistment enlistment)
         {
-            DisposeJournal();
+            this.DisposeJournal();
             enlistment.Done();
         }
 
         public void InDoubt(Enlistment enlistment)
         {
-            Rollback(enlistment);
+            this.Rollback(enlistment);
         }
 
         public void Prepare(PreparingEnlistment preparingEnlistment)
@@ -92,12 +83,12 @@ namespace FileTransactionManager
             try
             {
                 // Roll back journal items in reverse order
-                for (int i = _journal.Count - 1; i >= 0; i--)
+                for (int i = this.journal.Count - 1; i >= 0; i--)
                 {
-                    _journal[i].Rollback();
+                    this.journal[i].Rollback();
                 }
 
-                DisposeJournal();
+                this.DisposeJournal();
             }
             catch (Exception e)
             {
@@ -107,17 +98,19 @@ namespace FileTransactionManager
             enlistment.Done();
         }
 
-        public void RollbackAfterCrash()
+        public void RollbackAfterCrash(List<IRollbackableOperation> journal)
         {
+            this.journal = journal;
+
             try
             {
                 // Roll back journal items in reverse order
-                for (int i = _journal.Count - 1; i >= 0; i--)
+                for (int i = this.journal.Count - 1; i >= 0; i--)
                 {
-                    _journal[i].Rollback();
+                    this.journal[i].Rollback();
                 }
 
-                DisposeJournal();
+                this.DisposeJournal();
             }
             catch (Exception e)
             {
@@ -125,18 +118,23 @@ namespace FileTransactionManager
             }
         }
 
+        internal List<IRollbackableOperation> GetJournal()
+        {
+            return this.journal;
+        }
+
         private void DisposeJournal()
         {
             IDisposable disposable;
-            for (int i = _journal.Count - 1; i >= 0; i--)
+            for (int i = this.journal.Count - 1; i >= 0; i--)
             {
-                disposable = _journal[i] as IDisposable;
+                disposable = this.journal[i] as IDisposable;
                 if (disposable != null)
                 {
                     disposable.Dispose();
                 }
 
-                _journal.RemoveAt(i);
+                this.journal.RemoveAt(i);
             }
         }
     }

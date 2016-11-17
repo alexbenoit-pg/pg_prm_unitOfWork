@@ -36,10 +36,12 @@ namespace Core.Helpers
         {
             get
             {
-                return $"{UserTempFolder}\\{FolderName}";
-                //return Convert.ToBoolean(ConfigurationSettings.AppSettings["UseDefaultJournalFolder"]) 
-                //    ? $"{UserTempFolder}\\{FolderName}"
-                //    : ConfigurationSettings.AppSettings["CustomJournalFolderPath"];
+                bool useDefault = Convert.ToBoolean(ConfigurationManager.AppSettings["UseDefaultJournalFolder"]);
+                string def = $"{UserTempFolder}\\{FolderName}";
+                string undef = ConfigurationManager.AppSettings["CustomJournalFolderPath"];
+
+                return useDefault
+                    ? def : undef;
             }
         }
 

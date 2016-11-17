@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="UnitConverter.cs" company="Paragon Software Group">
+// <copyright file="UnitJsonConverter.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -31,19 +31,26 @@ namespace Units
     public class UnitJsonConverter : JsonConverter
     {
         public override bool CanWrite => false;
+
         public override bool CanRead => true;
+
         public override bool CanConvert(Type objectType)
         {
             return objectType == typeof(ITransactionUnit);
         }
-        public override void WriteJson(JsonWriter writer,
-            object value, JsonSerializer serializer)
+
+        public override void WriteJson(
+            JsonWriter writer,
+            object value, 
+            JsonSerializer serializer)
         {
             throw new InvalidOperationException("Use default serialization.");
         }
 
-        public override object ReadJson(JsonReader reader,
-            Type objectType, object existingValue,
+        public override object ReadJson(
+            JsonReader reader,
+            Type objectType, 
+            object existingValue,
             JsonSerializer serializer)
         {
             var jsonObject = JObject.Load(reader);
@@ -57,6 +64,7 @@ namespace Units
                     unit = new SQLiteUnit();
                     break;
             }
+
             serializer.Populate(jsonObject.CreateReader(), unit);
             return unit;
         }

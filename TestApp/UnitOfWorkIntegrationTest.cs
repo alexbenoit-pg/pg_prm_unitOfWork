@@ -8,6 +8,7 @@ namespace TestApp
     using Core;
     using NUnit.Framework;
     using Units;
+
     public class TestAppIntegrationTest
     {
 
@@ -52,8 +53,7 @@ namespace TestApp
             Directory.Delete(pathToSaveDirectory, true);
         }
 
-        private static void pre(string pathToSaveDirectory, string pathToDataBase)
-        {
+        private static void pre(string pathToSaveDirectory, string pathToDataBase) {
             if (File.Exists(pathToDataBase))
             {
                 File.Delete(pathToDataBase);
@@ -66,8 +66,8 @@ namespace TestApp
                 File.Delete(appendFile);
             }
             File.Create(appendFile).Close();
-            File.AppendAllText(appendFile, "asd");
-
+            File.AppendAllText(appendFile,"asd");
+            
             string writeFile = pathToSaveDirectory + "write.txt";
             if (File.Exists(writeFile))
             {
@@ -82,7 +82,7 @@ namespace TestApp
                 File.Delete(copyFile);
             }
             File.Create(copyFile).Close();
-
+            
             string deleteFile = pathToSaveDirectory + "delete.txt";
             if (File.Exists(deleteFile))
             {
@@ -96,7 +96,7 @@ namespace TestApp
                 File.Delete(removeFile);
             }
             File.Create(removeFile).Close();
-            Directory.CreateDirectory(pathToSaveDirectory + "Target");
+            Directory.CreateDirectory(pathToSaveDirectory+"Target");
         }
 
         private static void CreatDataBase(string pathDataBase)
@@ -248,4 +248,6 @@ namespace TestApp
     //    {
     //    }
     //}
+
+
 }
