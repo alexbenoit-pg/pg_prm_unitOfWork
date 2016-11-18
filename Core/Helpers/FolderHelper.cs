@@ -31,17 +31,16 @@ namespace Core.Helpers
     {
         private static readonly string UserTempFolder = Path.GetTempPath();
         private static readonly string FolderName = "Unit_Of_Work";
+        private static string def = $"{UserTempFolder}\\{FolderName}";
+        private static string undef = ConfigurationManager.AppSettings["CustomJournalFolderPath"];
 
         internal static string JournalsFolder
         {
             get
             {
                 bool useDefault = Convert.ToBoolean(ConfigurationManager.AppSettings["UseDefaultJournalFolder"]);
-                string def = $"{UserTempFolder}\\{FolderName}";
-                string undef = ConfigurationManager.AppSettings["CustomJournalFolderPath"];
 
-                return useDefault
-                    ? def : undef;
+                return def;
             }
         }
 

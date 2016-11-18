@@ -27,6 +27,7 @@ namespace Core
     using System.Linq;
     using Core.Helpers;
     using Core.Interfaces;
+    using System.Configuration;
 
     public sealed class UnitOfWork
     {
@@ -38,6 +39,8 @@ namespace Core
         
         public UnitOfWork(IJournal saver, bool checkAfterCrush)
         {
+            var undef = ConfigurationManager.AppSettings["CustomJournalFolderPath"];
+
             FolderHelper.CreateJournalsFolder();
             if (checkAfterCrush)
             {

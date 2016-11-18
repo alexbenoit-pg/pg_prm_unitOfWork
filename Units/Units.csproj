@@ -66,13 +66,13 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ChinhDo.Transactions.FileManager\FileTransactionManager.csproj">
-      <Project>{E824ACBB-90C8-4C60-9D52-9C8020E98E3E}</Project>
-      <Name>FileTransactionManager</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{13ec2041-9b82-494a-88c7-9535d771cdab}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FileTransactionManager\FileTransactionManager.csproj">
+      <Project>{e824acbb-90c8-4c60-9d52-9c8020e98e3e}</Project>
+      <Name>FileTransactionManager</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
