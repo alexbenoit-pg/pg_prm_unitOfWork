@@ -1,4 +1,25 @@
-﻿using System.Collections.Generic;
+﻿// -----------------------------------------------------------------------
+// <copyright file="UnitOfWorkIntegrationTest.cs" company="Paragon Software Group">
+// EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
+// HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
+// GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
+// IN WHOLE OR IN PART WITHOUT EXPLICIT WRITTEN AUTHORIZATION FROM THE COMPANY.
+// 
+// Copyright (c) 1994-2016 Paragon Software Group, All rights reserved.
+// 
+// UNLESS OTHERWISE AGREED IN A WRITING SIGNED BY THE PARTIES, THIS SOFTWARE IS
+// PROVIDED "AS-IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+// PARTICULAR PURPOSE, ALL OF WHICH ARE HEREBY DISCLAIMED. IN NO EVENT SHALL THE
+// AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF NOT ADVISED OF
+// THE POSSIBILITY OF SUCH DAMAGE.
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace TestApp
 {
@@ -8,246 +29,370 @@ namespace TestApp
     using Core;
     using NUnit.Framework;
     using Units;
-
-    public class TestAppIntegrationTest
+    
+    [TestFixture]
+    public class UnitOfWorkIntegrationTest
     {
+        private readonly UnitOfWork unit = new UnitOfWork(new UnitJsonJournal(), false);
 
-        private static void Main()
+        private static string PathToSaveDirectory => $"{Path.GetTempPath()}FileAndSQLiteTransaction\\";
+
+        private string PathToDataBase => $"{PathToSaveDirectory}test.db";
+
+        private string DbTableName => "Person";
+
+        private string DbFieldFirstName => "FirstName";
+
+        private string DbFieldLastName => "LastName";
+
+        private string DbFieldId => "Id";
+
+        private string DbRowId => "1";
+
+        private string FirstName => "Max";
+
+        private string LastName => "Doerty";
+
+        private string NewFirstName => "Pit";
+
+        private string TargetDirectory => $"{PathToSaveDirectory}TargetFolder\\";
+
+        private string AppendFilePath => $"{PathToSaveDirectory}append.txt"; 
+
+        private string WriteFilePath => $"{PathToSaveDirectory}write.txt"; 
+
+        private string Content => "Text for test.";
+
+        private string CopyFilePath => $"{PathToSaveDirectory}copy.txt"; 
+
+        private string DeleteFilePath => $"{PathToSaveDirectory}delete.txt"; 
+
+        private string MoveFilePath => $"{PathToSaveDirectory}move.txt"; 
+
+        private string CreateFilePath => $"{PathToSaveDirectory}CreateFileTest.txt"; 
+
+        private string MovebleFilePath => $"{TargetDirectory}moveble.txt"; 
+
+        private string CopybleFilePath => $"{PathToSaveDirectory}copy_2.txt"; 
+
+        private string AddedContent => "\n=====\nThis text was added\n=====\n";
+        
+        [SetUp]
+        public void TestFixtureSetup()
         {
+            if (Directory.Exists(PathToSaveDirectory))
+            {
+                Directory.Delete(PathToSaveDirectory, true);
+            }
 
-            string pathToSaveDirectory = Path.GetTempPath() + @"FileAndSQLiteTransaction\";
-            string pathToDataBase = pathToSaveDirectory + "test.db";
+            Directory.CreateDirectory(PathToSaveDirectory);
+            this.CreatDataBase(this.PathToDataBase);
+            File.Create(this.AppendFilePath).Close();
+            File.AppendAllText(this.AppendFilePath, this.Content);
+            File.Create(this.WriteFilePath).Close();
+            File.AppendAllText(this.WriteFilePath, this.Content);
+            File.Create(this.CopyFilePath).Close();
+            File.Create(this.DeleteFilePath).Close();
+            File.Create(this.MoveFilePath).Close();
+            Directory.CreateDirectory(this.TargetDirectory);
+        }
 
-            //Directory.CreateDirectory(pathToSaveDirectory);
-            pre(pathToSaveDirectory, pathToDataBase);
+        [TearDown]
+        public void TestFixtureTearDown()
+        {
+            GC.Collect();
+            GC.SuppressFinalize(this);
+            Directory.Delete(PathToSaveDirectory, true);
+        }
 
-            UnitOfWork unit = new UnitOfWork(new UnitJsonJournal());
-
-            //var sqliteTransactionFirst = new SQLiteUnit(pathToDataBase);
-            //sqliteTransactionFirst.AddSqliteCommand(
-            //    "INSERT INTO person(id, first_name, last_name) VALUES (2, 'Commit1', 'Check1');",
-            //    "DELETE FROM person WHERE first_name = 'Commit1'");
-
-            //var sqliteTransactionSecond = new SQLiteUnit(pathToDataBase);
-            //sqliteTransactionSecond.AddSqliteCommand(
-            //    "UPDATE person set first_name = 'pit' WHERE id = 2",
-            //    "UPDATE person set first_name = 'max' WHERE id = 2");
+        [Test]
+        public void AllFunctionallityPositiveTest_ReturnTrue()
+        {
+            // Arrange
+            var sqliteTransactionFirst = new SQLiteUnit(this.PathToDataBase);
+            string firstSqlCommand = 
+                $"INSERT INTO {this.DbTableName}({this.DbFieldId}, {this.DbFieldFirstName}, {this.DbFieldLastName}) "
+                + $"VALUES ({this.DbRowId}, '{this.FirstName}', '{this.LastName}')";
+            string firstSqlRollback = $"DELETE FROM {this.DbTableName} WHERE {this.DbFieldId} = {this.DbRowId}";
+            sqliteTransactionFirst.AddSqliteCommand(
+                firstSqlCommand,
+                firstSqlRollback);
 
             var fileTransaction = new FileUnit();
-            fileTransaction.CreateFile(pathToSaveDirectory + "CreateFileTest.txt");
-            fileTransaction.Copy(pathToSaveDirectory + "copy.txt", pathToSaveDirectory + "copy_2.txt", true);
-            fileTransaction.AppendAllText(pathToSaveDirectory + "append.txt", "\nAAAAAAAAA");
-            fileTransaction.WriteAllText(pathToSaveDirectory + "write.txt", "AAAAAAAAA");
-            fileTransaction.Delete(pathToSaveDirectory + "delete.txt");
-            fileTransaction.Move(pathToSaveDirectory + "move.txt", pathToSaveDirectory + "Target\\moveble.txt");
+            fileTransaction.CreateFile(this.CreateFilePath);
+            fileTransaction.Copy(this.CopyFilePath, this.CopybleFilePath, true);
+            fileTransaction.AppendAllText(this.AppendFilePath, this.AddedContent);
+            fileTransaction.WriteAllText(this.WriteFilePath, this.AddedContent);
+            fileTransaction.Delete(this.DeleteFilePath);
+            fileTransaction.Move(this.MoveFilePath, this.MovebleFilePath);
 
+            var sqliteTransactionSecond = new SQLiteUnit(this.PathToDataBase);
+            string secondSqlCommand = 
+                $"UPDATE {this.DbTableName} set {this.DbFieldFirstName} = "
+                + $"'{this.NewFirstName}' WHERE {this.DbFieldId} = {this.DbRowId}";
+            string secondSqlRollback = 
+                $"UPDATE {this.DbTableName} set {this.DbFieldFirstName} = "
+                + $"'{this.LastName}' WHERE {this.DbFieldId} = {this.DbRowId}";
+            sqliteTransactionSecond.AddSqliteCommand(
+                secondSqlCommand,
+                secondSqlRollback);
 
-            using (var bussinesTransaction = unit.BeginTransaction())
+            // Act
+            using (var bussinesTransaction = this.unit.BeginTransaction())
             {
-                //bussinesTransaction.ExecuteUnit(sqliteTransactionFirst);
-                //bussinesTransaction.ExecuteUnit(sqliteTransactionSecond);
+                bussinesTransaction.ExecuteUnit(sqliteTransactionFirst);
+                bussinesTransaction.ExecuteUnit(fileTransaction);
+                bussinesTransaction.ExecuteUnit(sqliteTransactionSecond);
+                bussinesTransaction.Commit();
+            }
+
+            string firstNameInDb = string.Empty;
+            string lastNameInDb = string.Empty;
+            this.GetInfOfDataBase(out firstNameInDb, out lastNameInDb);
+
+            // Assert
+            Assert.IsTrue(File.Exists(this.CreateFilePath));
+            Assert.IsTrue(File.Exists(this.CopybleFilePath) && File.Exists(this.CopyFilePath));
+            string textInAppendFile = File.ReadAllText(this.AppendFilePath);
+            Assert.AreEqual(textInAppendFile, this.Content + this.AddedContent);
+            string textInWriteFile = File.ReadAllText(this.WriteFilePath);
+            Assert.AreEqual(textInWriteFile, this.AddedContent);
+            Assert.IsFalse(File.Exists(this.DeleteFilePath));
+            Assert.IsTrue(File.Exists(this.MovebleFilePath) && !File.Exists(this.MoveFilePath));
+            Assert.AreEqual(this.NewFirstName, firstNameInDb);
+            Assert.AreEqual(this.LastName, lastNameInDb);
+        }
+
+        [Test]
+        public void BadUnitAfterGoodUnits_ReturnTrue()
+        {
+            // Arrange
+            var sqliteTransactionFirst = new SQLiteUnit(this.PathToDataBase);
+            string firstSqlCommand =
+                $"INSERT INTO {this.DbTableName}({this.DbFieldId}, {this.DbFieldFirstName}, {this.DbFieldLastName}) "
+                + $"VALUES ({this.DbRowId}, '{this.FirstName}', '{this.LastName}')";
+            string firstSqlRollback = $"DELETE FROM {this.DbTableName} WHERE {this.DbFieldId} = {this.DbRowId}";
+            sqliteTransactionFirst.AddSqliteCommand(
+                firstSqlCommand,
+                firstSqlRollback);
+
+            var fileTransaction = new FileUnit();
+            fileTransaction.CreateFile(this.CreateFilePath);
+            fileTransaction.Copy(this.CopyFilePath, this.CopybleFilePath, true);
+            fileTransaction.AppendAllText(this.AppendFilePath, this.AddedContent);
+            fileTransaction.WriteAllText(this.WriteFilePath, this.AddedContent);
+            fileTransaction.Delete(this.DeleteFilePath);
+            fileTransaction.Move(this.MoveFilePath, this.MovebleFilePath);
+            
+            var badFileUnit = new FileUnit();
+            badFileUnit.Copy(this.DeleteFilePath, this.CopybleFilePath, true);
+            
+            // Act
+            using (var bussinesTransaction = this.unit.BeginTransaction())
+            {
+                bussinesTransaction.ExecuteUnit(sqliteTransactionFirst);
+                bussinesTransaction.ExecuteUnit(fileTransaction);
+                bussinesTransaction.ExecuteUnit(badFileUnit);
+                bussinesTransaction.Commit();
+            }
+
+            string firstNameInDb = string.Empty;
+            string lastNameInDb = string.Empty;
+            this.GetInfOfDataBase(out firstNameInDb, out lastNameInDb);
+
+            // Assert
+            Assert.IsFalse(File.Exists(this.CreateFilePath));
+            Assert.IsTrue(!File.Exists(this.CopybleFilePath) && File.Exists(this.CopyFilePath));
+            string textInAppendFile = File.ReadAllText(this.AppendFilePath);
+            Assert.AreEqual(textInAppendFile, this.Content);
+            string textInWriteFile = File.ReadAllText(this.WriteFilePath);
+            Assert.AreEqual(textInWriteFile, this.Content);
+            Assert.IsTrue(File.Exists(this.DeleteFilePath));
+            Assert.IsTrue(!File.Exists(this.MovebleFilePath) && File.Exists(this.MoveFilePath));
+            Assert.AreEqual(string.Empty, firstNameInDb);
+            Assert.AreEqual(string.Empty, lastNameInDb);
+        }
+
+        [Test]
+        public void BadUnitBetweenGoodUnits_ReturnTrue()
+        {
+            // Arrange
+            var sqliteTransactionFirst = new SQLiteUnit(this.PathToDataBase);
+            string firstSqlCommand =
+                $"INSERT INTO {this.DbTableName}({this.DbFieldId}, {this.DbFieldFirstName}, {this.DbFieldLastName}) "
+                + $"VALUES ({this.DbRowId}, '{this.FirstName}', '{this.LastName}')";
+            string firstSqlRollback = $"DELETE FROM {this.DbTableName} WHERE {this.DbFieldId} = {this.DbRowId}";
+            sqliteTransactionFirst.AddSqliteCommand(
+                firstSqlCommand,
+                firstSqlRollback);
+
+            var fileTransaction = new FileUnit();
+            fileTransaction.CreateFile(this.CreateFilePath);
+            fileTransaction.Copy(this.CopyFilePath, this.CopybleFilePath, true);
+            fileTransaction.AppendAllText(this.AppendFilePath, this.AddedContent);
+            fileTransaction.WriteAllText(this.WriteFilePath, this.AddedContent);
+            fileTransaction.Delete(this.DeleteFilePath);
+            fileTransaction.Move(this.MoveFilePath, this.MovebleFilePath);
+
+            var badFileUnit = new FileUnit();
+            badFileUnit.Copy(this.CopybleFilePath, this.CopybleFilePath, true);
+
+            // Act
+            using (var bussinesTransaction = this.unit.BeginTransaction())
+            {
+                bussinesTransaction.ExecuteUnit(sqliteTransactionFirst);
+                bussinesTransaction.ExecuteUnit(badFileUnit);
                 bussinesTransaction.ExecuteUnit(fileTransaction);
                 bussinesTransaction.Commit();
             }
 
-            Directory.Delete(pathToSaveDirectory, true);
+            string firstNameInDb = string.Empty;
+            string lastNameInDb = string.Empty;
+            this.GetInfOfDataBase(out firstNameInDb, out lastNameInDb);
+
+            // Assert
+            Assert.IsFalse(File.Exists(this.CreateFilePath));
+            Assert.IsTrue(!File.Exists(this.CopybleFilePath) && File.Exists(this.CopyFilePath));
+            string textInAppendFile = File.ReadAllText(this.AppendFilePath);
+            Assert.AreEqual(textInAppendFile, this.Content);
+            string textInWriteFile = File.ReadAllText(this.WriteFilePath);
+            Assert.AreEqual(textInWriteFile, this.Content);
+            Assert.IsTrue(File.Exists(this.DeleteFilePath));
+            Assert.IsTrue(!File.Exists(this.MovebleFilePath) && File.Exists(this.MoveFilePath));
+            Assert.AreEqual(string.Empty, firstNameInDb);
+            Assert.AreEqual(string.Empty, lastNameInDb);
+        }
+        
+        [Test]
+        public void ForgottenToMakeCommit_ReturnTrue()
+        {
+            // Arrange
+            var sqliteTransactionFirst = new SQLiteUnit(this.PathToDataBase);
+            string firstSqlCommand =
+                $"INSERT INTO {this.DbTableName}({this.DbFieldId}, {this.DbFieldFirstName}, {this.DbFieldLastName}) "
+                + $"VALUES ({DbRowId}, '{FirstName}', '{LastName}')";
+            string firstSqlRollback = $"DELETE FROM {this.DbTableName} WHERE {DbFieldId} = {DbRowId}";
+            sqliteTransactionFirst.AddSqliteCommand(
+                firstSqlCommand,
+                firstSqlRollback);
+
+            var fileTransaction = new FileUnit();
+            fileTransaction.CreateFile(this.CreateFilePath);
+            fileTransaction.Copy(this.CopyFilePath, this.CopybleFilePath, true);
+            fileTransaction.AppendAllText(this.AppendFilePath, this.AddedContent);
+            fileTransaction.WriteAllText(this.WriteFilePath, this.AddedContent);
+            fileTransaction.Delete(this.DeleteFilePath);
+            fileTransaction.Move(this.MoveFilePath, this.MovebleFilePath);
+
+            var sqliteTransactionSecond = new SQLiteUnit(this.PathToDataBase);
+            string secondSqlCommand =
+                $"UPDATE {this.DbTableName} set {this.DbFieldFirstName} = "
+                + $"'{this.NewFirstName}' WHERE {this.DbFieldId} = {this.DbRowId}";
+            string secondSqlRollback =
+                $"UPDATE {this.DbTableName} set {this.DbFieldFirstName} = "
+                + $"'{LastName}' WHERE {this.DbFieldId} = {this.DbRowId}";
+            sqliteTransactionSecond.AddSqliteCommand(
+                secondSqlCommand,
+                secondSqlRollback);
+
+            // Act
+            using (var bussinesTransaction = this.unit.BeginTransaction())
+            {
+                bussinesTransaction.ExecuteUnit(sqliteTransactionFirst);
+                bussinesTransaction.ExecuteUnit(fileTransaction);
+                bussinesTransaction.ExecuteUnit(sqliteTransactionSecond);
+            }
+
+            string firstNameInDb = string.Empty;
+            string lastNameInDb = string.Empty;
+            this.GetInfOfDataBase(out firstNameInDb, out lastNameInDb);
+
+            // Assert
+            Assert.IsFalse(File.Exists(this.CreateFilePath));
+            Assert.IsTrue(!File.Exists(this.CopybleFilePath) && File.Exists(this.CopyFilePath));
+            string textInAppendFile = File.ReadAllText(this.AppendFilePath);
+            Assert.AreEqual(textInAppendFile, this.Content);
+            string textInWriteFile = File.ReadAllText(this.WriteFilePath);
+            Assert.AreEqual(textInWriteFile, this.Content);
+            Assert.IsTrue(File.Exists(this.DeleteFilePath));
+            Assert.IsTrue(!File.Exists(this.MovebleFilePath) && File.Exists(this.MoveFilePath));
+            Assert.AreEqual(string.Empty, firstNameInDb);
+            Assert.AreEqual(string.Empty, lastNameInDb);
         }
 
-        private static void pre(string pathToSaveDirectory, string pathToDataBase) {
-            if (File.Exists(pathToDataBase))
-            {
-                File.Delete(pathToDataBase);
-            }
-            CreatDataBase(pathToDataBase);
+        [Test]
+        public void OnlyBadUnit_ReturnTrue()
+        {
+            // Arrange
+            var badFileUnit = new FileUnit();
+            badFileUnit.Copy(this.CopybleFilePath, this.CopybleFilePath, true);
 
-            string appendFile = pathToSaveDirectory + "append.txt";
-            if (File.Exists(appendFile))
+            // Act
+            using (var bussinesTransaction = this.unit.BeginTransaction())
             {
-                File.Delete(appendFile);
+                bussinesTransaction.ExecuteUnit(badFileUnit);
+                bussinesTransaction.Commit();
             }
-            File.Create(appendFile).Close();
-            File.AppendAllText(appendFile,"asd");
-            
-            string writeFile = pathToSaveDirectory + "write.txt";
-            if (File.Exists(writeFile))
-            {
-                File.Delete(writeFile);
-            }
-            File.Create(writeFile).Close();
-            File.AppendAllText(writeFile, "asd");
 
-            string copyFile = pathToSaveDirectory + "copy.txt";
-            if (File.Exists(copyFile))
-            {
-                File.Delete(copyFile);
-            }
-            File.Create(copyFile).Close();
-            
-            string deleteFile = pathToSaveDirectory + "delete.txt";
-            if (File.Exists(deleteFile))
-            {
-                File.Delete(deleteFile);
-            }
-            File.Create(deleteFile).Close();
+            string firstNameInDb = string.Empty;
+            string lastNameInDb = string.Empty;
+            this.GetInfOfDataBase(out firstNameInDb, out lastNameInDb);
 
-            string removeFile = pathToSaveDirectory + "move.txt";
-            if (File.Exists(removeFile))
-            {
-                File.Delete(removeFile);
-            }
-            File.Create(removeFile).Close();
-            Directory.CreateDirectory(pathToSaveDirectory+"Target");
+            // Assert
+            Assert.IsFalse(File.Exists(this.CreateFilePath));
+            Assert.IsTrue(!File.Exists(this.CopybleFilePath) && File.Exists(this.CopyFilePath));
+            string textInAppendFile = File.ReadAllText(this.AppendFilePath);
+            Assert.AreEqual(textInAppendFile, this.Content);
+            string textInWriteFile = File.ReadAllText(this.WriteFilePath);
+            Assert.AreEqual(textInWriteFile, this.Content);
+            Assert.IsTrue(File.Exists(this.DeleteFilePath));
+            Assert.IsTrue(!File.Exists(this.MovebleFilePath) && File.Exists(this.MoveFilePath));
+            Assert.AreEqual(string.Empty, firstNameInDb);
+            Assert.AreEqual(string.Empty, lastNameInDb);
         }
 
-        private static void CreatDataBase(string pathDataBase)
+        private void CreatDataBase(string pathDataBase)
         {
             string sqliteConnectionString = SQLiteUnit.GetConnectionString(pathDataBase);
             SQLiteConnection connection = new SQLiteConnection(sqliteConnectionString);
 
-            SQLiteCommand command = new SQLiteCommand("CREATE TABLE person("
-                                                        + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                                                        + "first_name TEXT, "
-                                                        + "last_name TEXT);",
-                                                        connection);
+            SQLiteCommand command = new SQLiteCommand(
+                $"CREATE TABLE {DbTableName}("
+                    + $"{DbFieldId} INTEGER, "
+                    + $"{DbFieldFirstName} TEXT, "
+                    + $"{DbFieldLastName} TEXT);",
+                connection);
             connection.Open();
             command.ExecuteNonQuery();
             connection.Close();
             connection.Dispose();
         }
+
+        private void GetInfOfDataBase(out string firstName, out string lastName)
+        {
+            firstName = string.Empty;
+            lastName = string.Empty;
+
+            string connectionString = SQLiteUnit.GetConnectionString(this.PathToDataBase);
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+                using (SQLiteCommand command = new SQLiteCommand(
+                    $"SELECT * FROM person WHERE {DbFieldId} = {DbRowId}", 
+                    connection))
+                {
+                    using (SQLiteDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            firstName = reader[$"{DbFieldFirstName}"].ToString();
+                            lastName = reader[$"{DbFieldLastName}"].ToString();
+                        }
+                    }
+                }
+
+                connection.Close();
+            }
+        }
     }
-
-    //[TestFixture]
-    //public class TestAppIntegrationTest
-    //{
-    //    private string pathToSaveDirectory = Path.GetTempPath() + @"FileAndSQLiteTransaction\";
-    //    private string pathToDataBase;
-    //    private UnitOfWork unit = new UnitOfWork();
-
-    //    [OneTimeSetUp]
-    //    public void TestFixtureSetup()
-    //    {
-    //        Directory.CreateDirectory(this.pathToSaveDirectory);
-    //        this.pathToDataBase = this.pathToSaveDirectory + "test.db";
-    //        this.CreatDataBase(this.pathToDataBase);
-    //    }
-
-    //    [OneTimeTearDown]
-    //    public void TestFixtureTearDown()
-    //    {
-    //        GC.Collect();
-    //        GC.SuppressFinalize(this);
-    //        Directory.Delete(this.pathToSaveDirectory, true);
-    //    }
-
-    //    [Test]
-    //    public void WorkFileAndSqliteTransactionUNits_PositiveWork_ReturnTrue()
-    //    {
-    //        var sqliteTransactionFirst = new SQLiteUnit(this.pathToDataBase);
-    //        sqliteTransactionFirst.AddSqliteCommand(
-    //            "INSERT INTO person(id, first_name, last_name) VALUES (2, 'Commit1', 'Check1');",
-    //            "DELETE FROM person WHERE first_name = 'Commit1'");
-
-    //        var fileTransaction = new FileUnit();
-    //        fileTransaction.CreateFile(this.pathToSaveDirectory + "CreateFileTest.txt");
-
-    //        var sqliteTransactionSecond = new SQLiteUnit(this.pathToDataBase);
-    //        sqliteTransactionSecond.AddSqliteCommand(
-    //            "UPDATE person set first_name = 'pit' WHERE id = 2",
-    //            "UPDATE person set first_name = 'max' WHERE id = 2");
-
-    //        using (var bussinesTransaction = this.unit.BeginTransaction())
-    //        {
-    //            bussinesTransaction.ExecuteUnit(sqliteTransactionFirst);
-    //            bussinesTransaction.ExecuteUnit(fileTransaction);
-    //            bussinesTransaction.ExecuteUnit(sqliteTransactionSecond);
-    //            bussinesTransaction.Commit();
-    //        }
-
-    //        string firstname = string.Empty;
-    //        string lastname = string.Empty;
-    //        GetInfoofDataBase(out firstname, out lastname);
-
-    //        Assert.IsTrue(File.Exists(this.pathToSaveDirectory + "CreateFileTest.txt"));
-    //        Assert.AreEqual("pit", firstname);
-    //        Assert.AreEqual("Check1", lastname);
-    //    }
-
-    //    [Test]
-    //    public void WorkFileAndSqliteTransactionUNits_NegativWork_ReturnTrue()
-    //    {
-    //        var sqliteTransactionFirst = new SQLiteUnit(this.pathToDataBase);
-    //        sqliteTransactionFirst.AddSqliteCommand(
-    //            "INSERT INTO person(id, first_name, last_name) VALUES (2, 'Commit1', 'Check1');",
-    //            "DELETE FROM person WHERE first_name = 'Commit1'");
-
-    //        var fileTransaction = new FileUnit();
-    //        fileTransaction.CreateFile(this.pathToSaveDirectory + "CreateFileTest.txt");
-
-    //        var sqliteTransactionSecond = new SQLiteUnit(this.pathToDataBase);
-    //        sqliteTransactionSecond.AddSqliteCommand("UPDATE somethink set first_name = 'pit' WHERE id = 2", string.Empty);
-
-    //        using (var bussinesTransaction = this.unit.BeginTransaction())
-    //        {
-    //            bussinesTransaction.ExecuteUnit(sqliteTransactionFirst);
-    //            bussinesTransaction.ExecuteUnit(fileTransaction);
-    //            bussinesTransaction.ExecuteUnit(sqliteTransactionSecond);
-    //            bussinesTransaction.Commit();
-    //        }
-
-    //        string firstname = string.Empty;
-    //        string lastname = string.Empty;
-    //        GetInfoofDataBase(out firstname, out lastname);
-
-    //        Assert.IsFalse(File.Exists(this.pathToSaveDirectory + "CreateFileTest.txt"));
-    //        Assert.AreNotEqual("pit", firstname);
-    //        Assert.AreNotEqual("Check1", lastname);
-    //    }
-
-    //    private void CreatDataBase(string pathDataBase)
-    //    {
-    //        string sqliteConnectionString = SQLiteUnit.GetConnectionString(pathDataBase);
-    //        SQLiteConnection connection = new SQLiteConnection(sqliteConnectionString);
-
-    //        SQLiteCommand command = new SQLiteCommand("CREATE TABLE person("
-    //                                                    + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-    //                                                    + "first_name TEXT, "
-    //                                                    + "last_name TEXT);",
-    //                                                    connection);
-    //        connection.Open();
-    //        command.ExecuteNonQuery();
-    //        connection.Close();
-    //        connection.Dispose();
-    //    }
-
-    //    private void GetInfoofDataBase(out string firstname , out string lastname)
-    //    {
-    //        firstname = string.Empty;
-    //        lastname = string.Empty;
-
-    //        string sqliteConnectionString = SQLiteUnit.GetConnectionString(this.pathToDataBase);
-    //        using (SQLiteConnection connection = new SQLiteConnection(sqliteConnectionString))
-    //        {
-    //            connection.Open();
-    //            using (SQLiteCommand command = new SQLiteCommand("SELECT * FROM person  WHERE first_name = 'pit'", connection))
-    //            {
-    //                using (SQLiteDataReader rdr = command.ExecuteReader())
-    //                {
-    //                    while (rdr.Read())
-    //                    {
-    //                        firstname = rdr["first_name"].ToString();
-    //                        lastname = rdr["last_name"].ToString();
-    //                    }
-    //                }
-    //            }
-
-    //            connection.Close();
-    //        }
-    //    }
-
-    //    private static void Main()
-    //    {
-    //    }
-    //}
-
-
 }

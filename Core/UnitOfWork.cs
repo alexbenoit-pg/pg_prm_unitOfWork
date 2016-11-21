@@ -39,6 +39,7 @@ namespace Core
         
         public UnitOfWork(IJournal saver, bool checkAfterCrush)
         {
+            this.saver = saver;
             var undef = ConfigurationManager.AppSettings["CustomJournalFolderPath"];
 
             FolderHelper.CreateJournalsFolder();

@@ -31,43 +31,52 @@ namespace Core
     {
         private List<ITransactionUnit> executedUnits;
         private IJournal saver;
-        private bool isException;
-        
+        private bool isBad;
+        private bool isCommit;
+
         internal BussinesTransaction(IJournal saver)
         {
             this.executedUnits = new List<ITransactionUnit>();
             this.saver = saver;
-            this.isException = true;
+            this.isBad = false;
+            this.isCommit = false;
         }
 
         public void ExecuteUnit(ITransactionUnit unit)
         {
             try
             {
-                unit.Commit();
-                this.executedUnits.Add(unit);
-                this.saver.Save(this.executedUnits);
+                if (!this.isBad)
+                {
+                    unit.Commit();
+                    this.executedUnits.Add(unit);
+                    this.saver.Save(this.executedUnits);
+                }
             }
             catch (Exception e)
             {
-                this.Dispose();
+                this.isBad = true;
+                this.Rollback();
             }
         }
 
         public void Commit()
         {
-            this.isException = false;
+            this.isCommit = true;
         }
 
         public void Dispose()
         {
-            if (this.isException)
+            if (!isCommit)
             {
                 this.Rollback();
             }
+            else
+            {
+                this.executedUnits.Clear();
+            }
 
             this.saver.Dispose();
-            this.executedUnits.Clear();
             this.executedUnits = null;
         }
         
