@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="SQLiteUnit.cs" company="Paragon Software Group">
+// <copyright file="SQLiteManager.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,57 +21,53 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Units
+namespace Units.SQLiteTransactionUnit
 {
     using System;
     using System.Collections.Generic;
-    using System.Runtime.Serialization;
-    using Core.Interfaces;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
-    using Units.SQLiteTransactionUnit;
-
-    [DataContract]
-    public class SQLiteUnit : ITransactionUnit
+    using System.Data.SQLite;
+    using Resources = Properties.SQLiteUnit;
+    
+    public static class SQLiteManager
     {
-        [DataMember(Order = 1)]
-        private readonly List<string> rollbackCommands = new List<string>();
-        private readonly List<string> commitCommands = new List<string>();
-        [DataMember(Order = 2)]
-        private string dataBasePath;
-        
-        public SQLiteUnit(string dataBasePath)
+        public static string GetConnectionString(string dataBasePath)
         {
-            this.dataBasePath = dataBasePath;
+            return string.Format(
+                    Resources.ConnectionString,
+                    dataBasePath);
         }
 
-        [DataMember(Order = 0)]
-        [JsonConverter(typeof(StringEnumConverter))]
-        public UnitType Type => UnitType.SQLiteUnit;
-
-        public void AddSqliteCommand(string sqlCommand, string rollbackCommand)
+        public static void ExecuteCommands(string dataBasePath, IEnumerable<string> commands)
         {
-            this.rollbackCommands.Add(rollbackCommand);
-            this.commitCommands.Add(sqlCommand);
-        }
+            var сonnectionString = GetConnectionString(dataBasePath);
+            var connection = new SQLiteConnection(сonnectionString);
+            connection.Open();
+            var transaction = connection.BeginTransaction();
+            var sqlCommand = new SQLiteCommand(connection)
+            {
+                Transaction = transaction
+            };
+            try
+            {
+                foreach (string command in commands)
+                {
+                    sqlCommand.CommandText = command;
+                    sqlCommand.ExecuteNonQuery();
+                }
 
-        public void Rollback()
-        {
-            SQLiteManager.ExecuteCommands(this.dataBasePath, this.rollbackCommands);
+                transaction.Commit();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                transaction.Dispose();
+                sqlCommand.Dispose();
+                connection.Close();
+                connection.Dispose();
+            }
         }
-
-        public void Commit()
-        {
-            SQLiteManager.ExecuteCommands(this.dataBasePath, this.commitCommands);
-        }
-        
-        public void Dispose()
-        {
-            this.rollbackCommands.Clear();
-            this.commitCommands.Clear();
-            GC.Collect();
-            GC.SuppressFinalize(this);
-        }
-
     }
 }

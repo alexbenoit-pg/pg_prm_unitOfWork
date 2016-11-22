@@ -61,7 +61,7 @@ namespace Units
                     unit = new FileUnit();
                     break;
                 case "SQLiteUnit":
-                    unit = new SQLiteUnit();
+                    unit = new SQLiteUnit(jsonObject["dataBasePath"].Value<string>());
                     break;
             }
 

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Versioning;
+using Units.SQLiteTransactionUnit;
 
 namespace SQLiteTransaction.IntegrationTest
 {
@@ -8,7 +10,6 @@ namespace SQLiteTransaction.IntegrationTest
     using System.IO;
     using NUnit.Framework;
     using Units;
-
 
     [TestFixture]
     public class SqLiteTransactionIntegrationTest
@@ -60,17 +61,17 @@ namespace SQLiteTransaction.IntegrationTest
         [Test]
         public void OneCommandInUnit_ReturnTrue()
         {
-            // Arrange
+            //Arrange
             var sqliteTransactionFirst = new SQLiteUnit(this.PathToDataBase);
             string firstSqlCommand =
                 $"INSERT INTO {this.DbTableName}({this.DbFieldId}, {this.DbFieldFirstName}, {this.DbFieldLastName}) "
                 + $"VALUES (1, '{this.FirstName1}', '{this.LastName1}')";
-            sqliteTransactionFirst.AddSqliteCommand(firstSqlCommand,string.Empty);
-            
-            // Act
+            sqliteTransactionFirst.AddSqliteCommand(firstSqlCommand, string.Empty);
+
+            //Act
             sqliteTransactionFirst.Commit();
 
-            // Assert
+            //Assert
             var personsInDatabase = this.GetInfOfDataBase();
             var FirstNameinDb = personsInDatabase[0][0];
             var LastNameinDb = personsInDatabase[0][1];
@@ -238,17 +239,15 @@ namespace SQLiteTransaction.IntegrationTest
                 sqliteTransactionFirst.AddSqliteCommand(sqlCommand, rollbackComand);
             }
 
-            // Act
-            sqliteTransactionFirst.Commit();
-
             // Assert
+            Assert.Throws<SQLiteException>(() => sqliteTransactionFirst.Commit());
             var personsInDatabase = this.GetInfOfDataBase();
             Assert.IsTrue(!personsInDatabase.Any());
         }
 
         private void CreatDataBase(string pathDataBase)
         {
-            string sqliteConnectionString = SQLiteUnit.GetConnectionString(pathDataBase);
+            string sqliteConnectionString = SQLiteManager.GetConnectionString(pathDataBase);
             SQLiteConnection connection = new SQLiteConnection(sqliteConnectionString);
 
             SQLiteCommand command = new SQLiteCommand(
@@ -257,17 +256,18 @@ namespace SQLiteTransaction.IntegrationTest
                     + $"{DbFieldFirstName} TEXT, "
                     + $"{DbFieldLastName} TEXT);",
                 connection);
+
             connection.Open();
             command.ExecuteNonQuery();
+            command.Dispose();
             connection.Close();
-            connection.Dispose();
         }
 
         private List<string[]> GetInfOfDataBase()
         {
             var result = new List<string[]>();
 
-            string connectionString = SQLiteUnit.GetConnectionString(this.PathToDataBase);
+            string connectionString = SQLiteManager.GetConnectionString(this.PathToDataBase);
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
@@ -289,6 +289,7 @@ namespace SQLiteTransaction.IntegrationTest
                 connection.Close();
                 return result;
             }
+
         }
     }
 
