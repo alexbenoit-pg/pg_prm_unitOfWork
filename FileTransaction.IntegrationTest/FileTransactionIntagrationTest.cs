@@ -9,137 +9,129 @@
     [TestFixture]
     public class FileTransactionIntagrationTest
     {
-        private string pathToSaveDirectory = Path.GetTempPath() + @"TestFileTransaction\";
-       
-        [OneTimeSetUp]
+        private static string PathToSaveDirectory => $"{Path.GetTempPath()}FileAndSQLiteTransaction\\";
+
+        private string TargetDirectory => $"{PathToSaveDirectory}TargetFolder\\";
+
+        private string AppendFilePath => $"{PathToSaveDirectory}append.txt";
+
+        private string WriteFilePath => $"{PathToSaveDirectory}write.txt";
+
+        private string Content => "Text for test.";
+
+        private string CopyFilePath => $"{PathToSaveDirectory}copy.txt";
+
+        private string DeleteFilePath => $"{PathToSaveDirectory}delete.txt";
+
+        private string MoveFilePath => $"{PathToSaveDirectory}move.txt";
+
+        private string CreateFilePath => $"{PathToSaveDirectory}CreateFileTest.txt";
+
+        private string MovebleFilePath => $"{TargetDirectory}moveble.txt";
+
+        private string CopybleFilePath => $"{PathToSaveDirectory}copy_2.txt";
+
+        private string AddedContent => "\n=====\nThis text was added\n=====\n";
+
+        [SetUp]
         public void TestFixtureSetup()
         {
-            Directory.CreateDirectory(this.pathToSaveDirectory);
+            if (Directory.Exists(PathToSaveDirectory))
+            {
+                Directory.Delete(PathToSaveDirectory, true);
+            }
+
+            Directory.CreateDirectory(PathToSaveDirectory);
+            File.Create(this.AppendFilePath).Close();
+            File.AppendAllText(this.AppendFilePath, this.Content);
+            File.Create(this.WriteFilePath).Close();
+            File.AppendAllText(this.WriteFilePath, this.Content);
+            File.Create(this.CopyFilePath).Close();
+            File.Create(this.DeleteFilePath).Close();
+            File.Create(this.MoveFilePath).Close();
+            Directory.CreateDirectory(this.TargetDirectory);
         }
 
-        [OneTimeTearDown]
+        [TearDown]
         public void TestFixtureTearDown()
         {
             GC.Collect();
             GC.SuppressFinalize(this);
-            Directory.Delete(this.pathToSaveDirectory,true);
+            Directory.Delete(PathToSaveDirectory, true);
         }
 
         [Test]
         public void FileTransactionUnit_CreateFile_ReturnTrue()
         {
             var filetransaction = new FileUnit();
-            filetransaction.CreateFile(this.pathToSaveDirectory + "CreateFileTest.txt");
+            filetransaction.CreateFile(this.CreateFilePath);
             filetransaction.Commit();
             filetransaction.Dispose();
            
-            Assert.IsTrue(File.Exists(this.pathToSaveDirectory + "CreateFileTest.txt"));
+            Assert.IsTrue(File.Exists(this.CreateFilePath));
         }
 
         [Test]
         public void FileTransactionUnit_Move_ReturnTrue()
         {
-            Directory.CreateDirectory(this.pathToSaveDirectory + "MoveTestFrom");
-            Directory.CreateDirectory(this.pathToSaveDirectory + "MoveTestWhere");
-
-            using (File.Create(this.pathToSaveDirectory + "\\MoveTestFrom\\" + "FileMoveTest.txt"))
-            {
-            }
-
             var filetransaction = new FileUnit();
-            filetransaction.Move(this.pathToSaveDirectory + "MoveTestFrom\\FileMoveTest.txt", this.pathToSaveDirectory + "MoveTestWhere\\FileMoveTest.txt");
+            filetransaction.Move(this.MoveFilePath, this.MovebleFilePath);
             filetransaction.Commit();
             filetransaction.Dispose();
 
-            Assert.IsTrue(File.Exists(this.pathToSaveDirectory + "MoveTestWhere\\FileMoveTest.txt"));
+            Assert.IsTrue(File.Exists(this.MovebleFilePath) 
+                            && !File.Exists(this.MoveFilePath));
         }
 
         [Test]
         public void FileTransactionUnit_Delete_ReturnFalse()
         {
-            using (File.Create(this.pathToSaveDirectory + "TestFileDelete.txt"))
-            {
-            }
-
             var filetransaction = new FileUnit();
-            filetransaction.Delete(this.pathToSaveDirectory + "TestFileDelete.txt");
+            filetransaction.Delete(this.DeleteFilePath);
 
             filetransaction.Commit();
             filetransaction.Dispose();
 
-            Assert.IsFalse(File.Exists(this.pathToSaveDirectory + "TestFileDelete.txt"));
+            Assert.IsFalse(File.Exists(this.DeleteFilePath));
         }
 
         [Test]
         public void FileTransactionUnit_Copy_ReturnTrue()
         {
-            Directory.CreateDirectory(this.pathToSaveDirectory + "CopyTestFrom");
-            Directory.CreateDirectory(this.pathToSaveDirectory + "CopyTestWhere");
-
-            using (File.Create(this.pathToSaveDirectory + "CopyTestFrom" + "\\FileCopyTestFrom.txt"))
-            {
-            }
-            
             var filetransaction = new FileUnit();
-            filetransaction.Copy(this.pathToSaveDirectory + "\\CopyTestFrom\\FileCopyTestFrom.txt", this.pathToSaveDirectory + "\\CopyTestWhere\\FileCopyTestWhere.txt", true);
+            filetransaction.Copy(this.CopyFilePath, this.CopybleFilePath, true);
 
             filetransaction.Commit();
             filetransaction.Dispose();
 
-            Assert.IsTrue(File.Exists(this.pathToSaveDirectory + "CopyTestWhere\\FileCopyTestWhere.txt"));
+            Assert.IsTrue(File.Exists(this.CopyFilePath)
+                && File.Exists(CopyFilePath));
         }
 
         [Test]
         public void FileTransactionUnit_AppendAllText_ReturnTrue()
         {
             var filetransaction = new FileUnit();
-
-            using (File.Create(this.pathToSaveDirectory + "\\FileAppendAllTextFrom.txt"))
-            {
-            }
-
-            filetransaction.AppendAllText(this.pathToSaveDirectory + "\\FileAppendAllTextFrom.txt", "Test Append Text");
+            filetransaction.AppendAllText(this.AppendFilePath, this.AddedContent);
 
             filetransaction.Commit();
             filetransaction.Dispose();
-
-            string readedstring = string.Empty;
-            using (StreamReader streamReader = new StreamReader(this.pathToSaveDirectory + "\\FileAppendAllTextFrom.txt", System.Text.Encoding.Default))
-            {
-                while ((readedstring = streamReader.ReadLine()) != null)
-                {
-                    if (readedstring == "Test Append Text")
-                    {
-                        break;
-                    }
-                }
-            }
-
-            Assert.AreEqual("Test Append Text", readedstring);
+            
+            string textInAppendFile = File.ReadAllText(this.AppendFilePath);
+            Assert.AreEqual(textInAppendFile, this.Content + this.AddedContent);
         }
 
         [Test]
         public void FileTransactionUnit_WriteAllText_ReturnTrue()
         {
-            var filetransaction = new FileUnit();
-            filetransaction.WriteAllText(this.pathToSaveDirectory + "\\FileWriteAllTextFrom.txt", "Test Write Text");
+            var unit = new FileUnit();
+            unit.WriteAllText(this.WriteFilePath, this.AddedContent);
 
-            filetransaction.Commit();
-            filetransaction.Dispose();
+            unit.Commit();
+            unit.Dispose();
 
-            string readedstring = string.Empty;
-            using (StreamReader sr = new StreamReader(this.pathToSaveDirectory + "\\FileWriteAllTextFrom.txt", System.Text.Encoding.Default))
-            {
-                while ((readedstring = sr.ReadLine()) != null)
-                {
-                    if (readedstring == "Test Write Text")
-                    {
-                        break;
-                    }
-                }
-            }
-
-            Assert.AreEqual("Test Write Text", readedstring);
+            string textInWriteFile = File.ReadAllText(this.WriteFilePath);
+            Assert.AreEqual(textInWriteFile, this.AddedContent);
         }
     }
 }
