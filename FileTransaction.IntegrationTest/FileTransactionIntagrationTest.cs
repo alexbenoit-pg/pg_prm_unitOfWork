@@ -61,68 +61,130 @@
         }
 
         [Test]
-        public void FileTransactionUnit_CreateFile_ReturnTrue()
+        public void CreateFile_ReturnTrue()
         {
-            var filetransaction = new FileUnit();
-            filetransaction.CreateFile(this.CreateFilePath);
-            filetransaction.Commit();
-            filetransaction.Dispose();
+            var unit = new FileUnit();
+            unit.CreateFile(this.CreateFilePath);
+            unit.Commit();
+            unit.Dispose();
            
             Assert.IsTrue(File.Exists(this.CreateFilePath));
         }
 
         [Test]
-        public void FileTransactionUnit_Move_ReturnTrue()
+        public void RollbackCreateFile_ReturnTrue()
         {
-            var filetransaction = new FileUnit();
-            filetransaction.Move(this.MoveFilePath, this.MovebleFilePath);
-            filetransaction.Commit();
-            filetransaction.Dispose();
+            var unit = new FileUnit();
+            unit.CreateFile(this.CreateFilePath);
+            unit.Commit();
+            unit.Rollback();
+            unit.Dispose();
+
+            Assert.IsFalse(File.Exists(this.CreateFilePath));
+        }
+
+        [Test]
+        public void Move_ReturnTrue()
+        {
+            var unit = new FileUnit();
+            unit.Move(this.MoveFilePath, this.MovebleFilePath);
+            unit.Commit();
+            unit.Dispose();
 
             Assert.IsTrue(File.Exists(this.MovebleFilePath) 
                             && !File.Exists(this.MoveFilePath));
         }
 
         [Test]
-        public void FileTransactionUnit_Delete_ReturnFalse()
+        public void RollbackMove_ReturnTrue()
         {
-            var filetransaction = new FileUnit();
-            filetransaction.Delete(this.DeleteFilePath);
+            var unit = new FileUnit();
+            unit.Move(this.MoveFilePath, this.MovebleFilePath);
+            unit.Commit();
+            unit.Rollback();
+            unit.Dispose();
 
-            filetransaction.Commit();
-            filetransaction.Dispose();
+            Assert.IsTrue(!File.Exists(this.MovebleFilePath)
+                            && File.Exists(this.MoveFilePath));
+        }
+
+        [Test]
+        public void Delete_ReturnFalse()
+        {
+            var unit = new FileUnit();
+            unit.Delete(this.DeleteFilePath);
+            unit.Commit();
+            unit.Dispose();
 
             Assert.IsFalse(File.Exists(this.DeleteFilePath));
         }
 
         [Test]
-        public void FileTransactionUnit_Copy_ReturnTrue()
+        public void RollbackDelete_ReturnFalse()
         {
-            var filetransaction = new FileUnit();
-            filetransaction.Copy(this.CopyFilePath, this.CopybleFilePath, true);
+            var unit = new FileUnit();
+            unit.Delete(this.DeleteFilePath);
+            unit.Commit();
+            unit.Rollback();
+            unit.Dispose();
 
-            filetransaction.Commit();
-            filetransaction.Dispose();
-
-            Assert.IsTrue(File.Exists(this.CopyFilePath)
-                && File.Exists(CopyFilePath));
+            Assert.IsTrue(File.Exists(this.DeleteFilePath));
         }
 
         [Test]
-        public void FileTransactionUnit_AppendAllText_ReturnTrue()
+        public void Copy_ReturnTrue()
         {
-            var filetransaction = new FileUnit();
-            filetransaction.AppendAllText(this.AppendFilePath, this.AddedContent);
+            var unit = new FileUnit();
+            unit.Copy(this.CopyFilePath, this.CopybleFilePath, true);
+            unit.Commit();
+            unit.Dispose();
 
-            filetransaction.Commit();
-            filetransaction.Dispose();
+            Assert.IsTrue(File.Exists(this.CopyFilePath)
+                && File.Exists(this.CopybleFilePath));
+        }
+
+        [Test]
+        public void RollbackCopy_ReturnTrue()
+        {
+            var unit = new FileUnit();
+            unit.Copy(this.CopyFilePath, this.CopybleFilePath, true);
+            unit.Commit();
+            unit.Rollback();
+            unit.Dispose();
+
+            Assert.IsTrue(File.Exists(this.CopyFilePath)
+                && !File.Exists(this.CopybleFilePath));
+        }
+
+        [Test]
+        public void AppendAllText_ReturnTrue()
+        {
+            var unit = new FileUnit();
+            unit.AppendAllText(this.AppendFilePath, this.AddedContent);
+
+            unit.Commit();
+            unit.Dispose();
             
             string textInAppendFile = File.ReadAllText(this.AppendFilePath);
             Assert.AreEqual(textInAppendFile, this.Content + this.AddedContent);
         }
 
         [Test]
-        public void FileTransactionUnit_WriteAllText_ReturnTrue()
+        public void RollbackAppendAllText_ReturnTrue()
+        {
+            var unit = new FileUnit();
+            unit.AppendAllText(this.AppendFilePath, this.AddedContent);
+
+            unit.Commit();
+            unit.Rollback();
+            unit.Dispose();
+
+            string textInAppendFile = File.ReadAllText(this.AppendFilePath);
+            Assert.AreEqual(textInAppendFile, this.Content);
+        }
+
+        [Test]
+        public void WriteAllText_ReturnTrue()
         {
             var unit = new FileUnit();
             unit.WriteAllText(this.WriteFilePath, this.AddedContent);
@@ -132,6 +194,20 @@
 
             string textInWriteFile = File.ReadAllText(this.WriteFilePath);
             Assert.AreEqual(textInWriteFile, this.AddedContent);
+        }
+
+        [Test]
+        public void RollbackWriteAllText_ReturnTrue()
+        {
+            var unit = new FileUnit();
+            unit.WriteAllText(this.WriteFilePath, this.AddedContent);
+
+            unit.Commit();
+            unit.Rollback();
+            unit.Dispose();
+
+            string textInWriteFile = File.ReadAllText(this.WriteFilePath);
+            Assert.AreEqual(textInWriteFile, this.Content);
         }
     }
 }

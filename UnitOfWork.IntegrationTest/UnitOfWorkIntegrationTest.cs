@@ -29,7 +29,8 @@ namespace TestApp
     using Core;
     using NUnit.Framework;
     using Units;
-    
+    using Units.SQLiteTransactionUnit;
+
     [TestFixture]
     public class UnitOfWorkIntegrationTest
     {
@@ -77,6 +78,9 @@ namespace TestApp
 
         private string AddedContent => "\n=====\nThis text was added\n=====\n";
         
+        public static void Main()
+        { }
+
         [SetUp]
         public void TestFixtureSetup()
         {
@@ -353,7 +357,7 @@ namespace TestApp
 
         private void CreatDataBase(string pathDataBase)
         {
-            string sqliteConnectionString = SQLiteUnit.GetConnectionString(pathDataBase);
+            string sqliteConnectionString = SQLiteManager.GetConnectionString(pathDataBase);
             SQLiteConnection connection = new SQLiteConnection(sqliteConnectionString);
 
             SQLiteCommand command = new SQLiteCommand(
@@ -373,7 +377,7 @@ namespace TestApp
             firstName = string.Empty;
             lastName = string.Empty;
 
-            string connectionString = SQLiteUnit.GetConnectionString(this.PathToDataBase);
+            string connectionString = SQLiteManager.GetConnectionString(this.PathToDataBase);
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
