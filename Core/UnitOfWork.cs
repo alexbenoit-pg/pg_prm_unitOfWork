@@ -21,6 +21,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Collections.Specialized;
+
 namespace Core
 {
     using System.IO;
@@ -31,17 +33,15 @@ namespace Core
 
     public sealed class UnitOfWork
     {
-        private IJournal saver;
+        private IJournalManager journalManager;
 
-        public UnitOfWork(IJournal saver) : this(saver, true)
+        public UnitOfWork(IJournalManager journalManager) : this(journalManager, true)
         {
         }
         
-        public UnitOfWork(IJournal saver, bool checkAfterCrush)
+        public UnitOfWork(IJournalManager journalManager, bool checkAfterCrush)
         {
-            this.saver = saver;
-            var undef = ConfigurationManager.AppSettings["CustomJournalFolderPath"];
-
+            this.journalManager = journalManager;
             FolderHelper.CreateJournalsFolder();
             if (checkAfterCrush)
             {
@@ -49,22 +49,21 @@ namespace Core
             }
         }
         
-        public static string GetJournalsFolder
+        public string JournalsFolder => FolderHelper.JournalsFolder;
+
+        public static string GetJournalsFolder()
         {
-            get
-            {
-                return FolderHelper.JournalsFolder;
-            }
+            return FolderHelper.JournalsFolder;
         }
 
         public BussinesTransaction BeginTransaction()
         {
-            return new BussinesTransaction(this.saver);
+            return new BussinesTransaction(this.journalManager);
         }
 
         private void CheckBadTransaction()
         {
-            var journals = Directory.GetFiles(FolderHelper.JournalsFolder);
+            var journals = Directory.GetFiles(JournalsFolder);
             if (journals.Any())
             {
                 this.RollbackBadTransactions(journals);
@@ -75,8 +74,9 @@ namespace Core
         {
             foreach (var journalPath in journals)
             {
-                using (new BadBussinesTransaction(this.saver, journalPath))
+                using (var transaction = new BadBussinesTransaction(this.journalManager, journalPath))
                 {
+                    transaction.Rollback();
                 }
             }
         }

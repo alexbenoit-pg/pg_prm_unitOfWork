@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="UnitOfWorkTests.cs" company="Paragon Software Group">
+// <copyright file="IJournalManager.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,45 +21,17 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core.Tests
+namespace Core.Interfaces
 {
-    using NUnit.Framework;
+    using System;
+    using System.Collections.Generic;
 
-    using Core;
-    using Core.Tests.Fakes;
-
-    /// <summary>
-    /// Unit tests for UnitOfWork Class
-    /// </summary>
-    public class UnitOfWorkTests
+    public interface IJournalManager : IDisposable
     {
-        /// <summary>
-        /// Test for a possibility of creation of an instans of a UnitOfWork
-        /// </summary>
-        //[Test]
-        //public void UnitOfWork_CreateIstance_IsNotNull()
-        //{
-        //    // Arrange
-        //    var unitOfWork = new UnitOfWork();
+        string JournalPath { get; set; }
 
-        //    // Assert
-        //    Assert.IsNotNull(unitOfWork);
-        //}
+        void Save(List<ITransactionUnit> lst);
 
-        ///// <summary>
-        /////  Test for a possibility of get a Bussines Transaction from UnitOfWork
-        ///// </summary>
-        //[Test]
-        //public void UnitOfWork_GetBussinesTransaction_IsNotNull()
-        //{
-        //    // Arrange
-        //    var unitOfWork = new UnitOfWork();
-
-        //    // Act 
-        //    var bussinesTransaction = unitOfWork.BeginTransaction();
-
-        //    // Assert
-        //    Assert.IsNotNull(bussinesTransaction);
-        //}
+        List<ITransactionUnit> Get();
     }
 }

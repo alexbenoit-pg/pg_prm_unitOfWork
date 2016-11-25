@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="SnapshotOperation.cs" company="Paragon Software Group">
+// <copyright file="RollbackException.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,34 +21,14 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace FileTransactionManager.Operations
+namespace Core.Exceptions
 {
-    using System.IO;
-    using System.Runtime.Serialization;
-    using FileTransactionManager.Heplers;
+    using System;
 
-    /// <summary>
-    /// Rollbackable operation which takes a snapshot of a file. The snapshot is used to rollback the file later if needed.
-    /// </summary>
-    [DataContract]
-    internal sealed class SnapshotOperation : SingleFileOperation
+    public class RollbackException : Exception
     {
-        /// <summary>
-        /// Instantiates the class.
-        /// </summary>
-        /// <param name="path">The file to take a snapshot for.</param>
-        public SnapshotOperation(string path) : base(path)
+        public RollbackException(string message) : base(message)
         {
-        }
-
-        public override void Execute()
-        {
-            if (File.Exists(this.Path))
-            {
-                string temp = FileUtils.GetTempFileName(System.IO.Path.GetExtension(this.Path));
-                File.Copy(this.Path, temp);
-                this.BackupPath = temp;
-            }
         }
     }
 }

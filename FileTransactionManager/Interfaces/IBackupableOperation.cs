@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="IJournal.cs" company="Paragon Software Group">
+// <copyright file="IBackupableOperation.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,17 +21,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Core.Interfaces
+namespace FileTransactionManager.Interfaces
 {
-    using System;
-    using System.Collections.Generic;
-
-    public interface IJournal : IDisposable
+    interface IBackupableOperation
     {
-        string JournalPath { get; set; }
-
-        void Save(List<ITransactionUnit> lst);
-
-        List<ITransactionUnit> Get();
+        string BackupFolder { get; set; }
     }
 }

@@ -21,6 +21,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using FileTransactionManager.Heplers;
+
 namespace FileTransactionManager.Operations
 {
     using System;
@@ -33,7 +35,7 @@ namespace FileTransactionManager.Operations
     /// to backup a single file and restore it when Rollback() is called.
     /// </summary>
     [DataContract]
-    internal abstract class SingleFileOperation : IRollbackableOperation, IDisposable
+    internal abstract class SingleFileOperation : IRollbackableOperation, IBackupableOperation, IDisposable
     {
         [DataMember(Order = 10)]
         private readonly string path;
@@ -48,6 +50,8 @@ namespace FileTransactionManager.Operations
         {
             this.path = path;
         }
+        
+        public string BackupFolder { get; set; }
 
         public string BackupPath
         {
@@ -62,13 +66,7 @@ namespace FileTransactionManager.Operations
             }
         }
 
-        public string Path
-        {
-            get
-            {
-                return this.path;
-            }
-        }
+        public string Path => this.path;
 
         public abstract void Execute();
 
@@ -90,6 +88,23 @@ namespace FileTransactionManager.Operations
                 {
                     File.Delete(this.Path);
                 }
+            }
+        }
+
+        public void BackupFile()
+        {
+            if (File.Exists(this.Path))
+            {
+                if (!Directory.Exists(this.BackupFolder))
+                {
+                    Directory.CreateDirectory(this.BackupFolder);
+                }
+
+                string temp = FileUtils.GetTempFileName(
+                    this.BackupFolder,
+                    System.IO.Path.GetExtension(this.Path));
+                File.Copy(this.Path, temp);
+                this.BackupPath = temp;
             }
         }
 

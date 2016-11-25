@@ -65,13 +65,7 @@ namespace FileTransactionManager.Operations
 
         public override void Execute()
         {
-            if (File.Exists(this.Path))
-            {
-                string temp = FileUtils.GetTempFileName(System.IO.Path.GetExtension(this.Path));
-                File.Copy(this.Path, temp);
-                this.BackupPath = temp;
-            }
-            
+            this.BackupFile();
             File.Copy(this.sourceFileName, this.Path, this.overwrite);
         }
     }

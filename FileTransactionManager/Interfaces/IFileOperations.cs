@@ -46,12 +46,6 @@ namespace FileTransactionManager.Interfaces
         /// <summary>
         /// Creates all directories in the specified path.
         /// </summary>
-        /// <param name="path">The directory path to create.</param>
-        void CreateDirectory(string path);
-
-        /// <summary>
-        /// Creates all directories in the specified path.
-        /// </summary>
         /// <param name="pathToFile">The directory path to create.</param>
         void CreateFile(string pathToFile);
 
@@ -62,36 +56,17 @@ namespace FileTransactionManager.Interfaces
         void Delete(string path);
 
         /// <summary>
-        /// Deletes the specified directory and all its contents. An exception is not thrown if the directory does not exist.
-        /// </summary>
-        /// <param name="path">The directory to be deleted.</param>
-        void DeleteDirectory(string path);
-
-        /// <summary>
         /// Moves the specified file to a new location.
         /// </summary>
         /// <param name="srcFileName">The name of the file to move.</param>
         /// <param name="destFileName">The new path for the file.</param>
         void Move(string srcFileName, string destFileName);
-
-        /// <summary>
-        /// Take a snapshot of the specified file. The snapshot is used to rollback the file later if needed.
-        /// </summary>
-        /// <param name="fileName">The file to take a snapshot for.</param>
-        void Snapshot(string fileName);
-
+        
         /// <summary>
         /// Creates a file, write the specified <paramref name="contents"/> to the file.
         /// </summary>
         /// <param name="path">The file to write to.</param>
         /// <param name="contents">The string to write to the file.</param>
         void WriteAllText(string path, string contents);
-
-        /// <summary>
-        /// Creates a file, write the specified <paramref name="contents"/> to the file.
-        /// </summary>
-        /// <param name="path">The file to write to.</param>
-        /// <param name="contents">The bytes to write to the file.</param>
-        void WriteAllBytes(string path, byte[] contents);
     }
 }

@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="MockTransactionUnit.cs" company="Paragon Software Group">
+// <copyright file="UnitJsonJournalManager.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,57 +21,40 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using Core.Interfaces;
-
-namespace Core.Tests.Fakes
+namespace Units
 {
     using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using Core;
+    using Core.Interfaces;
+    using Newtonsoft.Json;
 
-    [Serializable]
-    public class MockTransactionUnit : IFakeTransactionUnit
+    public class UnitJsonJournalManager : IJournalManager
     {
-        public MockTransactionUnit()
+        public UnitJsonJournalManager()
         {
-            IsRollback = false;
-            IsCommit = false;
-            ID = Guid.NewGuid().ToString().Substring(1, 9);
-        }
-        
-        public string ID { get; set; }
-
-        public string GetOperationId()
-        {
-            return ID /*Guid.NewGuid().ToString().Substring(1,9)*/;
+            var name = Guid.NewGuid().ToString();
+            this.JournalPath = Path.Combine(UnitOfWork.GetJournalsFolder(), name);
         }
 
-        public void Rollback(string operationID)
-        {
-            // Читает журнал по ID, где ID - имя журнала
-            // id.txt
-        }
-        
-
-        public void Rollback()
-        {
-            IsRollback = true;
-            IsCommit = false;
-        }
-
-        public void Commit()
-        {
-            IsCommit = true;
-        }
+        public string JournalPath { get; set; }
 
         public void Dispose()
         {
+            File.Delete(this.JournalPath);
         }
 
-        public void SetOperationId(string operationId)
+        public List<ITransactionUnit> Get()
         {
-            throw new NotImplementedException();
+            var json = File.ReadAllText(this.JournalPath);
+            return JsonConvert.DeserializeObject<List<ITransactionUnit>>(json, new UnitJsonConverter());
         }
-
-        public bool IsRollback { get; set; }
-        public bool IsCommit { get; set; }
+        
+        public void Save(List<ITransactionUnit> unitsCollection)
+        {
+            string json = JsonConvert.SerializeObject(unitsCollection, Formatting.Indented);
+            File.WriteAllText(this.JournalPath, json);
+        }
     }
 }

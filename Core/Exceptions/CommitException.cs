@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="MockBadTransactionUnit.cs" company="Paragon Software Group">
+// <copyright file="CommitException.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,54 +21,14 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
-using Core.Interfaces;
-
-namespace Core.Tests.Fakes
+namespace Core.Exceptions
 {
-    public class MockBadTransactionUnit : IFakeTransactionUnit
+    using System;
+
+    public class CommitException : Exception
     {
-        public MockBadTransactionUnit()
+        public CommitException(string message) : base(message)
         {
-            IsCommit = false;
-            IsRollback = false;
-        }
-
-        public bool IsRollback { get; set; }
-        public bool IsCommit { get; set; }
-
-        public string ID { get; set; }
-        public string GetOperationId()
-        {
-            return ID/*Guid.NewGuid().ToString().Substring(1, 9)*/;
-        }
-
-        public void Rollback(string operationID)
-        {
-            IsRollback = true;
-            IsCommit = false;
-        }
-        
-
-        public void Rollback()
-        {
-            IsRollback = true;
-            IsCommit = false;
-        }
-
-        public void Commit()
-        {
-            IsCommit = true;
-            throw new Exception();
-        }
-        
-        public void Dispose()
-        {
-        }
-
-        public void SetOperationId(string operationId)
-        {
-            throw new NotImplementedException();
         }
     }
 }

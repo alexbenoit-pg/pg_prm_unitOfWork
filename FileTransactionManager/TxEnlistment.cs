@@ -64,15 +64,14 @@ namespace FileTransactionManager
             this.DisposeJournal();
             enlistment.Done();
         }
-
-        public void InDoubt(Enlistment enlistment)
-        {
-            this.Rollback(enlistment);
-        }
-
+        
         public void Prepare(PreparingEnlistment preparingEnlistment)
         {
             preparingEnlistment.Prepared();
+        }
+        
+        public void InDoubt(Enlistment enlistment)
+        {
         }
 
         /// <summary>Notifies an enlisted object that a transaction is being rolled back (aborted).</summary>
@@ -80,47 +79,37 @@ namespace FileTransactionManager
         /// <remarks>This is typically called on a different thread from the transaction thread.</remarks>
         public void Rollback(Enlistment enlistment)
         {
-            try
-            {
-                // Roll back journal items in reverse order
-                for (int i = this.journal.Count - 1; i >= 0; i--)
-                {
-                    this.journal[i].Rollback();
-                }
-
-                this.DisposeJournal();
-            }
-            catch (Exception e)
-            {
-                throw new TransactionException("Failed to roll back.", e);
-            }
-
+            this.Rollback();
             enlistment.Done();
         }
-
-        public void RollbackAfterCrash(List<IRollbackableOperation> journal)
+        
+        public void Rollback(List<IRollbackableOperation> journal)
         {
             this.journal = journal;
-
-            try
-            {
-                // Roll back journal items in reverse order
-                for (int i = this.journal.Count - 1; i >= 0; i--)
-                {
-                    this.journal[i].Rollback();
-                }
-
-                this.DisposeJournal();
-            }
-            catch (Exception e)
-            {
-                throw new TransactionException("Failed to roll back.", e);
-            }
+            this.Rollback();
         }
 
         internal List<IRollbackableOperation> GetJournal()
         {
             return this.journal;
+        }
+
+        private void Rollback()
+        {
+            try
+            {
+                // Roll back journal items in reverse order
+                for (int i = this.journal.Count - 1; i >= 0; i--)
+                {
+                    this.journal[i].Rollback();
+                }
+
+                this.DisposeJournal();
+            }
+            catch (Exception e)
+            {
+                throw new TransactionException("Failed to roll back.", e);
+            }
         }
 
         private void DisposeJournal()

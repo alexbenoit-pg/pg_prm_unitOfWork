@@ -25,8 +25,11 @@ namespace Units
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Runtime.Serialization;
     using System.Transactions;
+    using Core;
+    using Core.Exceptions;
     using Core.Interfaces;
     using FileTransactionManager;
     using Newtonsoft.Json;
@@ -43,6 +46,9 @@ namespace Units
         public FileUnit()
         {
             this.target = new TxFileManager();
+            this.target.TempFolder = Path.Combine(
+                UnitOfWork.GetJournalsFolder(), 
+                "FileUnit");
             this.operations = new List<FileOperations>();
             this.paramsForOperations = new Dictionary<int, object[]>();
         }
@@ -59,6 +65,12 @@ namespace Units
 
         public void Commit()
         {
+            this.target.TempFolder = Path.Combine(
+                UnitOfWork.GetJournalsFolder(),
+                "FileUnit",
+                Guid.NewGuid().ToString()
+                );
+
             using (var scope = new TransactionScope())
             {
                 try
@@ -69,20 +81,21 @@ namespace Units
                 catch (Exception e)
                 {
                     scope.Dispose();
-                    throw e;
+                    throw new CommitException(e.Message);
                 }
             }
-        }
-
-        public void Dispose()
-        {
         }
         
         public void Rollback()
         {
-            this.target.RollbackAfterCrash();
+            this.target.Rollback();
         }
-        
+
+        public void Dispose()
+        {
+            this.target.Dispose();
+        }
+
         #region File operations
 
         public void AppendAllText(string path, string contents)

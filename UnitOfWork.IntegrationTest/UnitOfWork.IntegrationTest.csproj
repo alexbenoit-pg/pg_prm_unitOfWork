@@ -72,7 +72,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TestApp.cs" />
     <Compile Include="UnitOfWorkIntegrationTest.cs">
       <ExcludeFromStyleCop>False</ExcludeFromStyleCop>
     </Compile>

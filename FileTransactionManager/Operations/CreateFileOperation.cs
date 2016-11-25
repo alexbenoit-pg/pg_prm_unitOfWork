@@ -37,11 +37,11 @@ namespace FileTransactionManager.Operations
     internal sealed class CreateFileOperation : IRollbackableOperation
     {
         [DataMember(Order = 1)]
-        public readonly string Path;
+        public readonly string path;
 
         public CreateFileOperation(string pathToFile)
         {
-            this.Path = pathToFile;
+            this.path = pathToFile;
         }
 
         [DataMember(Order = 0)]
@@ -53,6 +53,8 @@ namespace FileTransactionManager.Operations
                 return FileOperations.CreateFile;
             }
         }
+        
+        public string Path => this.path;
 
         public void Execute()
         {
@@ -78,7 +80,7 @@ namespace FileTransactionManager.Operations
         {
             if (File.Exists(this.Path))
             {
-                File.Delete(this.Path);
+                File.Delete(this.path);
             }
         }
     }

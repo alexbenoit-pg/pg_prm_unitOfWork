@@ -21,11 +21,13 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System;
+
 namespace Units
 {
-    using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
+    using Core.Exceptions;
     using Core.Interfaces;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
@@ -34,12 +36,10 @@ namespace Units
     [DataContract]
     public class SQLiteUnit : ITransactionUnit
     {
-        [DataMember(Order = 1)]
-        private readonly List<string> rollbackCommands = new List<string>();
+        [DataMember(Order = 2)] private readonly List<string> rollbackCommands = new List<string>();
         private readonly List<string> commitCommands = new List<string>();
-        [DataMember(Order = 2)]
-        private string dataBasePath;
-        
+        [DataMember(Order = 1)] private string dataBasePath;
+
         public SQLiteUnit(string dataBasePath)
         {
             this.dataBasePath = dataBasePath;
@@ -57,21 +57,34 @@ namespace Units
 
         public void Rollback()
         {
-            SQLiteManager.ExecuteCommands(this.dataBasePath, this.rollbackCommands);
+            try
+            {
+                SQLiteManager.ExecuteCommandsInTransaction(
+                    this.dataBasePath, 
+                    this.rollbackCommands);
+            }
+            catch (Exception e)
+            {
+                throw new RollbackException(e.Message);
+            }
         }
 
         public void Commit()
         {
-            SQLiteManager.ExecuteCommands(this.dataBasePath, this.commitCommands);
-        }
-        
+            try
+            {
+                SQLiteManager.ExecuteCommandsInTransaction(
+                    this.dataBasePath, 
+                    this.commitCommands);
+            }
+            catch (Exception e)
+            {
+                throw new CommitException(e.Message);
+            }
+            }
+
         public void Dispose()
         {
-            this.rollbackCommands.Clear();
-            this.commitCommands.Clear();
-            GC.Collect();
-            GC.SuppressFinalize(this);
         }
-
     }
 }

@@ -26,18 +26,18 @@ namespace Core
     using System;
     using System.Collections.Generic;
     using Core.Interfaces;
-    
+
     public sealed class BussinesTransaction : IDisposable
     {
         private List<ITransactionUnit> executedUnits;
-        private IJournal saver;
+        private IJournalManager journalManager;
         private bool isBad;
         private bool isCommit;
 
-        internal BussinesTransaction(IJournal saver)
+        internal BussinesTransaction(IJournalManager journalManager)
         {
             this.executedUnits = new List<ITransactionUnit>();
-            this.saver = saver;
+            this.journalManager = journalManager;
             this.isBad = false;
             this.isCommit = false;
         }
@@ -50,11 +50,12 @@ namespace Core
                 {
                     unit.Commit();
                     this.executedUnits.Add(unit);
-                    this.saver.Save(this.executedUnits);
+                    this.journalManager.Save(this.executedUnits);
                 }
             }
             catch (Exception e)
             {
+                unit.Dispose();
                 this.isBad = true;
                 this.Rollback();
             }
@@ -73,13 +74,14 @@ namespace Core
             }
             else
             {
+                this.executedUnits.ForEach(unit => unit.Dispose());
                 this.executedUnits.Clear();
             }
 
-            this.saver.Dispose();
+            this.journalManager.Dispose();
             this.executedUnits = null;
         }
-        
+
         private void Rollback()
         {
             var notRollbacked = new List<ITransactionUnit>();
@@ -87,9 +89,16 @@ namespace Core
 
             foreach (var unit in this.executedUnits)
             {
-                unit.Rollback();
-                notRollbacked.Remove(unit);
-                this.saver.Save(notRollbacked);
+                try
+                {
+                    unit.Rollback();
+                }
+                finally
+                {
+                    notRollbacked.Remove(unit);
+                    unit.Dispose();
+                    this.journalManager.Save(notRollbacked);
+                }
             }
         }
     }

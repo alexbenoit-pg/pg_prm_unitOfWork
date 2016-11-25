@@ -21,7 +21,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace TestApp
+namespace UnitOfWork.IntegrationTest
 {
     using System;
     using System.Data.SQLite;
@@ -34,7 +34,7 @@ namespace TestApp
     [TestFixture]
     public class UnitOfWorkIntegrationTest
     {
-        private readonly UnitOfWork unit = new UnitOfWork(new UnitJsonJournal(), false);
+        private readonly UnitOfWork unit = new UnitOfWork(new UnitJsonJournalManager(), false);
 
         private static string PathToSaveDirectory => $"{Path.GetTempPath()}FileAndSQLiteTransaction\\";
 
@@ -338,6 +338,47 @@ namespace TestApp
                 bussinesTransaction.Commit();
             }
 
+            // Assert
+            Assert.IsFalse(File.Exists(this.CreateFilePath));
+            Assert.IsTrue(!File.Exists(this.CopybleFilePath) && File.Exists(this.CopyFilePath));
+            string textInAppendFile = File.ReadAllText(this.AppendFilePath);
+            Assert.AreEqual(textInAppendFile, this.Content);
+            string textInWriteFile = File.ReadAllText(this.WriteFilePath);
+            Assert.AreEqual(textInWriteFile, this.Content);
+            Assert.IsTrue(File.Exists(this.DeleteFilePath));
+            Assert.IsTrue(!File.Exists(this.MovebleFilePath) && File.Exists(this.MoveFilePath));
+        }
+        
+        [Test]
+        public void RollbackAfterCrush_ReturnTrue()
+        {
+            // Arrange
+            var sqliteTransactionFirst = new SQLiteUnit(this.PathToDataBase);
+            string firstSqlCommand =
+                $"INSERT INTO {this.DbTableName}({this.DbFieldId}, {this.DbFieldFirstName}, {this.DbFieldLastName}) "
+                + $"VALUES ({this.DbRowId}, '{this.FirstName}', '{this.LastName}')";
+            string firstSqlRollback = $"DELETE FROM {this.DbTableName} WHERE {this.DbFieldId} = {this.DbRowId}";
+            sqliteTransactionFirst.AddSqliteCommand(
+                firstSqlCommand,
+                firstSqlRollback);
+
+            var fileTransaction = new FileUnit();
+            fileTransaction.CreateFile(this.CreateFilePath);
+            fileTransaction.Copy(this.CopyFilePath, this.CopybleFilePath, true);
+            fileTransaction.AppendAllText(this.AppendFilePath, this.AddedContent);
+            fileTransaction.WriteAllText(this.WriteFilePath, this.AddedContent);
+            fileTransaction.Delete(this.DeleteFilePath);
+            fileTransaction.Move(this.MoveFilePath, this.MovebleFilePath);
+
+            // Act
+            var bussinesTransaction = this.unit.BeginTransaction();
+            bussinesTransaction.ExecuteUnit(sqliteTransactionFirst);
+            bussinesTransaction.ExecuteUnit(fileTransaction);
+            
+            // Эмитируем падение программы и повторное создание объекта UnitOfWork 
+            // Так как журнал остался, будет выполнен роллбек.
+            var newUnit = new UnitOfWork(new UnitJsonJournalManager());
+
             string firstNameInDb = string.Empty;
             string lastNameInDb = string.Empty;
             this.GetInfOfDataBase(out firstNameInDb, out lastNameInDb);
@@ -354,7 +395,7 @@ namespace TestApp
             Assert.AreEqual(string.Empty, firstNameInDb);
             Assert.AreEqual(string.Empty, lastNameInDb);
         }
-
+        
         private void CreatDataBase(string pathDataBase)
         {
             string sqliteConnectionString = SQLiteManager.GetConnectionString(pathDataBase);
@@ -368,6 +409,7 @@ namespace TestApp
                 connection);
             connection.Open();
             command.ExecuteNonQuery();
+            command.Dispose();
             connection.Close();
             connection.Dispose();
         }

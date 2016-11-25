@@ -23,24 +23,23 @@
 
 namespace Core.Helpers
 {
-    using System;
-    using System.Configuration;
     using System.IO;
 
     internal static class FolderHelper
     {
-        private static readonly string UserTempFolder = Path.GetTempPath();
-        private static readonly string FolderName = "Unit_Of_Work";
-        private static string def = $"{UserTempFolder}\\{FolderName}";
-        private static string undef = ConfigurationManager.AppSettings["CustomJournalFolderPath"];
+        private static bool useDefaultFolder = UserConfig.Default.UseDefaultJournalFolder;
+        private static string defaultFolder = Path.Combine(
+            Path.GetTempPath(),
+            "UnitOfWork");
+        private static string userFolder = UserConfig.Default.CustomJournalFolderPath;
 
         internal static string JournalsFolder
         {
             get
             {
-                bool useDefault = Convert.ToBoolean(ConfigurationManager.AppSettings["UseDefaultJournalFolder"]);
-
-                return def;
+                return useDefaultFolder
+                    ? defaultFolder
+                    : userFolder;
             }
         }
 
@@ -50,16 +49,6 @@ namespace Core.Helpers
             {
                 Directory.CreateDirectory(JournalsFolder);
             }
-        }
-
-        internal static string GetJournalName(string fullPath)
-        {
-            return Path.GetFileNameWithoutExtension(fullPath);
-        }
-
-        internal static string CreatePathToJournal(string name)
-        {
-            return Path.Combine(JournalsFolder, $"{name}.txt");
         }
     }
 }

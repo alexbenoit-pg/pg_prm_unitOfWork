@@ -37,7 +37,7 @@ namespace Units.SQLiteTransactionUnit
                     dataBasePath);
         }
 
-        public static void ExecuteCommands(string dataBasePath, IEnumerable<string> commands)
+        public static void ExecuteCommandsInTransaction(string dataBasePath, IEnumerable<string> commands)
         {
             var сonnectionString = GetConnectionString(dataBasePath);
             var connection = new SQLiteConnection(сonnectionString);

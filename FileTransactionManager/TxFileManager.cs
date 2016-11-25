@@ -34,21 +34,25 @@ namespace FileTransactionManager
     using Newtonsoft.Json;
 
     [DataContract]
-    public class TxFileManager : IFileManager
+    public class TxFileManager : IFileManager, IDisposable
     {
         /// <summary>Dictionary of transaction enlistment objects for the current thread.</summary>
         private readonly object enlistmentsLock = new object();
         [DataMember]
+        private string tempFolder;
+        [DataMember] 
         [JsonConverter(typeof(OperationJsonConverter))]
         private List<IRollbackableOperation> journal; private Dictionary<string, TxEnlistment> enlistments;
-
-        /// <summary>
-        /// Initializes the <see cref="TxFileManager"/> class.
-        /// </summary>
-        /// 
-        public TxFileManager()
-        {
-            FileUtils.EnsureTempFolderExists();
+        
+        public string TempFolder {
+            get
+            {
+                return this.tempFolder;
+            }
+            set
+            {
+                this.tempFolder = value;
+            }
         }
 
         #region IFileOperations
@@ -58,14 +62,7 @@ namespace FileTransactionManager
         /// <param name="contents">The string to append to the file.</param>
         public void AppendAllText(string path, string contents)
         {
-            if (this.IsInTransaction())
-            {
-                this.EnlistOperation(new AppendAllTextOperation(path, contents));
-            }
-            else
-            {
-                File.AppendAllText(path, contents);
-            }
+           this.EnlistOperation(new AppendAllTextOperation(path, contents));
         }
 
         /// <summary>Copies the specified <paramref name="sourceFileName"/> to <paramref name="destFileName"/>.</summary>
@@ -74,70 +71,21 @@ namespace FileTransactionManager
         /// <param name="overwrite">true if the destination file can be overwritten, otherwise false.</param>
         public void Copy(string sourceFileName, string destFileName, bool overwrite)
         {
-            if (this.IsInTransaction())
-            {
-                this.EnlistOperation(new CopyOperation(sourceFileName, destFileName, overwrite));
-            }
-            else
-            {
-                File.Copy(sourceFileName, destFileName, overwrite);
-            }
-        }
-
-        /// <summary>Creates all directories in the specified path.</summary>
-        /// <param name="path">The directory path to create.</param>
-        public void CreateDirectory(string path)
-        {
-            if (this.IsInTransaction())
-            {
-                this.EnlistOperation(new CreateDirectoryOperation(path));
-            }
-            else
-            {
-                Directory.CreateDirectory(path);
-            }
+            this.EnlistOperation(new CopyOperation(sourceFileName, destFileName, overwrite));
         }
 
         /// <summary>Creates all directories in the specified path.</summary>
         /// <param name="pathToFile">The directory path to create.</param>
         public void CreateFile(string pathToFile)
         {
-            if (this.IsInTransaction())
-            {
-                this.EnlistOperation(new CreateFileOperation(pathToFile));
-            }
-            else
-            {
-                File.Create(pathToFile);
-            }
+            this.EnlistOperation(new CreateFileOperation(pathToFile));
         }
 
         /// <summary>Deletes the specified file. An exception is not thrown if the file does not exist.</summary>
         /// <param name="path">The file to be deleted.</param>
         public void Delete(string path)
         {
-            if (this.IsInTransaction())
-            {
-                this.EnlistOperation(new DeleteFileOperation(path));
-            }
-            else
-            {
-                File.Delete(path);
-            }
-        }
-
-        /// <summary>Deletes the specified directory and all its contents. An exception is not thrown if the directory does not exist.</summary>
-        /// <param name="path">The directory to be deleted.</param>
-        public void DeleteDirectory(string path)
-        {
-            if (this.IsInTransaction())
-            {
-                this.EnlistOperation(new DeleteDirectoryOperation(path));
-            }
-            else
-            {
-                Directory.Delete(path, true);
-            }
+            this.EnlistOperation(new DeleteFileOperation(path));
         }
 
         /// <summary>Moves the specified file to a new location.</summary>
@@ -145,155 +93,31 @@ namespace FileTransactionManager
         /// <param name="destFileName">The new path for the file.</param>
         public void Move(string srcFileName, string destFileName)
         {
-            if (this.IsInTransaction())
-            {
-                this.EnlistOperation(new MoveOperation(srcFileName, destFileName));
-            }
-            else
-            {
-                File.Move(srcFileName, destFileName);
-            }
+            this.EnlistOperation(new MoveOperation(srcFileName, destFileName));
         }
-
-        /// <summary>Take a snapshot of the specified file. The snapshot is used to rollback the file later if needed.</summary>
-        /// <param name="fileName">The file to take a snapshot for.</param>
-        public void Snapshot(string fileName)
-        {
-            if (this.IsInTransaction())
-            {
-                this.EnlistOperation(new SnapshotOperation(fileName));
-            }
-        }
-
+        
         /// <summary>Creates a file, write the specified <paramref name="contents"/> to the file.</summary>
         /// <param name="path">The file to write to.</param>
         /// <param name="contents">The string to write to the file.</param>
         public void WriteAllText(string path, string contents)
         {
-            if (this.IsInTransaction())
-            {
-                this.EnlistOperation(new WriteAllTextOperation(path, contents));
-            }
-            else
-            {
-                File.WriteAllText(path, contents);
-            }
-        }
-
-        /// <summary>Creates a file, write the specified <paramref name="contents"/> to the file.</summary>
-        /// <param name="path">The file to write to.</param>
-        /// <param name="contents">The bytes to write to the file.</param>
-        public void WriteAllBytes(string path, byte[] contents)
-        {
-            if (this.IsInTransaction())
-            {
-                this.EnlistOperation(new WriteAllBytesOperation(path, contents));
-            }
-            else
-            {
-                File.WriteAllBytes(path, contents);
-            }
+            this.EnlistOperation(new WriteAllTextOperation(path, contents));
         }
 
         #endregion
-
-        /// <summary>Determines whether the specified path refers to a directory that exists on disk.</summary>
-        /// <param name="path">The directory to check.</param>
-        /// <returns>True if the directory exists.</returns>
-        public bool DirectoryExists(string path)
-        {
-            return Directory.Exists(path);
-        }
-
-        /// <summary>Determines whether the specified file exists.</summary>
-        /// <param name="path">The file to check.</param>
-        /// <returns>True if the file exists.</returns>
-        public bool FileExists(string path)
-        {
-            return File.Exists(path);
-        }
-
-        /// <summary>Gets the files in the specified directory.</summary>
-        /// <param name="path">The directory to get files.</param>
-        /// <param name="handler">The <see cref="FileEventHandler"/> object to call on each file found.</param>
-        /// <param name="recursive">if set to <c>true</c>, include files in sub directories recursively.</param>
-        public void GetFiles(string path, FileEventHandler handler, bool recursive)
-        {
-            foreach (string fileName in Directory.GetFiles(path))
-            {
-                bool cancel = false;
-                handler(fileName, ref cancel);
-                if (cancel)
-                {
-                    return;
-                }
-            }
-
-            // Check subdirs
-            if (recursive)
-            {
-                foreach (string folderName in Directory.GetDirectories(path))
-                {
-                    this.GetFiles(folderName, handler, recursive);
-                }
-            }
-        }
-
-        /// <summary>Creates a temporary file name. File is not automatically created.</summary>
-        /// <param name="extension">File extension (with the dot).</param>
-        public string GetTempFileName(string extension)
-        {
-            string retVal = FileUtils.GetTempFileName(extension);
-
-            this.Snapshot(retVal);
-
-            return retVal;
-        }
-
-        /// <summary>Creates a temporary file name. File is not automatically created.</summary>
-        public string GetTempFileName()
-        {
-            return this.GetTempFileName(".tmp");
-        }
-
-        /// <summary>Gets a temporary directory.</summary>
-        /// <returns>The path to the newly created temporary directory.</returns>
-        public string GetTempDirectory()
-        {
-            return this.GetTempDirectory(Path.GetTempPath(), string.Empty);
-        }
-
-        /// <summary>Gets a temporary directory.</summary>
-        /// <param name="parentDirectory">The parent directory.</param>
-        /// <param name="prefix">The prefix of the directory name.</param>
-        /// <returns>Path to the temporary directory. The temporary directory is created automatically.</returns>
-        public string GetTempDirectory(string parentDirectory, string prefix)
-        {
-            Guid g = Guid.NewGuid();
-            string dirName = Path.Combine(parentDirectory, prefix + g.ToString().Substring(0, 16));
-
-            this.CreateDirectory(dirName);
-
-            return dirName;
-        }
 
         public void UniverseRun(FileOperations operationType, object[] operationParams)
         {
             ExecuteHelper.ExecuteOperation(this, operationType, operationParams);
         }
 
-        public void RollbackAfterCrash()
+        public void Rollback()
         {
-            new TxEnlistment().RollbackAfterCrash(this.journal);
+            new TxEnlistment().Rollback(this.journal);
         }
 
         #region Private
-
-        private bool IsInTransaction()
-        {
-            return Transaction.Current != null;
-        }
-
+        
         private void EnlistOperation(IRollbackableOperation operation)
         {
             Transaction tx = Transaction.Current;
@@ -312,6 +136,11 @@ namespace FileTransactionManager
                     this.enlistments.Add(tx.TransactionInformation.LocalIdentifier, enlistment);
                 }
 
+                if (operation is IBackupableOperation)
+                {
+                    ((IBackupableOperation) operation).BackupFolder = this.TempFolder;
+                }
+
                 enlistment.EnlistOperation(operation);
                 this.journal = new List<IRollbackableOperation>();
                 this.journal.AddRange(enlistment.GetJournal());
@@ -319,5 +148,13 @@ namespace FileTransactionManager
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            if (Directory.Exists(this.TempFolder))
+            {
+                Directory.Delete(this.TempFolder, true);
+            }
+        }
     }
 }
