@@ -21,13 +21,12 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using FileTransactionManager.Heplers;
-
 namespace FileTransactionManager.Operations
 {
     using System;
     using System.IO;
     using System.Runtime.Serialization;
+    using FileTransactionManager.Heplers;
     using FileTransactionManager.Interfaces;
 
     /// <summary>

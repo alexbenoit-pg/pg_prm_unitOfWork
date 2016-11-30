@@ -42,13 +42,16 @@ namespace FileTransactionManager
         private string tempFolder;
         [DataMember] 
         [JsonConverter(typeof(OperationJsonConverter))]
-        private List<IRollbackableOperation> journal; private Dictionary<string, TxEnlistment> enlistments;
-        
-        public string TempFolder {
+        private List<IRollbackableOperation> journal;
+        private Dictionary<string, TxEnlistment> enlistments;
+
+        public string TempFolder
+        {
             get
             {
                 return this.tempFolder;
             }
+
             set
             {
                 this.tempFolder = value;
@@ -115,9 +118,17 @@ namespace FileTransactionManager
         {
             new TxEnlistment().Rollback(this.journal);
         }
+        
+        public void Dispose()
+        {
+            if (Directory.Exists(this.TempFolder))
+            {
+                Directory.Delete(this.TempFolder, true);
+            }
+        }
 
         #region Private
-        
+
         private void EnlistOperation(IRollbackableOperation operation)
         {
             Transaction tx = Transaction.Current;
@@ -138,7 +149,7 @@ namespace FileTransactionManager
 
                 if (operation is IBackupableOperation)
                 {
-                    ((IBackupableOperation) operation).BackupFolder = this.TempFolder;
+                    ((IBackupableOperation)operation).BackupFolder = this.TempFolder;
                 }
 
                 enlistment.EnlistOperation(operation);
@@ -148,13 +159,5 @@ namespace FileTransactionManager
         }
 
         #endregion
-
-        public void Dispose()
-        {
-            if (Directory.Exists(this.TempFolder))
-            {
-                Directory.Delete(this.TempFolder, true);
-            }
-        }
     }
 }

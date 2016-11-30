@@ -117,7 +117,7 @@ namespace Units.Tests
         {
             // Arrange
             var unit = new FileUnit();
-            unit.CreateFile(Path.Combine(PathToSaveDirectory, "UnrealFolder","File.txt"));
+            unit.CreateFile(Path.Combine(PathToSaveDirectory, "UnrealFolder", "File.txt"));
 
             // Assert
             Assert.Throws<CommitException>(() => unit.Commit());
@@ -287,6 +287,7 @@ namespace Units.Tests
             unit.WriteAllText(this.WriteFilePath, this.AddedContent);
             unit.Delete(this.DeleteFilePath);
             unit.Move(this.MoveFilePath, this.MovebleFilePath);
+
             // Плохая операция
             unit.Copy(this.DeleteFilePath, this.CopybleFilePath, true);
             
@@ -311,6 +312,7 @@ namespace Units.Tests
             unit.Copy(this.CopyFilePath, this.CopybleFilePath, true);
             unit.AppendAllText(this.AppendFilePath, this.AddedContent);
             unit.WriteAllText(this.WriteFilePath, this.AddedContent);
+
             // Плохая операция
             unit.Copy(this.DeleteFilePath, this.CopybleFilePath, true);
             unit.Delete(this.DeleteFilePath);
@@ -334,6 +336,7 @@ namespace Units.Tests
         {
             // Arrange
             var unit = new FileUnit();
+
             // Плохая операция
             unit.Copy(this.DeleteFilePath, this.CopybleFilePath, true);
             unit.CreateFile(this.CreateFilePath);
@@ -355,6 +358,5 @@ namespace Units.Tests
             Assert.IsTrue(File.Exists(this.DeleteFilePath));
             Assert.IsTrue(!File.Exists(this.MovebleFilePath) && File.Exists(this.MoveFilePath));
         }
-
     }
 }

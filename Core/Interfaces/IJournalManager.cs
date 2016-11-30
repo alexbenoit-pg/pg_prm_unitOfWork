@@ -28,6 +28,8 @@ namespace Core.Interfaces
 
     public interface IJournalManager : IDisposable
     {
+        string JournalFolder { get; set; }
+
         string JournalPath { get; set; }
 
         void Save(List<ITransactionUnit> lst);

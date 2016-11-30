@@ -32,15 +32,40 @@ namespace Units
 
     public class UnitJsonJournalManager : IJournalManager
     {
+        private string name;
+        private string folder;
+
         public UnitJsonJournalManager()
         {
-            var name = Guid.NewGuid().ToString();
-            this.JournalPath = Path.Combine(UnitOfWork.GetJournalsFolder(), name);
+            name = Guid.NewGuid().ToString();
+            folder = UnitOfWork.GetJournalsFolder();
         }
 
-        public string JournalPath { get; set; }
+        public string JournalFolder
+        {
+            get
+            {
+                return this.folder;
+            }
+            set
+            {
+                this.folder = value;
+            }
+        }
 
-        public void Dispose()
+        public string JournalPath {
+            get
+            {
+                return Path.Combine(this.folder, this.name);
+            }
+            set
+            {
+                this.folder = Path.GetDirectoryName(value);
+                this.name = Path.GetFileName(value);
+            }
+        }
+
+            public void Dispose()
         {
             File.Delete(this.JournalPath);
         }

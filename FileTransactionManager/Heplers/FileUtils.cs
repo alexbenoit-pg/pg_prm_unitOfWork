@@ -28,7 +28,7 @@ namespace FileTransactionManager.Heplers
 
     public static class FileUtils
     {
-        public static string GetTempFileName(string folderPath,string extension)
+        public static string GetTempFileName(string folderPath, string extension)
         {
             Guid g = Guid.NewGuid();
             string retVal = Path.Combine(folderPath, g.ToString().Substring(0, 8)) + extension;

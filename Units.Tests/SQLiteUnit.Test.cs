@@ -1,4 +1,7 @@
-﻿// HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
+﻿// -----------------------------------------------------------------------
+// <copyright file="SQLiteUnitTests.cs" company="Paragon Software Group">
+// EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
+// HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
 // IN WHOLE OR IN PART WITHOUT EXPLICIT WRITTEN AUTHORIZATION FROM THE COMPANY.
 // 
@@ -27,7 +30,6 @@ namespace Units.Tests
     using System.Linq;
     using Core.Exceptions;
     using NUnit.Framework;
-    using Units.SQLiteTransactionUnit;
     using Assert = NUnit.Framework.Assert;
 
     [TestFixture]
@@ -94,28 +96,28 @@ namespace Units.Tests
         [Test]
         public void SQLiteUnit_OneCommandInUnit_ReturnTrue()
         {
-            //Arrange
+            // Arrange
             var unit = new SQLiteUnit(this.PathToDataBase);
             string command =
                 $"INSERT INTO {this.DbTableName}({this.DbFieldId}, {this.DbFieldFirstName}, {this.DbFieldLastName}) "
                 + $"VALUES (1, '{this.FirstName1}', '{this.LastName1}')";
             unit.AddSqliteCommand(command, string.Empty);
 
-            //Act
+            // Act
             unit.Commit();
 
-            //Assert
+            // Assert
             var personsInDatabase = this.GetInfOfDataBase();
-            var FirstNameinDb = personsInDatabase[0][0];
-            var LastNameinDb = personsInDatabase[0][1];
-            Assert.AreEqual(this.FirstName1, FirstNameinDb);
-            Assert.AreEqual(this.LastName1, LastNameinDb);
+            var firstNameInDb = personsInDatabase[0][0];
+            var lastNameInDb = personsInDatabase[0][1];
+            Assert.AreEqual(this.FirstName1, firstNameInDb);
+            Assert.AreEqual(this.LastName1, lastNameInDb);
         }
 
         [Test]
         public void SQLiteUnit_SeveralCommandsInUnit_ReturnTrue()
         {
-            //Arrange
+            // Arrange
             var unit = new SQLiteUnit(this.PathToDataBase);
             for (int i = 0; i < this.Names.Length; i++)
             {
@@ -132,10 +134,10 @@ namespace Units.Tests
             var personsInDatabase = this.GetInfOfDataBase();
             for (int i = 0; i < this.Names.Length; i++)
             {
-                var firstNameinDb = personsInDatabase[i][0];
-                var lastNameinDb = personsInDatabase[i][1];
-                Assert.AreEqual(this.Names[i], firstNameinDb);
-                Assert.AreEqual(this.LastNames[i], lastNameinDb);
+                var firstNameInDb = personsInDatabase[i][0];
+                var lastNameInDb = personsInDatabase[i][1];
+                Assert.AreEqual(this.Names[i], firstNameInDb);
+                Assert.AreEqual(this.LastNames[i], lastNameInDb);
             }
         }
 
@@ -149,11 +151,10 @@ namespace Units.Tests
                 + $"VALUES (1, '{this.FirstName1}', '{this.LastName1}', 'FAKE FIELD')";
             unit.AddSqliteCommand(command, string.Empty);
 
-            //Assert
+            // Assert
             Assert.Throws<CommitException>(() => unit.Commit());
         }
-
-
+        
         [Test]
         public void SQLiteUnit_BadFieldInCommandAndThrowException_ReturnTrue()
         {
@@ -165,7 +166,7 @@ namespace Units.Tests
                 + $"VALUES ({badField}, '{this.FirstName1}', '{this.LastName1}')";
             unit.AddSqliteCommand(command, string.Empty);
 
-            //Assert
+            // Assert
             Assert.Throws<CommitException>(() => unit.Commit());
         }
 
@@ -194,7 +195,7 @@ namespace Units.Tests
         {
             // Arrange
             var unit = new SQLiteUnit(this.PathToDataBase);
-            for (int i = 0; i < Names.Length; i++)
+            for (int i = 0; i < this.Names.Length; i++)
             {
                 int id = i + 1;
                 string command =
@@ -233,6 +234,7 @@ namespace Units.Tests
                         $"INSERT INTO {this.DbTableName}({this.DbFieldId}, {this.DbFieldFirstName}, {this.DbFieldLastName}) "
                         + $"VALUES ({badField}, '{this.FirstName1}', '{this.LastName1}')";
                 }
+
                 unit.AddSqliteCommand(command, rollbackComand);
             }
 
@@ -286,7 +288,6 @@ namespace Units.Tests
                 connection.Close();
                 return result;
             }
-
         }
     }
 }

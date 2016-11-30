@@ -32,14 +32,14 @@ namespace Core
         private List<ITransactionUnit> executedUnits;
         private IJournalManager journalManager;
         private bool isBad;
-        private bool isCommit;
+        private bool isComplete;
 
         internal BussinesTransaction(IJournalManager journalManager)
         {
             this.executedUnits = new List<ITransactionUnit>();
             this.journalManager = journalManager;
             this.isBad = false;
-            this.isCommit = false;
+            this.isComplete = false;
         }
 
         public void ExecuteUnit(ITransactionUnit unit)
@@ -53,7 +53,7 @@ namespace Core
                     this.journalManager.Save(this.executedUnits);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 unit.Dispose();
                 this.isBad = true;
@@ -63,23 +63,19 @@ namespace Core
 
         public void Commit()
         {
-            this.isCommit = true;
+            this.isComplete = true;
+            this.journalManager.Dispose();
+            this.executedUnits.ForEach(unit => unit.Dispose());
+            this.executedUnits.Clear();
+            this.executedUnits = null;
         }
 
         public void Dispose()
         {
-            if (!isCommit)
+            if (!this.isComplete)
             {
                 this.Rollback();
             }
-            else
-            {
-                this.executedUnits.ForEach(unit => unit.Dispose());
-                this.executedUnits.Clear();
-            }
-
-            this.journalManager.Dispose();
-            this.executedUnits = null;
         }
 
         private void Rollback()

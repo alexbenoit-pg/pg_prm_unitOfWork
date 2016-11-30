@@ -27,20 +27,33 @@ namespace Core.Helpers
 
     internal static class FolderHelper
     {
-        private static bool useDefaultFolder = UserConfig.Default.UseDefaultJournalFolder;
         private static string defaultFolder = Path.Combine(
             Path.GetTempPath(),
             "UnitOfWork");
-        private static string userFolder = UserConfig.Default.CustomJournalFolderPath;
-
+        
         internal static string JournalsFolder
         {
             get
             {
+                bool useDefaultFolder = UserConfig.Default.UseDefaultJournalFolder;
+                string userFolder = UserConfig.Default.CustomJournalFolderPath;
                 return useDefaultFolder
                     ? defaultFolder
                     : userFolder;
             }
+        }
+
+        internal static void UseUserFolder(string path)
+        {
+            UserConfig.Default.UseDefaultJournalFolder = false;
+            UserConfig.Default.CustomJournalFolderPath = path;
+            CreateJournalsFolder();
+        }
+
+        internal static void UseDefaultFolder()
+        {
+            UserConfig.Default.UseDefaultJournalFolder = true;
+            CreateJournalsFolder();
         }
 
         internal static void CreateJournalsFolder()

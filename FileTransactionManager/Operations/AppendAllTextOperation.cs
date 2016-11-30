@@ -25,7 +25,6 @@ namespace FileTransactionManager.Operations
 {
     using System.IO;
     using System.Runtime.Serialization;
-    using FileTransactionManager.Heplers;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
 

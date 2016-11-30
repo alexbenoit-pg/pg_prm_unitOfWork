@@ -38,6 +38,13 @@ namespace Core
             this.journalManager.JournalPath = journalPath;
             this.executedUnits = this.journalManager.Get();
         }
+        
+        public void Dispose()
+        {
+            this.journalManager.Dispose();
+            this.executedUnits.Clear();
+            this.executedUnits = null;
+        }
 
         internal void Rollback()
         {
@@ -51,13 +58,6 @@ namespace Core
                 unit.Dispose();
                 this.journalManager.Save(notRollbacked);
             }
-        }
-
-        public void Dispose()
-        {
-            this.journalManager.Dispose();
-            this.executedUnits.Clear();
-            this.executedUnits = null;
         }
     }
 }

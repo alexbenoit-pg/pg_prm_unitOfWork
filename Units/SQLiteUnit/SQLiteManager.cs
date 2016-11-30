@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="CreateFileOperation.cs" company="Paragon Software Group">
+// <copyright file="SQLiteManager.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,66 +21,51 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace FileTransactionManager.Operations
+namespace Units
 {
     using System;
-    using System.IO;
-    using System.Runtime.Serialization;
-    using FileTransactionManager.Interfaces;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
-
-    /// <summary>
-    /// Rollbackable operation which copies a file.
-    /// </summary>
-    [DataContract]
-    internal sealed class CreateFileOperation : IRollbackableOperation
+    using System.Collections.Generic;
+    using System.Data.SQLite;
+    
+    public static class SQLiteManager
     {
-        [DataMember(Order = 1)]
-        private string path;
-
-        public CreateFileOperation(string pathToFile)
+        public static string GetConnectionString(string dataBasePath)
         {
-            this.path = pathToFile;
+            return string.Format(
+                    SQLiteSettings.Default.ConnectionString,
+                    dataBasePath);
         }
 
-        [DataMember(Order = 0)]
-        [JsonConverter(typeof(StringEnumConverter))]
-        public FileOperations Type
+        public static void ExecuteCommandsInTransaction(string dataBasePath, IEnumerable<string> commands)
         {
-            get
+            var сonnectionString = GetConnectionString(dataBasePath);
+            var connection = new SQLiteConnection(сonnectionString);
+            connection.Open();
+            var transaction = connection.BeginTransaction();
+            var sqlCommand = new SQLiteCommand(connection)
             {
-                return FileOperations.CreateFile;
-            }
-        }
-        
-        public string Path => this.path;
-
-        public void Execute()
-        {
-            var parentFolders = this.Path.Split('\\');
-            string tempPath = string.Empty;
-
-            for (var i = 0; i < parentFolders.Length - 1; i++)
+                Transaction = transaction
+            };
+            try
             {
-                tempPath = System.IO.Path.Combine(tempPath, parentFolders[i] + "\\");
-                if (!Directory.Exists(tempPath))
+                foreach (string command in commands)
                 {
-                    throw new Exception($"Folder {tempPath} is not exist.");
+                    sqlCommand.CommandText = command;
+                    sqlCommand.ExecuteNonQuery();
                 }
-            }
 
-            if (!File.Exists(this.Path))
-            {
-                File.Create(this.Path).Close();
+                transaction.Commit();
             }
-        }
-
-        public void Rollback()
-        {
-            if (File.Exists(this.Path))
+            catch (Exception e)
             {
-                File.Delete(this.path);
+                throw e;
+            }
+            finally
+            {
+                transaction.Dispose();
+                sqlCommand.Dispose();
+                connection.Close();
+                connection.Dispose();
             }
         }
     }

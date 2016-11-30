@@ -21,7 +21,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Collections.Specialized;
+using System.Runtime.Serialization.Formatters;
 
 namespace Core
 {
@@ -29,7 +29,6 @@ namespace Core
     using System.Linq;
     using Core.Helpers;
     using Core.Interfaces;
-    using System.Configuration;
 
     public sealed class UnitOfWork
     {
@@ -49,8 +48,10 @@ namespace Core
             }
         }
         
+        // Static context
         public string JournalsFolder => FolderHelper.JournalsFolder;
 
+        // Non static context
         public static string GetJournalsFolder()
         {
             return FolderHelper.JournalsFolder;
@@ -61,9 +62,21 @@ namespace Core
             return new BussinesTransaction(this.journalManager);
         }
 
+        public void UseMyFolderForJournals(string path)
+        {
+            FolderHelper.UseUserFolder(path);
+            this.journalManager.JournalFolder = FolderHelper.JournalsFolder;
+        }
+
+        public void UseDefaultFolderForJournals()
+        {
+            FolderHelper.UseDefaultFolder();
+            this.journalManager.JournalFolder = FolderHelper.JournalsFolder;
+        }
+
         private void CheckBadTransaction()
         {
-            var journals = Directory.GetFiles(JournalsFolder);
+            var journals = Directory.GetFiles(this.JournalsFolder);
             if (journals.Any())
             {
                 this.RollbackBadTransactions(journals);

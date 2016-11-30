@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="SQLiteManager.cs" company="Paragon Software Group">
+// <copyright file="UnitJsonConverter.Test.cs" company="Paragon Software Group">
 // EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
@@ -21,53 +21,41 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Units.SQLiteTransactionUnit
+namespace Units.Tests
 {
     using System;
     using System.Collections.Generic;
-    using System.Data.SQLite;
-    using Resources = Properties.SQLiteUnit;
-    
-    public static class SQLiteManager
+    using System.IO;
+    using System.Text;
+    using Core.Interfaces;
+    using Newtonsoft.Json;
+    using NUnit.Framework;
+    using Units;
+    using Assert = NUnit.Framework.Assert;
+
+    [TestFixture]
+    public class UnitJsonConverterTest
     {
-        public static string GetConnectionString(string dataBasePath)
+        [Test]
+        public void UnitJsonConverter_SerializeITransactionUnit_ReturnTrue()
         {
-            return string.Format(
-                    Resources.ConnectionString,
-                    dataBasePath);
-        }
-
-        public static void ExecuteCommandsInTransaction(string dataBasePath, IEnumerable<string> commands)
-        {
-            var сonnectionString = GetConnectionString(dataBasePath);
-            var connection = new SQLiteConnection(сonnectionString);
-            connection.Open();
-            var transaction = connection.BeginTransaction();
-            var sqlCommand = new SQLiteCommand(connection)
+            // Arrange
+            var units = new List<ITransactionUnit>
             {
-                Transaction = transaction
+                new FileUnit(),
+                new SQLiteUnit("fake\\path")
             };
-            try
+            
+            // Assert
+            Assert.Throws<InvalidOperationException>(() =>
             {
-                foreach (string command in commands)
-                {
-                    sqlCommand.CommandText = command;
-                    sqlCommand.ExecuteNonQuery();
-                }
-
-                transaction.Commit();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-            finally
-            {
-                transaction.Dispose();
-                sqlCommand.Dispose();
-                connection.Close();
-                connection.Dispose();
-            }
+                StringBuilder sb = new StringBuilder();
+                StringWriter sw = new StringWriter(sb);
+                new UnitJsonConverter().WriteJson(
+                        new JsonTextWriter(sw), 
+                        units, 
+                        JsonSerializer.CreateDefault());
+            });
         }
     }
 }

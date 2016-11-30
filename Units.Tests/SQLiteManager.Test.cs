@@ -29,7 +29,6 @@ namespace Units.Tests
     using System.IO;
     using System.Linq;
     using NUnit.Framework;
-    using Units.SQLiteTransactionUnit;
     using Assert = NUnit.Framework.Assert;
 
     [TestFixture]
@@ -82,26 +81,28 @@ namespace Units.Tests
         [Test]
         public void SQLiteUnit_OneCommand_ReturnTrue()
         {
-            //Arrange
+            // Arrange
              string command =
                 $"INSERT INTO {this.DbTableName}({this.DbFieldId}, {this.DbFieldFirstName}, {this.DbFieldLastName}) "
                 + $"VALUES (1, '{this.FirstName1}', '{this.LastName1}')";
-            //Act
+
+            // Act
             SQLiteManager.ExecuteCommandsInTransaction(
                 this.PathToDataBase,
                 new List<string> { command });
 
-            //Assert
+            // Assert
             var personsInDatabase = this.GetInfOfDataBase();
-            var FirstNameinDb = personsInDatabase[0][0];
-            var LastNameinDb = personsInDatabase[0][1];
-            Assert.AreEqual(this.FirstName1, FirstNameinDb);
-            Assert.AreEqual(this.LastName1, LastNameinDb);
+            var firstNameInDb = personsInDatabase[0][0];
+            var lastNameInDb = personsInDatabase[0][1];
+            Assert.AreEqual(this.FirstName1, firstNameInDb);
+            Assert.AreEqual(this.LastName1, lastNameInDb);
         }
 
         [Test]
         public void SQLiteUnit_SeveralCommands_ReturnTrue()
         {
+            // Arrange
             var names = new string[]
             {
                 this.FirstName1,
@@ -132,12 +133,11 @@ namespace Units.Tests
             var personsInDatabase = this.GetInfOfDataBase();
             for (int i = 0; i < names.Length; i++)
             {
-                var firstNameinDb = personsInDatabase[i][0];
-                var lastNameinDb = personsInDatabase[i][1];
-                Assert.AreEqual(names[i], firstNameinDb);
-                Assert.AreEqual(lastNames[i], lastNameinDb);
+                var firstNameInDb = personsInDatabase[i][0];
+                var lastNameInDb = personsInDatabase[i][1];
+                Assert.AreEqual(names[i], firstNameInDb);
+                Assert.AreEqual(lastNames[i], lastNameInDb);
             }
-
         }
 
         private void CreatDataBase(string pathDataBase)
@@ -184,7 +184,6 @@ namespace Units.Tests
                 connection.Close();
                 return result;
             }
-
         }
     }
 }

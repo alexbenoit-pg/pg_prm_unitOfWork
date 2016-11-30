@@ -21,17 +21,15 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
-
 namespace Units
 {
+    using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
     using Core.Exceptions;
     using Core.Interfaces;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
-    using Units.SQLiteTransactionUnit;
 
     [DataContract]
     public class SQLiteUnit : ITransactionUnit

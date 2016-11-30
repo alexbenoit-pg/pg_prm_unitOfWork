@@ -68,8 +68,7 @@ namespace Units
             this.target.TempFolder = Path.Combine(
                 UnitOfWork.GetJournalsFolder(),
                 "FileUnit",
-                Guid.NewGuid().ToString()
-                );
+                Guid.NewGuid().ToString());
 
             using (var scope = new TransactionScope())
             {

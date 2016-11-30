@@ -23,7 +23,7 @@
 
 namespace FileTransactionManager.Interfaces
 {
-    interface IBackupableOperation
+    internal interface IBackupableOperation
     {
         string BackupFolder { get; set; }
     }
