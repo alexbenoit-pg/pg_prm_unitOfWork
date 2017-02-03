@@ -1,12 +1,12 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="UnitOfWorkIntegrationTest.cs" company="Paragon Software Group">
-// EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
+// EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
 // IN WHOLE OR IN PART WITHOUT EXPLICIT WRITTEN AUTHORIZATION FROM THE COMPANY.
-// 
+//
 // Copyright (c) 1994-2016 Paragon Software Group, All rights reserved.
-// 
+//
 // UNLESS OTHERWISE AGREED IN A WRITING SIGNED BY THE PARTIES, THIS SOFTWARE IS
 // PROVIDED "AS-IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -38,7 +38,7 @@ namespace UnitOfWork.IntegrationTest
         private readonly UnitOfWork unit = new UnitOfWork(new UnitJsonJournalManager(), false);
 
         private static string PathToSaveDirectory => $"{Path.GetTempPath()}FileAndSQLiteTransaction\\";
-        
+
         private string UserFolderForJournals => @"C:\Test\";
 
         private string PathToDataBase => $"{PathToSaveDirectory}test.db";
@@ -61,28 +61,28 @@ namespace UnitOfWork.IntegrationTest
 
         private string TargetDirectory => $"{PathToSaveDirectory}TargetFolder\\";
 
-        private string AppendFilePath => $"{PathToSaveDirectory}append.txt"; 
+        private string AppendFilePath => $"{PathToSaveDirectory}append.txt";
 
-        private string WriteFilePath => $"{PathToSaveDirectory}write.txt"; 
+        private string WriteFilePath => $"{PathToSaveDirectory}write.txt";
 
         private string Content => "Text for test.";
 
-        private string CopyFilePath => $"{PathToSaveDirectory}copy.txt"; 
+        private string CopyFilePath => $"{PathToSaveDirectory}copy.txt";
 
-        private string DeleteFilePath => $"{PathToSaveDirectory}delete.txt"; 
+        private string DeleteFilePath => $"{PathToSaveDirectory}delete.txt";
 
-        private string MoveFilePath => $"{PathToSaveDirectory}move.txt"; 
+        private string MoveFilePath => $"{PathToSaveDirectory}move.txt";
 
-        private string CreateFilePath => $"{PathToSaveDirectory}CreateFileTest.txt"; 
+        private string CreateFilePath => $"{PathToSaveDirectory}CreateFileTest.txt";
 
-        private string MovebleFilePath => $"{TargetDirectory}moveble.txt"; 
+        private string MovebleFilePath => $"{TargetDirectory}moveble.txt";
 
-        private string CopybleFilePath => $"{PathToSaveDirectory}copy_2.txt"; 
+        private string CopybleFilePath => $"{PathToSaveDirectory}copy_2.txt";
 
         private string AddedContent => "\n=====\nThis text was added\n=====\n";
 
         public static void Main()
-        { 
+        {
         }
 
         [SetUp]
@@ -115,7 +115,6 @@ namespace UnitOfWork.IntegrationTest
         {
             GC.Collect();
             GC.SuppressFinalize(this);
-            Directory.Delete(PathToSaveDirectory, true);
         }
 
         [Test]
@@ -123,7 +122,7 @@ namespace UnitOfWork.IntegrationTest
         {
             // Arrange
             var sqliteTransactionFirst = new SQLiteUnit(this.PathToDataBase);
-            string firstSqlCommand = 
+            string firstSqlCommand =
                 $"INSERT INTO {this.DbTableName}({this.DbFieldId}, {this.DbFieldFirstName}, {this.DbFieldLastName}) "
                 + $"VALUES ({this.DbRowId}, '{this.FirstName}', '{this.LastName}')";
             string firstSqlRollback = $"DELETE FROM {this.DbTableName} WHERE {this.DbFieldId} = {this.DbRowId}";
@@ -140,10 +139,10 @@ namespace UnitOfWork.IntegrationTest
             fileTransaction.Move(this.MoveFilePath, this.MovebleFilePath);
 
             var sqliteTransactionSecond = new SQLiteUnit(this.PathToDataBase);
-            string secondSqlCommand = 
+            string secondSqlCommand =
                 $"UPDATE {this.DbTableName} set {this.DbFieldFirstName} = "
                 + $"'{this.NewFirstName}' WHERE {this.DbFieldId} = {this.DbRowId}";
-            string secondSqlRollback = 
+            string secondSqlRollback =
                 $"UPDATE {this.DbTableName} set {this.DbFieldFirstName} = "
                 + $"'{this.LastName}' WHERE {this.DbFieldId} = {this.DbRowId}";
             sqliteTransactionSecond.AddSqliteCommand(
@@ -197,10 +196,10 @@ namespace UnitOfWork.IntegrationTest
             fileTransaction.WriteAllText(this.WriteFilePath, this.AddedContent);
             fileTransaction.Delete(this.DeleteFilePath);
             fileTransaction.Move(this.MoveFilePath, this.MovebleFilePath);
-            
+
             var badFileUnit = new FileUnit();
             badFileUnit.Copy(this.DeleteFilePath, this.CopybleFilePath, true);
-            
+
             // Act
             using (var bussinesTransaction = this.unit.BeginTransaction())
             {
@@ -276,7 +275,7 @@ namespace UnitOfWork.IntegrationTest
             Assert.AreEqual(string.Empty, firstNameInDb);
             Assert.AreEqual(string.Empty, lastNameInDb);
         }
-        
+
         [Test]
         public void ForgottenToMakeCommit_ReturnTrue()
         {
@@ -358,7 +357,7 @@ namespace UnitOfWork.IntegrationTest
             Assert.IsTrue(File.Exists(this.DeleteFilePath));
             Assert.IsTrue(!File.Exists(this.MovebleFilePath) && File.Exists(this.MoveFilePath));
         }
-        
+
         [Test]
         public void RollbackAfterCrush_ReturnTrue()
         {
@@ -384,8 +383,8 @@ namespace UnitOfWork.IntegrationTest
             var bussinesTransaction = this.unit.BeginTransaction();
             bussinesTransaction.ExecuteUnit(sqliteTransactionFirst);
             bussinesTransaction.ExecuteUnit(fileTransaction);
-            
-            // Эмитируем падение программы и повторное создание объекта UnitOfWork 
+
+            // Эмитируем падение программы и повторное создание объекта UnitOfWork
             // Так как журнал остался, будет выполнен роллбек.
             var newUnit = new UnitOfWork(new UnitJsonJournalManager());
 
@@ -496,7 +495,7 @@ namespace UnitOfWork.IntegrationTest
             {
                 connection.Open();
                 using (SQLiteCommand command = new SQLiteCommand(
-                    $"SELECT * FROM person WHERE {DbFieldId} = {DbRowId}", 
+                    $"SELECT * FROM person WHERE {DbFieldId} = {DbRowId}",
                     connection))
                 {
                     using (SQLiteDataReader reader = command.ExecuteReader())

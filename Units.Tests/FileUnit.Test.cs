@@ -1,12 +1,12 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="FileUnitTests.cs" company="Paragon Software Group">
-// EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED 
+// EXCEPT WHERE OTHERWISE STATED, THE INFORMATION AND SOURCE CODE CONTAINED
 // HEREIN AND IN RELATED FILES IS THE EXCLUSIVE PROPERTY OF PARAGON SOFTWARE
 // GROUP COMPANY AND MAY NOT BE EXAMINED, DISTRIBUTED, DISCLOSED, OR REPRODUCED
 // IN WHOLE OR IN PART WITHOUT EXPLICIT WRITTEN AUTHORIZATION FROM THE COMPANY.
-// 
+//
 // Copyright (c) 1994-2016 Paragon Software Group, All rights reserved.
-// 
+//
 // UNLESS OTHERWISE AGREED IN A WRITING SIGNED BY THE PARTIES, THIS SOFTWARE IS
 // PROVIDED "AS-IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -80,7 +80,6 @@ namespace Units.Tests
         {
             GC.Collect();
             GC.SuppressFinalize(this);
-            Directory.Delete(PathToSaveDirectory, true);
         }
 
         [Test]
@@ -111,7 +110,7 @@ namespace Units.Tests
             // Assert
             Assert.IsFalse(File.Exists(this.CreateFilePath));
         }
-        
+
         [Test]
         public void FileUnit_CreateFileInNonExistFolder_ReturnTrue()
         {
@@ -134,7 +133,7 @@ namespace Units.Tests
             unit.Commit();
 
             // Assert
-            Assert.IsTrue(File.Exists(this.MovebleFilePath) 
+            Assert.IsTrue(File.Exists(this.MovebleFilePath)
                             && !File.Exists(this.MoveFilePath));
         }
 
@@ -290,7 +289,7 @@ namespace Units.Tests
 
             // Плохая операция
             unit.Copy(this.DeleteFilePath, this.CopybleFilePath, true);
-            
+
             // Assert
             Assert.Throws<CommitException>(() => unit.Commit());
             Assert.IsFalse(File.Exists(this.CreateFilePath));
@@ -330,7 +329,7 @@ namespace Units.Tests
             Assert.IsTrue(File.Exists(this.DeleteFilePath));
             Assert.IsTrue(!File.Exists(this.MovebleFilePath) && File.Exists(this.MoveFilePath));
         }
-        
+
         [Test]
         public void FileUnit_BadOperationBeforeGoodOperationsAndRollback_ReturnTrue()
         {
